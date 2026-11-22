@@ -46,7 +46,7 @@ class Result:
 
     @property
     def area(self):
-        return float(self.mesh.areas[self.hole].sum())
+        return float(_measure(self.mesh)[self.hole].sum())
 
 
 # ---------------------------------------------------------------------------
@@ -77,10 +77,19 @@ class _Clock:
         self.overhead += self._pc() - s
 
 
+def _measure(mesh):
+    """Element measures: areas, or volumes of revolution 2 pi r_bar |T| if axisymmetric."""
+    if getattr(mesh, "axisymmetric", False):
+        return 2 * np.pi * mesh.areas * mesh.p[mesh.t][:, :, 0].mean(axis=1)
+    return mesh.areas
+
+
 def _frame(mesh, hole, u, lam, label="", t=None):
     """Snapshot used to produce movies of the iterations."""
+    meas = _measure(mesh)
     return dict(p=mesh.p.copy(), t=mesh.t.copy(), hole=np.asarray(hole).copy(),
-                u=np.asarray(u).copy(), lam=float(lam), area=float(mesh.areas[hole].sum()),
+                u=np.asarray(u).copy(), lam=float(lam), area=float(meas[hole].sum()),
+                axisymmetric=bool(getattr(mesh, "axisymmetric", False)),
                 label=label, time=t)
 
 def select_by_score(score, areas, alpha, allowed=None):
@@ -102,7 +111,7 @@ def select_by_score(score, areas, alpha, allowed=None):
 
 
 def initial_hole(mesh: Mesh, alpha, center=(0.0, 0.0), shape="disk", rng=None, allowed=None):
-    """Initial union of triangles of measure ~alpha."""
+    """Initial union of triangles of measure ~alpha (volume if axisymmetric)."""
     c = mesh.centroids
     if shape == "disk":
         score = np.hypot(c[:, 0] - center[0], c[:, 1] - center[1])
@@ -113,7 +122,7 @@ def initial_hole(mesh: Mesh, alpha, center=(0.0, 0.0), shape="disk", rng=None, a
         score = rng.random(mesh.n_elements)
     else:
         raise ValueError(shape)
-    return select_by_score(score, mesh.areas, alpha, allowed)
+    return select_by_score(score, _measure(mesh), alpha, allowed)
 
 
 def interior_elements(mesh: Mesh):
@@ -158,7 +167,7 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
     relative amount 1e-6) during ``patience`` consecutive iterations.
     """
     mesh = sys.mesh
-    areas = mesh.areas
+    areas = sys.measure
     allowed = interior_elements(mesh) if keep_off_boundary else np.ones(mesh.n_elements, bool)
     clock = _Clock()
     hole = hole0.copy()
@@ -251,7 +260,7 @@ def rearrangement(sys: P1System, hole0, alpha, betas=(1e1, 1e2, 1e3, 1e4, 1e5),
     The history stores the hard eigenvalue lambda_{1,h}(chi_k) as well.
     """
     mesh = sys.mesh
-    areas = mesh.areas
+    areas = sys.measure
     allowed = interior_elements(mesh) if keep_off_boundary else None
     chi = hole0.copy()
     hist_pen, hist_hard, ar = [], [], []
@@ -300,7 +309,7 @@ def local_search(sys: P1System, hole, alpha, max_iter=200, n_cand=6, verbose=Fal
     outside triangle with small |du/dnu|; the best improving swap is accepted.
     """
     mesh = sys.mesh
-    areas = mesh.areas
+    areas = sys.measure
     allowed = interior_elements(mesh) if keep_off_boundary else np.ones(mesh.n_elements, bool)
     lam, u = eig_hard(sys, hole)
     hist = [lam]
@@ -384,6 +393,8 @@ def interface_data(sys: P1System, hole, u):
         np.add.at(nn, pos[e[:, j]], (0.5 * L)[:, None] * n)
     gn /= w
     nn /= np.linalg.norm(nn, axis=1)[:, None]
+    if getattr(mesh, "axisymmetric", False):
+        w = w * 2 * np.pi * mesh.p[nodes, 0]      # surface measure of the surface of revolution
     return dict(nodes=nodes, normal=nn, g2=gn, weight=w, edges=e, pos=pos,
                 face_len=L, face_g2=g2)
 
@@ -437,7 +448,7 @@ def _thin(points, dmin):
 
 
 def remesh(mesh: Mesh, hole, fd, bbox, h, h_fine, width=None, seed=0, smooth_passes=10,
-           corners=None):
+           corners=None, max_iter=150):
     """New mesh of Omega refined near the interface of ``hole``.
 
     The element size grows linearly from h_fine at the interface to h at
@@ -470,9 +481,20 @@ def remesh(mesh: Mesh, hole, fd, bbox, h, h_fine, width=None, seed=0, smooth_pas
     tree = cKDTree(pts)
     width = 6 * h if width is None else width
 
+    # Size function: distance to the interface evaluated once on a background
+    # grid (spacing h_fine) and interpolated bilinearly; querying the KD-tree at
+    # every DistMesh iteration took about half of the remeshing time.
+    from scipy.interpolate import RegularGridInterpolator
+    (bx0, by0), (bx1, by1) = bbox
+    gx = np.arange(bx0 - h, bx1 + 2 * h, h_fine)
+    gy = np.arange(by0 - h, by1 + 2 * h, h_fine)
+    GX, GY = np.meshgrid(gx, gy, indexing="ij")
+    dgrid, _ = tree.query(np.column_stack([GX.ravel(), GY.ravel()]))
+    sgrid = (np.minimum(h_fine + (h - h_fine) * dgrid / width, h) / h_fine).reshape(GX.shape)
+    _interp = RegularGridInterpolator((gx, gy), sgrid, bounds_error=False, fill_value=h / h_fine)
+
     def fh(p):
-        d, _ = tree.query(p)
-        return np.minimum(h_fine + (h - h_fine) * d / width, h) / h_fine
+        return _interp(p)
 
     # contact points with dOmega first (so that they survive the thinning)
     onb = np.abs(fd(pts)) < 1e-9
@@ -483,7 +505,9 @@ def remesh(mesh: Mesh, hole, fd, bbox, h, h_fine, width=None, seed=0, smooth_pas
         corners = np.asarray(corners, dtype=float)
         far = np.min(np.linalg.norm(pfix[:, None] - corners[None], axis=2), axis=1) > 0.5 * h_fine
         pfix = np.vstack([corners, pfix[far]])
-    new = distmesh2d(fd, h_fine, bbox, pfix=pfix, fh=fh, seed=seed)
+    new = distmesh2d(fd, h_fine, bbox, pfix=pfix, fh=fh, seed=seed, max_iter=max_iter)
+    new.axisymmetric = bool(getattr(mesh, "axisymmetric", False))
+    new = Mesh(new.p, new.t, None, new.axisymmetric)
     newhole = hole[locate(mesh, new.centroids)]
     # near the interface, classify by the side of the (smoothed) interface
     seg_a, seg_b = pa, pb
@@ -529,7 +553,7 @@ def remove_islands(mesh: Mesh, hole, rel=0.05):
     cols = nb.ravel()
     ok = cols >= 0
     rows, cols = rows[ok], cols[ok]
-    areas = mesh.areas
+    areas = _measure(mesh)
     hole = hole.copy()
     for target in (True, False):
         mask = hole == target
@@ -586,7 +610,7 @@ def _boundary_projection(fd, p, eps=1e-8):
 
 def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
                         min_quality=0.2, remesh_args=None, steklov_edges=None,
-                        tol=1e-7, patience=8, verbose=False, record=False):
+                        tol=1e-7, patience=8, verbose=False, record=False, max_stalls=2):
     """Boundary-fitted gradient descent driven by the shape derivative.
 
     Interface nodes x_i move along the normal nu_i (pointing into the hole) by
@@ -606,7 +630,7 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
     clock = _Clock()
     sys = P1System(mesh, steklov_edges)
     lam, u = eig_hard(sys, hole)
-    hist, ar = [lam], [mesh.areas[hole].sum()]
+    hist, ar = [lam], [_measure(mesh)[hole].sum()]
     n_remesh = 0
     frames = []
     if record:
@@ -614,6 +638,8 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
     best = (lam, mesh, hole, u)
     stall = 0
     q_ref = np.min(_quality(mesh))
+    it_last_remesh = -10
+    stalls = 0
     for it in range(n_iter):
         data = interface_data(sys, hole, u)
         nodes, nrm, g = data["nodes"], data["normal"], data["g2"]
@@ -623,7 +649,7 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
         gbar = np.sum(w * g) / np.sum(w)
         V = g - gbar
         perim = np.sum(w)
-        area = mesh.areas[hole].sum()
+        area = _measure(mesh)[hole].sum()
         delta = (area - alpha) / perim
         hl = np.zeros(nodes.size)
         e = data["edges"]
@@ -663,18 +689,26 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
         if accepted:
             mesh, sys, lam, u = new_mesh, new_sys, lam_new, u_new
             hist.append(lam)
-            ar.append(mesh.areas[hole].sum())
+            ar.append(_measure(mesh)[hole].sum())
             if record:
                 clock.record(frames, mesh, hole, u, lam, "shape gradient flow")
         q = np.min(_quality(mesh))
+        if not accepted and it - it_last_remesh <= 2:
+            # no descent step right after a remeshing: count it; after
+            # ``max_stalls`` such events the flow has converged at this
+            # resolution (remeshing again would only add noise)
+            stalls += 1
+            if stalls >= max_stalls:
+                break
         if remesh_args is not None and ((q < min_quality and q < 0.6 * q_ref) or not accepted):
+            it_last_remesh = it
             mesh, hole = remesh(mesh, hole, seed=n_remesh, **remesh_args)
             n_remesh += 1
             q_ref = np.min(_quality(mesh))
             sys = P1System(mesh, steklov_edges)
             lam, u = eig_hard(sys, hole)
             hist.append(lam)
-            ar.append(mesh.areas[hole].sum())
+            ar.append(_measure(mesh)[hole].sum())
             if record:
                 clock.record(frames, mesh, hole, u, lam, "shape gradient flow (remeshed)")
         elif not accepted:
@@ -682,7 +716,7 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
         if verbose and it % 5 == 0:
             print(f"[flow] it {it:3d} lambda={lam:.6f} area={ar[-1]:.5f} q={q:.2f} "
                   f"remeshes={n_remesh}")
-        if lam < best[0] * (1 - tol) and abs(ar[-1] - alpha) < 0.02 * alpha:
+        if lam < best[0] * (1 - tol) and abs(ar[-1] - alpha) < 1e-3 * alpha:
             best = (lam, mesh, hole, u)
             stall = 0
         else:

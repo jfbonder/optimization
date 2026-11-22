@@ -7,12 +7,12 @@ Companion code to
   Ann. Mat. Pura Appl. (4) 186 (2007), 341-358.
 """
 
-from .mesh import Mesh, disk, annulus, lshape, two_disks_with_handle, distmesh2d
+from .mesh import Mesh, disk, annulus, lshape, two_disks_with_handle, half_disk, distmesh2d
 from .fem import P1System
 from .eigen import eig_hard, eig_dirichlet, eig_penalized
 from . import radial, algorithms
 
 __all__ = [
-    "Mesh", "disk", "annulus", "lshape", "two_disks_with_handle", "distmesh2d",
+    "Mesh", "disk", "annulus", "lshape", "two_disks_with_handle", "half_disk", "distmesh2d",
     "P1System", "eig_hard", "eig_dirichlet", "eig_penalized", "radial", "algorithms",
 ]

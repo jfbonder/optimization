@@ -55,6 +55,7 @@ class Mesh:
     p: np.ndarray            # (n, 2) node coordinates
     t: np.ndarray            # (m, 3) triangles, counter-clockwise
     bedges: np.ndarray = field(default=None)   # (k, 2) boundary edges
+    axisymmetric: bool = False   # meridian section (r = x >= 0, z = y) of a body of revolution
 
     def __post_init__(self):
         self.p = np.ascontiguousarray(self.p, dtype=float)
@@ -149,11 +150,11 @@ class Mesh:
             np.column_stack([m20, m12, c]),
             np.column_stack([m01, m12, m20]),
         ])
-        return Mesh(newp, newt)
+        return Mesh(newp, newt, axisymmetric=self.axisymmetric)
 
     def deform(self, displacement):
         """Return a mesh with the same connectivity and moved nodes."""
-        return Mesh(self.p + displacement, self.t.copy(), self.bedges.copy())
+        return Mesh(self.p + displacement, self.t.copy(), self.bedges.copy(), self.axisymmetric)
 
 
 def boundary_edges(t):
@@ -306,3 +307,13 @@ def two_disks_with_handle(h, radius=1.0, gap=1.0, handle_width=0.5, seed=0):
     xr = cx - np.sqrt(radius ** 2 - w ** 2)
     pfix = [[-xr, w], [-xr, -w], [xr, w], [xr, -w]]
     return distmesh2d(fd, h, ((-cx - radius, -radius), (cx + radius, radius)), pfix=pfix, seed=seed)
+
+
+def half_disk(h, radius=1.0, seed=0):
+    """Meridian half-disk {r >= 0, r^2 + z^2 < R^2} of the ball B_R in R^3
+    (axisymmetric mesh: coordinates (r, z))."""
+    fd = lambda p: d_intersection(d_circle(p, (0, 0), radius), -p[:, 0])
+    pfix = [[0.0, -radius], [0.0, radius]]
+    m = distmesh2d(fd, h, ((0, -radius), (radius, radius)), pfix=pfix, seed=seed)
+    m.axisymmetric = True
+    return m

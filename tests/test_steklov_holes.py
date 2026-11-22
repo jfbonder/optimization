@@ -86,3 +86,23 @@ def test_translation_second_derivative_sign():
     # R < R*: local maximum, R > R*: local minimum
     assert radial.translation_second_derivative(1.0, 0.2) < 0
     assert radial.translation_second_derivative(3.0, 0.5) > 0
+
+
+def test_axisymmetric_ball_quadratic_convergence():
+    """Ball B_1 in R^3 with the centred hole B_{1/2}: axisymmetric FEM vs exact (N = 3)."""
+    from steklov_holes.mesh import distmesh2d, d_circle, d_intersection, d_difference, Mesh
+    R, r = 1.0, 0.5
+    ex = radial.lambda1(R, r, 3)
+    errs = []
+    for h in (0.08, 0.04):
+        fd = lambda p: d_intersection(d_difference(d_circle(p, (0, 0), R), d_circle(p, (0, 0), r)), -p[:, 0])
+        m = distmesh2d(fd, h, ((0, -R), (R, R)), pfix=[[0, -R], [0, -r], [0, r], [0, R]])
+        m = Mesh(m.p, m.t, None, True)
+        mid = np.hypot(*m.p[m.bedges].mean(1).T)
+        onaxis = np.all(np.abs(m.p[m.bedges][:, :, 0]) < 1e-9, axis=1)
+        S = sh.P1System(m, m.bedges[(mid > 0.75) & ~onaxis])
+        fixed = np.zeros(m.n_nodes, bool)
+        fixed[np.unique(m.bedges[(mid <= 0.75) & ~onaxis])] = True
+        errs.append(abs(sh.eig_dirichlet(S, fixed)[0] - ex) / ex)
+        assert abs(S.measure.sum() - 4 / 3 * np.pi * (R ** 3 - r ** 3)) < 2e-2
+    assert errs[0] / errs[1] > 3.0 and errs[1] < 1e-3

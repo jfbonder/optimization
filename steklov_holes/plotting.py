@@ -36,8 +36,26 @@ def _boundary_segments(p, t):
     return p[b]
 
 
-def draw_hole(ax, p, t, hole, show_mesh=False):
+def _mirror(p, t, *fields):
+    """Reflect an axisymmetric meridian section (r >= 0) to show the full section."""
+    pm = p * np.array([-1.0, 1.0])
+    P = np.vstack([p, pm])
+    n = p.shape[0]
+    idx = np.arange(n) + n
+    on_axis = np.abs(p[:, 0]) < 1e-12 * max(1.0, np.ptp(p, axis=0).max())
+    idx[on_axis] = np.flatnonzero(on_axis)          # share the nodes on the axis
+    T = np.vstack([t, idx[t[:, ::-1]]])
+    out = []
+    for f in fields:
+        f = np.asarray(f)
+        out.append(np.concatenate([f, f]))
+    return (P, T, *out)
+
+
+def draw_hole(ax, p, t, hole, show_mesh=False, mirror=False):
     """Binary picture: hole (u = 0) in black, Omega \\ A in white."""
+    if mirror:
+        p, t, hole = _mirror(p, t, hole)
     ax.add_collection(PolyCollection(p[t[~hole]], facecolors="white",
                                      edgecolors="0.8" if show_mesh else "white",
                                      lw=0.15 if show_mesh else 0.3))
@@ -46,7 +64,10 @@ def draw_hole(ax, p, t, hole, show_mesh=False):
     _finish(ax, p)
 
 
-def draw_eigenfunction(ax, p, t, u, vmax=None, cmap="viridis", contours=True):
+def draw_eigenfunction(ax, p, t, u, vmax=None, cmap="viridis", contours=True, mirror=False):
+    if mirror:
+        P, T, _ = _mirror(p, t, np.zeros(t.shape[0]))
+        p, t, u = P, T, np.concatenate([u, u])
     tri = Triangulation(p[:, 0], p[:, 1], t)
     vmax = float(np.max(u)) if vmax is None else vmax
     im = ax.tripcolor(tri, u, shading="gouraud", cmap=cmap, vmin=0, vmax=vmax)
@@ -74,17 +95,18 @@ def plot_result(res, fname=None, title=None, show_mesh=False):
     return fig
 
 
-def plot_holes_panel(states, titles, fname, show_mesh=False, size=2.8, with_eigenfunction=True):
+def plot_holes_panel(states, titles, fname, show_mesh=False, size=2.8, with_eigenfunction=True,
+                     mirror=False):
     """Columns = states; first row holes (binary), second row eigenfunctions."""
     n = len(states)
     nrows = 2 if with_eigenfunction else 1
     fig, axs = plt.subplots(nrows, n, figsize=(size * n, size * nrows), squeeze=False)
     vmax = max(float(np.max(s[3])) for s in states)
     for j, ((p, t, hole, u), ttl) in enumerate(zip(states, titles)):
-        draw_hole(axs[0, j], p, t, hole, show_mesh)
+        draw_hole(axs[0, j], p, t, hole, show_mesh, mirror=mirror)
         axs[0, j].set_title(ttl, fontsize=9)
         if with_eigenfunction:
-            draw_eigenfunction(axs[1, j], p, t, u, vmax=vmax)
+            draw_eigenfunction(axs[1, j], p, t, u, vmax=vmax, mirror=mirror)
     fig.tight_layout()
     fig.savefig(fname, dpi=200)
     plt.close(fig)
@@ -252,7 +274,7 @@ def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3
             for ax, fr, tt, ll, sw, Tt, lab, col in data:
                 k = max(0, int(np.searchsorted(tt, tau, side="right")) - 1)
                 f = fr[k]
-                draw_hole(ax, f["p"], f["t"], f["hole"])
+                draw_hole(ax, f["p"], f["t"], f["hole"], mirror=f.get("axisymmetric", False))
                 in_flow = sw is not None and k >= sw
                 phase = "Alg. 3 (shape flow)" if in_flow else lab.split(" ")[0] + " " + lab.split(" ")[1]
                 it = k - sw if in_flow else k
