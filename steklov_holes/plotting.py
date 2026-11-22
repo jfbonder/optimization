@@ -201,17 +201,17 @@ def make_comparison_movie(frames_a, frames_b, fname, labels=("original algorithm
 
 
 def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3", "Alg. 2 \u2192 Alg. 3"),
-                        title="", fps=10, dpi=100, hold_last=3.0, max_frames=400):
-    """Three panels: hole of pipeline A, hole of pipeline B, and both eigenvalue
-    curves on the same axes, drawn progressively.  The frames carry a ``label``;
-    the switch to the shape flow (label containing "flow") is marked on the curves."""
-    from matplotlib.animation import FFMpegWriter, PillowWriter
+                        totals=None, title="", fps=12, duration=30.0, dpi=100, hold_last=3.0):
+    """Real-time comparison of two pipelines.
 
-    def sub(fr):
-        if len(fr) > max_frames:
-            idx = np.unique(np.linspace(0, len(fr) - 1, max_frames).astype(int))
-            return [fr[i] for i in idx], idx
-        return fr, np.arange(len(fr))
+    Every frame carries a timestamp ``time`` (seconds of computation, recording
+    overhead excluded).  The movie runs at a constant rate in computation
+    time: at movie time tau each panel shows the last state computed before
+    tau.  Panels: hole of pipeline A, hole of pipeline B, and both eigenvalue
+    curves against computation time (dotted line: switch to the shape flow).
+    ``totals`` = (total time A, total time B); by default the last timestamps.
+    """
+    from matplotlib.animation import FFMpegWriter, PillowWriter
 
     def switch(fr):
         for i, f in enumerate(fr):
@@ -219,52 +219,61 @@ def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3
                 return i
         return None
 
-    fa, ia = sub(frames_a)
-    fb, ib = sub(frames_b)
-    la = np.array([f["lam"] for f in fa])
-    lb = np.array([f["lam"] for f in fb])
-    sa, sb = switch(fa), switch(fb)
+    ta = np.array([f["time"] for f in frames_a])
+    tb = np.array([f["time"] for f in frames_b])
+    la = np.array([f["lam"] for f in frames_a])
+    lb = np.array([f["lam"] for f in frames_b])
+    Ta, Tb = totals if totals is not None else (ta[-1], tb[-1])
+    T = max(Ta, Tb)
+    sa, sb = switch(frames_a), switch(frames_b)
     lo, hi = min(la.min(), lb.min()), max(la.max(), lb.max())
     pad = 0.05 * (hi - lo + 1e-12)
-    nmax = max(ia[-1], ib[-1]) + 1
-    pts = np.vstack([f["p"] for f in fa[:1] + fb[:1]])
 
     fig = plt.figure(figsize=(14.5, 5.0))
-    ax_a = fig.add_axes([0.01, 0.06, 0.28, 0.78])
-    ax_b = fig.add_axes([0.30, 0.06, 0.28, 0.78])
-    ax2 = fig.add_axes([0.65, 0.14, 0.33, 0.70])
+    ax_a = fig.add_axes([0.01, 0.06, 0.28, 0.76])
+    ax_b = fig.add_axes([0.30, 0.06, 0.28, 0.76])
+    ax2 = fig.add_axes([0.65, 0.14, 0.33, 0.68])
     if fname.endswith(".gif"):
         writer = PillowWriter(fps=fps)
     else:
         import imageio_ffmpeg
         matplotlib.rcParams["animation.ffmpeg_path"] = imageio_ffmpeg.get_ffmpeg_exe()
         writer = FFMpegWriter(fps=fps, bitrate=2400, codec="libx264", extra_args=["-pix_fmt", "yuv420p"])
-    n = max(len(fa), len(fb))
-    seq = list(range(n)) + [n - 1] * int(hold_last * fps)
+    n = max(2, int(fps * duration))
+    taus = list(np.linspace(0, T, n)) + [T] * int(hold_last * fps)
     colors = ("C1", "C0")
+    data = ((ax_a, frames_a, ta, la, sa, Ta, labels[0], colors[0]),
+            (ax_b, frames_b, tb, lb, sb, Tb, labels[1], colors[1]))
     with writer.saving(fig, fname, dpi=dpi):
-        for k in seq:
-            ka, kb = min(k, len(fa) - 1), min(k, len(fb) - 1)
+        for tau in taus:
             for ax in (ax_a, ax_b, ax2):
                 ax.clear()
-            for ax, fr, kk, idx, sw, lab, col in ((ax_a, fa, ka, ia, sa, labels[0], colors[0]),
-                                                 (ax_b, fb, kb, ib, sb, labels[1], colors[1])):
-                f = fr[kk]
+            for ax, fr, tt, ll, sw, Tt, lab, col in data:
+                k = max(0, int(np.searchsorted(tt, tau, side="right")) - 1)
+                f = fr[k]
                 draw_hole(ax, f["p"], f["t"], f["hole"])
-                phase = "Alg. 3 (shape flow)" if (sw is not None and kk >= sw) else lab.split(" ")[0] + " " + lab.split(" ")[1]
-                ax.set_title(f"{lab}\n{phase}, iteration {idx[kk]},  $\\lambda$={f['lam']:.5f}",
+                in_flow = sw is not None and k >= sw
+                phase = "Alg. 3 (shape flow)" if in_flow else lab.split(" ")[0] + " " + lab.split(" ")[1]
+                it = k - sw if in_flow else k
+                done = tau >= Tt
+                status = f"finished in {Tt:.1f} s" if done else f"t = {tau:.1f} s"
+                ax.set_title(f"{lab}   [{status}]\n{phase}, iteration {it},  $\\lambda$ = {f['lam']:.5f}",
                              fontsize=10, color=col)
-            for fr_l, idx, kk, sw, lab, col in ((la, ia, ka, sa, labels[0], colors[0]),
-                                                (lb, ib, kb, sb, labels[1], colors[1])):
-                ax2.plot(idx[:kk + 1], fr_l[:kk + 1], color=col, lw=1.6, label=lab)
-                ax2.plot([idx[kk]], [fr_l[kk]], "o", color=col, ms=5)
-                if sw is not None and kk >= sw:
-                    ax2.axvline(idx[sw], color=col, ls=":", lw=1.2)
-            ax2.set_xlim(-0.5, nmax - 0.5)
+                # eigenvalue against computation time (step curve)
+                xs = np.append(tt[:k + 1], min(tau, Tt))
+                ys = np.append(ll[:k + 1], ll[k])
+                ax2.step(xs, ys, where="post", color=col, lw=1.6, label=lab)
+                ax2.plot([xs[-1]], [ys[-1]], "o", color=col, ms=5)
+                if in_flow:
+                    ax2.axvline(tt[sw], color=col, ls=":", lw=1.2)
+                if done:
+                    ax2.annotate(f"{Tt:.1f} s", (Tt, ll[k]), textcoords="offset points", xytext=(4, 6),
+                                 color=col, fontsize=9)
+            ax2.set_xlim(0, T * 1.08)
             ax2.set_ylim(lo - pad, hi + pad)
-            ax2.set_xlabel("iteration")
+            ax2.set_xlabel("computation time (s)")
             ax2.set_ylabel(r"$\lambda_{1,h}$")
-            ax2.set_title("eigenvalue (dotted line: switch to Alg. 3)", fontsize=10)
+            ax2.set_title("eigenvalue vs. computation time (dotted line: switch to Alg. 3)", fontsize=10)
             ax2.grid(alpha=0.3)
             ax2.legend(loc="upper right", fontsize=9)
             fig.suptitle(title, fontsize=12)

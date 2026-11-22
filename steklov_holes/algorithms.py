@@ -53,11 +53,35 @@ class Result:
 # helpers
 # ---------------------------------------------------------------------------
 
-def _frame(mesh, hole, u, lam, label=""):
+class _Clock:
+    """Wall-clock timer that excludes the time spent recording frames."""
+
+    def __init__(self):
+        import time
+        self._pc = time.perf_counter
+        self.t0 = self._pc()
+        self.overhead = 0.0
+
+    def now(self):
+        return self._pc() - self.t0 - self.overhead
+
+    def record(self, frames, *args, extra=None):
+        """Append a frame (timestamped) and charge its cost to the overhead.
+        ``extra`` is an optional callable computed only for the frame
+        (e.g. the hard eigenpair in the rearrangement) and also excluded."""
+        s = self._pc()
+        t = s - self.t0 - self.overhead
+        if extra is not None:
+            args = extra(*args)
+        frames.append(_frame(*args, t=t))
+        self.overhead += self._pc() - s
+
+
+def _frame(mesh, hole, u, lam, label="", t=None):
     """Snapshot used to produce movies of the iterations."""
     return dict(p=mesh.p.copy(), t=mesh.t.copy(), hole=np.asarray(hole).copy(),
                 u=np.asarray(u).copy(), lam=float(lam), area=float(mesh.areas[hole].sum()),
-                label=label)
+                label=label, time=t)
 
 def select_by_score(score, areas, alpha, allowed=None):
     """Greedy choice of elements with the smallest score until area >= alpha.
@@ -136,12 +160,15 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
     mesh = sys.mesh
     areas = mesh.areas
     allowed = interior_elements(mesh) if keep_off_boundary else np.ones(mesh.n_elements, bool)
+    clock = _Clock()
     hole = hole0.copy()
     lam, u = eig_hard(sys, hole)
     best = (lam, hole.copy(), u)
     hist, ar = [lam], [areas[hole].sum()]
     removed_at = np.full(mesh.n_elements, -10 ** 9)
-    frames = [_frame(mesh, hole, u, lam, "swap")] if record else []
+    frames = []
+    if record:
+        clock.record(frames, mesh, hole, u, lam, "swap")
     last_improvement = 0
     for k in range(n_iter):
         g2 = np.sum(sys.element_grad(u) ** 2, axis=1)
@@ -199,12 +226,13 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
         if lam < best[0]:
             best = (lam, hole.copy(), u)
         if record:
-            frames.append(_frame(mesh, hole, u, lam, "swap"))
+            clock.record(frames, mesh, hole, u, lam, "swap")
         if patience is not None and k - last_improvement >= patience:
             break
         if verbose and k % 10 == 0:
             print(f"[swap] it {k:4d} lambda={lam:.6f} best={best[0]:.6f}")
-    return Result(mesh, best[1], best[0], best[2], hist, ar, {"method": "swap", "frames": frames})
+    return Result(mesh, best[1], best[0], best[2], hist, ar, {"method": "swap", "frames": frames,
+                                                                 "time": clock.now()})
 
 
 # ---------------------------------------------------------------------------
@@ -228,9 +256,14 @@ def rearrangement(sys: P1System, hole0, alpha, betas=(1e1, 1e2, 1e3, 1e4, 1e5),
     chi = hole0.copy()
     hist_pen, hist_hard, ar = [], [], []
     frames = []
+    clock = _Clock()
+
+    def _hard(mesh_, chi_, label_):
+        lh_, uh_ = eig_hard(sys, chi_)
+        return mesh_, chi_, uh_, lh_, label_
+
     if record:
-        lh, uh = eig_hard(sys, chi)
-        frames.append(_frame(mesh, chi, uh, lh, "initial hole"))
+        clock.record(frames, mesh, chi, "initial hole", extra=_hard)
     u = None
     for beta in betas:
         lam_b, u = eig_penalized(sys, chi, beta, v0=u)
@@ -248,8 +281,7 @@ def rearrangement(sys: P1System, hole0, alpha, betas=(1e1, 1e2, 1e3, 1e4, 1e5),
             chi, lam_b, u = new, lam_new, u_new
             ar.append(areas[chi].sum())
             if record:
-                lh, uh = eig_hard(sys, chi)
-                frames.append(_frame(mesh, chi, uh, lh, f"rearrangement (beta={beta:.0e})"))
+                clock.record(frames, mesh, chi, f"rearrangement (beta={beta:.0e})", extra=_hard)
         lam_h, _ = eig_hard(sys, chi)
         hist_hard.append((beta, lam_h))
         if verbose:
@@ -257,7 +289,7 @@ def rearrangement(sys: P1System, hole0, alpha, betas=(1e1, 1e2, 1e3, 1e4, 1e5),
     lam, uh = eig_hard(sys, chi)
     return Result(mesh, chi, lam, uh, [h for _, h in hist_hard], ar,
                   {"method": "rearrangement", "penalized": hist_pen, "hard_per_beta": hist_hard,
-                   "frames": frames})
+                   "frames": frames, "time": clock.now()})
 
 
 def local_search(sys: P1System, hole, alpha, max_iter=200, n_cand=6, verbose=False, record=False,
@@ -571,11 +603,14 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
     dict(fd=..., bbox=..., h=..., h_fine=...) is given.
     """
     fd = None if remesh_args is None else remesh_args["fd"]
+    clock = _Clock()
     sys = P1System(mesh, steklov_edges)
     lam, u = eig_hard(sys, hole)
     hist, ar = [lam], [mesh.areas[hole].sum()]
     n_remesh = 0
-    frames = [_frame(mesh, hole, u, lam, "shape gradient flow")] if record else []
+    frames = []
+    if record:
+        clock.record(frames, mesh, hole, u, lam, "shape gradient flow")
     best = (lam, mesh, hole, u)
     stall = 0
     q_ref = np.min(_quality(mesh))
@@ -630,7 +665,7 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
             hist.append(lam)
             ar.append(mesh.areas[hole].sum())
             if record:
-                frames.append(_frame(mesh, hole, u, lam, "shape gradient flow"))
+                clock.record(frames, mesh, hole, u, lam, "shape gradient flow")
         q = np.min(_quality(mesh))
         if remesh_args is not None and ((q < min_quality and q < 0.6 * q_ref) or not accepted):
             mesh, hole = remesh(mesh, hole, seed=n_remesh, **remesh_args)
@@ -641,7 +676,7 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
             hist.append(lam)
             ar.append(mesh.areas[hole].sum())
             if record:
-                frames.append(_frame(mesh, hole, u, lam, "shape gradient flow (remeshed)"))
+                clock.record(frames, mesh, hole, u, lam, "shape gradient flow (remeshed)")
         elif not accepted:
             break
         if verbose and it % 5 == 0:
@@ -656,7 +691,8 @@ def shape_gradient_flow(mesh: Mesh, hole, alpha, n_iter=100, step=0.3, smooth=3,
                 break
     lam, mesh, hole, u = best
     return Result(mesh, hole, lam, u, hist, ar,
-                  {"method": "shape_gradient_flow", "remeshes": n_remesh, "frames": frames})
+                  {"method": "shape_gradient_flow", "remeshes": n_remesh, "frames": frames,
+                   "time": clock.now()})
 
 
 def multistart(sys: P1System, alpha, centers, betas_list=((1e1, 1e2, 1e3, 1e4, 1e5),

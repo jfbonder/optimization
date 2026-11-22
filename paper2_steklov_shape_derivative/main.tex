@@ -548,7 +548,7 @@ All the computations were performed with the Python implementation that accompan
 \begin{table}[h]
 \centering\small
 \input{tables/domains.tex}
-\caption{Best values of $\lambda_{1,h}$ over the initial holes (``starts''), with the mean time per run in parentheses, and values after Algorithm~\ref{alg.flow} started from the best hole of each discrete algorithm. The number of nodes is that of the initial mesh; Algorithm~\ref{alg.flow} uses remeshing near the interface.}\label{tab.domains}
+\caption{Best values of $\lambda_{1,h}$ over the initial holes (``starts'') obtained by Algorithms~\ref{alg.swap} and \ref{alg.rearr}, with the mean computation time of one run in seconds in parentheses; Algorithm~\ref{alg.swap} is stopped when the best value has not improved during 40 iterations (at most 300 iterations). The last two columns give the value after Algorithm~\ref{alg.flow}, started from the best hole of each discrete algorithm, and in parentheses the total computation time of the chain (discrete algorithm from the best start plus Algorithm~\ref{alg.flow}), in seconds. Initial meshes have between 2000 and 5100 nodes; Algorithm~\ref{alg.flow} uses remeshing near the interface.}\label{tab.domains}
 \end{table}
 
 \begin{figure}[h]

@@ -123,16 +123,14 @@ Observaciones:
 - **Traslación del disco centrado:** la segunda derivada de $\lambda_1(B_r(te_1))$ calculada por FEM (con malla que se deforma con el agujero) coincide con la fórmula exacta de la Proposición 2.6, por ejemplo $+1.21\cdot10^{-2}$ contra $+1.22\cdot10^{-2}$ para $R=3$, $r=0.5$. El cambio de signo se produce exactamente en $R^*(r)$.
 - **Validación:** en la corona $B_1\setminus B_{0.5}$ el FEM converge como $O(h^2)$ al valor exacto 1.6088088…
 
-**Películas** (`movies/`):
-- `*_pipelines.mp4` (una por dominio): **las dos cadenas completas desde el mismo agujero inicial**.
-  - A la izquierda, Alg. 1 → Alg. 3. Al Algoritmo 1 se lo detiene cuando el mejor $\lambda$ no mejora en 40 iteraciones, y entonces se pasa al Algoritmo 3.
-  - En el centro, Alg. 2 → Alg. 3.
-  - A la derecha, las dos curvas de $\lambda$ en los mismos ejes, dibujándose a la par; una línea punteada marca el paso al Algoritmo 3.
-  - Las genera `experiments/pipeline_movies.py`, y los resultados quedan en `experiments/results/pipeline_*.json`.
-- `*_comparison.mp4` (una por dominio): **el método original y el nuevo lado a lado, desde el mismo agujero inicial**. Arriba el original (Alg. 1), abajo el nuevo (Alg. 2 + 3); cada fila muestra el agujero ($u_h=0$ en negro) y la autofunción, y a la derecha las dos curvas de $\lambda$ se dibujan a medida que avanzan las iteraciones.
-- `*_original_algorithm.mp4` y `*_rearrangement_and_flow.mp4`: cada método por separado (corrida anterior).
-- En la etapa de reordenamiento la curva muestra el autovalor duro $\lambda_{1,h}$, que puede subir en los primeros pasos: lo que es monótono es el penalizado $\lambda_\beta$.
-- `experiments/make_movies.py` regenera las películas a partir de los cuadros guardados.
+**Películas** (`movies/*_pipelines.mp4`, una por dominio): **las dos cadenas completas desde el mismo agujero inicial, en tiempo real de cómputo**.
+- A la izquierda, Alg. 1 → Alg. 3. Al Algoritmo 1 se lo detiene cuando el mejor $\lambda$ no mejora en 40 iteraciones, y entonces se pasa al Algoritmo 3.
+- En el centro, Alg. 2 → Alg. 3.
+- A la derecha, las dos curvas de $\lambda$ en función del **tiempo de cómputo** (segundos), en los mismos ejes; una línea punteada marca el paso al Algoritmo 3.
+- La película avanza a ritmo constante en ese tiempo. La cadena más rápida termina antes y queda quieta, con su tiempo total anotado, mientras la otra sigue.
+- En los títulos se muestran la fase, el número de iteración y el tiempo transcurrido.
+- El tiempo medido excluye el costo de grabar los cuadros: en el Algoritmo 2, cada cuadro requiere un cálculo extra del autovalor duro, que no forma parte del método.
+- Las genera `experiments/pipeline_movies.py`; los tiempos y valores quedan en `experiments/results/pipeline_*.json`.
 
 ## 5. ¿Qué método resultó más eficiente?
 
@@ -171,8 +169,7 @@ Conclusión:
 │   ├── translation.py       traslación del disco centrado (Tabla y Figura)
 │   ├── second_variation.py  diagrama de regímenes en el plano (r, R)
 │   ├── optimal_holes.py     configuración de los dominios (y corrida individual de cada método)
-│   ├── compare_methods.py   original vs nuevo desde los mismos inicios: tabla, figuras y películas comparativas
-│   ├── make_movies.py       regenera las películas a partir de los cuadros guardados
+│   ├── compare_methods.py   original vs nuevo desde los mismos inicios: tabla de valores y tiempos, figuras
 │   ├── pipeline_movies.py   películas de las cadenas Alg. 1 → 3 y Alg. 2 → 3 desde el mismo inicio
 │   ├── convergence.py       convergencia en h (L, α = 1)
 │   ├── make_tables.py       tablas LaTeX a partir de los JSON
@@ -248,7 +245,7 @@ pl.make_movie(res.info["frames"] + flow.info["frames"], "disco.mp4", fps=4)
 **`steklov_holes.plotting`**
 - `plot_result(res, fname)`, `plot_holes_panel(states, titles, fname)`.
 - `make_movie(frames, fname, fps)`: genera MP4 o GIF según la extensión.
-- `make_comparison_movie(frames_a, frames_b, fname)`: película lado a lado de dos métodos, con las dos curvas de $\lambda$.
+- `make_pipeline_movie(frames_a, frames_b, fname, totals)`: película en tiempo real de dos cadenas de métodos (agujeros y curvas de $\lambda$ contra tiempo de cómputo).
 
 ## 9. Cómo reproducir todo
 

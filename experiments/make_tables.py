@@ -24,11 +24,12 @@ for key, label in names.items():
     ts = sum(r["time_swap"] for r in d["runs"]) / len(d["runs"])
     tr = sum(r["time_rearr"] for r in d["runs"]) / len(d["runs"])
     rows.append(
-        f"{label} & {d['nodes']} & {len(d['runs'])} & {d['best_swap']:.5f} ({ts:.1f}\\,s) "
-        f"& {d['best_rearr']:.5f} ({tr:.1f}\\,s) & {d['flow_from_swap']:.5f} & {d['flow_from_rearr']:.5f} \\\\")
+        f"{label} & {len(d['runs'])} & {d['best_swap']:.5f} ({ts:.1f}) "
+        f"& {d['best_rearr']:.5f} ({tr:.1f}) & {d['flow_from_swap']:.5f} ({d['total_time_swap_flow']:.0f}) "
+        f"& {d['flow_from_rearr']:.5f} ({d['total_time_rearr_flow']:.0f}) \\\\")
 with open(os.path.join(TAB, "domains.tex"), "w") as fh:
-    fh.write("\\begin{tabular}{lrrrrrr}\n\\hline\n"
-             "domain & nodes & starts & Alg.~\\ref{alg.swap} & Alg.~\\ref{alg.rearr} & "
+    fh.write("\\begin{tabular}{lrrrrr}\n\\hline\n"
+             "domain & starts & Alg.~\\ref{alg.swap} & Alg.~\\ref{alg.rearr} & "
              "Alg.~\\ref{alg.swap}+\\ref{alg.flow} & Alg.~\\ref{alg.rearr}+\\ref{alg.flow}\\\\\n\\hline\n")
     fh.write("\n".join(rows) + "\n\\hline\n\\end{tabular}\n")
 
