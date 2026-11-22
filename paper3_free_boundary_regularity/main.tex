@@ -1,0 +1,848 @@
+\documentclass[11pt]{amsart}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1.15in]{geometry}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{proposition}{Proposition}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+\numberwithin{equation}{section}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cJ}{\mathcal{J}}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\supp}{supp}
+\newcommand{\avint}{\mathop{\,\rlap{--}\!\!\int}\nolimits}
+\newcommand{\red}{\mathrm{red}}
+
+\title[Regularity in an optimization problem]{Regularity of the free boundary in an optimization problem related to the best Sobolev trace constant}
+\author{Julián Fernández Bonder, Julio D. Rossi and Noemi Wolanski}
+\address{Julián Fernández Bonder and Noemi Wolanski\hfill\break\indent
+Departamento de Matemática, FCEyN, UBA (1428) Buenos Aires, Argentina.}
+\email{jfbonder@dm.uba.ar, wolanski@dm.uba.ar}
+\address{Julio D. Rossi\hfill\break\indent
+Consejo Superior de Investigaciones Científicas (CSIC), Serrano 117, Madrid, Spain,
+on leave from Departamento de Matemática, FCEyN, UBA (1428) Buenos Aires, Argentina.}
+\email{jrossi@dm.uba.ar}
+\thanks{Supported by ANPCyT PICT No. 03-05009, 03-13719 and 03-10608, CONICET PIP0660/98 and PEI6388/04, UBA X052 and X066 and Fundación Antorchas 13900-5. J.D. Rossi and N. Wolanski are members of CONICET.}
+\thanks{\textit{Published as:} SIAM J. Control Optim. \textbf{44} (2006), no.~5, 1614--1635. This is a revised version; the differences with the published text are listed at the beginning of the Introduction.}
+\subjclass[2000]{35J20, 35P30, 49K20}
+\keywords{Sobolev trace constant, free boundaries, eigenvalue optimization problems}
+
+\begin{document}
+
+\begin{abstract}
+In this paper we study the regularity properties of a free boundary problem arising in the optimization of the best Sobolev trace constant in the immersion $H^1(\Omega)\hookrightarrow L^q(\partial\Omega)$ for functions that vanish in a subset of $\Omega$. This problem is also related to a minimization problem for Steklov eigenvalues.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection*{Differences with the published version}
+This text is a revised version of the paper published in SIAM J. Control Optim. \textbf{44} (2006), 1614--1635. The results and the regularity theory (based on \cite{AC}) are those of the published version. The changes are the following.
+\begin{enumerate}
+\item \emph{Sign condition.} The condition $v\ge0$ was added to the admissible classes $\cA_\alpha$, $K$, $K_1$, $K_2$ and $K_\alpha$. It was implicit in the published version, which uses it in several places (subharmonicity of minimizers, Lemmas~\ref{l.lip0} and \ref{l.nondeg}, Theorem~\ref{t.growth}), but it is not part of the definitions there. Without it, Theorems~\ref{t.dense} and \ref{t.conv} are false as stated (Remark~\ref{r.sign}). Since $\cJ(|v|)=\cJ(v)$, this is equivalent to measuring $|\{v\neq0\}|$. With the sign condition all the proofs go through; the only argument that has to be adapted is the one-sided perturbation of Remark~\ref{r.sub}, which now uses $(u-t\varphi)^+$.
+\item \emph{Lemma~\ref{l.nondeg}.} The smallness condition on $\gamma$ is now $C_2C_3\gamma<\min(1,\varepsilon)$ instead of $C_2C_3\gamma<1$, because the left hand side of \eqref{211} contains $\varepsilon|B_\kappa\cap\{\bar u>0\}|$. This only changes constants that already depended on $\varepsilon$. The proof of Theorem~\ref{t.reg}~(2) was written out in more detail.
+\item \emph{Theorem~\ref{t.const}.} Near a free boundary point the Lipschitz bound gives $u\le C\rho_k$, not $u\le C\rho_k^N$ (a misprint). The difference of the $L^2$ norms is then $O(\rho_k^{N+2})$, and the argument is unchanged.
+\item \emph{Section~\ref{sec.small}.} In Lemma~\ref{l.meas} the uniform bound on $\|u_\varepsilon\|_{H^1}$ is justified. In Lemma~\ref{l.upper} the set $D$ is taken connected (needed for the relative isoperimetric inequality), with $|\Omega\setminus D|<c/2$, and a sign is corrected. In Lemma~\ref{l.lower} three things change: the normal derivative of $v_r$ is $-\lambda_\varepsilon+o(1)$ instead of $-\lambda_\varepsilon+o(\delta_r)$, the ball is $B_r(x_0)$ instead of $B_\kappa(x_0)$, the set is $D_{\delta_r}$, and the final constant is $c/K$.
+\item \emph{Section~\ref{sec.main}.} In Theorem~\ref{t.dense} the reference for the strict monotonicity of $S$ is now explicit, and we point out that here $\alpha$ is the measure of the positivity set, while in \cite{FBRW1} it is the measure of the hole. The second case of Theorem~\ref{t.orig} is written out. Corollary~\ref{c.ball} refers to the precise symmetry result of \cite{FBRW1}.
+\item \emph{Minor points.} In Theorem~\ref{t.grad} we added the justification of $\Delta|\nabla u|\ge|\nabla u|$. The constant $\alpha(N)$ was renamed $a_N$ and the Bessel factor $J(r)$ became $\mathbb{J}(r)$, to avoid clashes with $\alpha$ and $\cJ$. Typos and references were corrected; \cite{FBRW1} is cited in its published form.
+\end{enumerate}
+
+\medskip
+
+The study of Sobolev inequalities and of optimal constants is a subject of interest in the analysis of PDE's and related topics. It has been widely studied in the past by many authors and is still an area of intensive research. See for instance the book \cite{Ad}, and, for recent developments in this field, see the articles \cite{Au,dPF,FBR,LZ} and the survey \cite{DH} among others.
+
+The optimal Sobolev constant and its corresponding extremals (if they exist) are related to eigenvalue problems. In the case of the best Sobolev trace embedding $H^1(\Omega)\hookrightarrow L^q(\partial\Omega)$ where $\Omega$ is a bounded smooth domain in $\R^N$, the best constant and the extremal (that exists for $1\le q<2_*=2(N-1)/(N-2)$ since the immersion is compact) give rise to the following elliptic problem with nonlinear boundary conditions
+\[
+\begin{cases}
+-\Delta u+u=0 & \text{in }\Omega,\\[2pt]
+\dfrac{\partial u}{\partial\nu}=\lambda u^{q-1} & \text{on }\partial\Omega.
+\end{cases}
+\]
+The constant $\lambda$ depends on the normalization of the extremal $u$. For instance if $u$ is chosen so that $\|u\|_{L^q(\partial\Omega)}=1$, then $\lambda=S$, the best Sobolev trace constant. In the linear case, $q=2$, this problem becomes an eigenvalue problem that is known as the Steklov eigenvalue problem \cite{St}.
+
+In this paper we are interested in the best Sobolev trace constant among functions that vanish in a subset of $\Omega$. We try to optimize this best constant when varying the subset in the class of measurable sets with prescribed positive measure. In a previous article \cite{FBRW1}, we proved that there exists an optimal set. In this paper we focus our attention on regularity properties of these optimal sets.
+
+More precisely, in \cite{FBRW1} we studied the following problem. Let
+\[
+\cJ(v)=\int_\Omega|\nabla v|^2+v^2\,dx,\qquad
+\cA_\alpha=\{v\in H^1(\Omega)\ :\ v\ge0,\ \|v\|_{L^q(\partial\Omega)}=1\text{ and }|\{v>0\}|=\alpha\}.
+\]
+Then the problem is:
+\[
+(P_\alpha)\qquad\text{Find }\phi_0\in\cA_\alpha\text{ such that } S(\alpha):=\inf_{v\in\cA_\alpha}\cJ(v)=\cJ(\phi_0).
+\]
+Observe that here $\alpha$ denotes the measure of the positivity set; the hole $\{\phi_0=0\}$ has measure $|\Omega|-\alpha$. (In \cite{FBRW1} the parameter is the measure of the hole.)
+
+\begin{remark}[On the sign condition]\label{r.sign}
+The condition $v\ge0$ in the admissible classes $\cA_\alpha$, $K$, $K_1$, $K_2$ and $K_\alpha$ used throughout the paper is essential and was implicit in the published version. Since $\cJ(|v|)=\cJ(v)$, imposing $v\ge0$ is equivalent to measuring $|\{v\neq0\}|$ instead of $|\{v>0\}|$, and this is the natural formulation of the problem of \cite{FBRW1}, where the admissible functions vanish on the hole. Without it, negative values would not be counted in the measure of the positivity set and the problems would change: for instance, $v=-u_\emptyset$, where $u_\emptyset>0$ is an extremal for the trace embedding without holes normalized in $L^q(\partial\Omega)$, satisfies $\cJ(v)=S_\emptyset$ and $|\{v>0\}|=0$, so that it would be a global minimizer of the functional $\cJ_\varepsilon$ in \eqref{Je} below over $\{v\in H^1(\Omega):\|v\|_{L^q(\partial\Omega)}=1\}$ (because $\cJ\ge S_\emptyset$ and $F_\varepsilon\ge-\varepsilon\alpha$ there), for every $\varepsilon>0$. Several arguments below (subharmonicity of minimizers, Lemmas~\ref{l.lip0} and \ref{l.nondeg}) also use $u\ge0$.
+\end{remark}
+
+In \cite{FBRW1} we proved that there exists a solution $\phi_0$ to $(P_\alpha)$ but the approach in \cite{FBRW1} does not give any regularity properties of $\phi_0$ nor of the hole $\{\phi_0=0\}$.
+
+In this paper we consider a different approach. Instead of minimizing $\cJ(v)$ over $\cA_\alpha$ we penalize the functional and minimize without the measure restriction. This approach has been used with great success by many authors starting with the work \cite{AAC} (see also \cite{ACS,Le1,Le2,Te}, etc.). So, let
+\begin{equation}\label{Je}
+\cJ_\varepsilon(v)=\int_\Omega|\nabla v|^2+v^2\,dx+F_\varepsilon(|\{v>0\}|),
+\end{equation}
+where
+\[
+F_\varepsilon(s)=\begin{cases}\frac1\varepsilon(s-\alpha) & \text{if } s\ge\alpha,\\[2pt] \varepsilon(s-\alpha) & \text{if } s<\alpha.\end{cases}
+\]
+The penalized problem is to minimize $\cJ_\varepsilon$ over the class
+\[
+K_1=\{v\in H^1(\Omega)\ :\ v\ge0,\ \|v\|_{L^q(\partial\Omega)}=1\}.
+\]
+For technical reasons, it is better to minimize in the class
+\[
+K=\{v\in H^1(\Omega)\ :\ v\ge0,\ \|v\|_{L^q(\Gamma_N)}=1,\ v=\varphi_0\text{ on }\Gamma_D\},
+\]
+where $\emptyset\neq\Gamma_N\subset\partial\Omega$, $\Gamma_D=\partial\Omega\setminus\Gamma_N$ is the closure of a relatively open set of the boundary and $\varphi_0\in H^1(\Omega)$, $\varphi_0\ge c_0>0$ on $\Gamma_D$. We will only need to assume that $\Gamma_D\neq\emptyset$ at the end of our arguments. See Section~\ref{sec.small}, Lemma~\ref{l.lower}. So the penalized problem is:
+\[
+(P_\varepsilon)\qquad\text{Find } u_\varepsilon\in K\text{ such that }\cJ_\varepsilon(u_\varepsilon)=\inf_{v\in K}\cJ_\varepsilon(v).
+\]
+Observe that minimizing $\cJ_\varepsilon$ over $K$ gives a problem with mixed boundary conditions. We believe that this problem has independent interest.
+
+The main idea is to prove that for $\varepsilon$ small any minimizer $u_\varepsilon$ of $\cJ_\varepsilon$ in $K$ satisfies $|\{u_\varepsilon>0\}|=\alpha$, therefore the penalization term $F_\varepsilon$ vanishes and hence we have a minimizer of our original problem. This allows us to avoid the passage to the limit (as $\varepsilon\to0$) where uniform bounds are needed. To prove regularity of the minimizers of $\cJ_\varepsilon$ and their free boundaries, $\partial\{u_\varepsilon>0\}$, is easier than the original problem, thanks to the results of \cite{AC}. The main theorem in this article is:
+
+\begin{theorem}\label{t.main}
+For every $\varepsilon>0$ there exists a solution $u_\varepsilon\in K$ to $(P_\varepsilon)$. Moreover, any such solution is a locally Lipschitz continuous function and the free boundary $\partial\{u_\varepsilon>0\}$ is locally a $C^{1,\beta}$ surface up to a set of $\cH^{N-1}$-measure zero. In the case $N=2$ the free boundary is locally a $C^{1,\beta}$ surface. Moreover, if $\Gamma_D\neq\emptyset$, for $\varepsilon$ small we have $|\{u_\varepsilon>0\}|=\alpha$.
+\end{theorem}
+
+\subsection*{Outline of the paper}
+In Section~\ref{sec.pen} we begin our analysis of problem $(P_\varepsilon)$ for fixed $\varepsilon$. First we prove the existence of a minimizer, local Lipschitz regularity and nondegeneracy near the free boundary (Theorem~\ref{t.reg}). Then we prove that a minimizer $u_\varepsilon$ of $(P_\varepsilon)$ is a weak solution to the following free boundary problem
+\[
+\begin{cases}
+-\Delta u+u=0 & \text{in }\{u>0\}\cap\Omega,\\[2pt]
+\dfrac{\partial u}{\partial\nu}=\lambda_\varepsilon & \text{on }\partial\{u>0\}\cap\Omega,
+\end{cases}
+\]
+where $\lambda_\varepsilon$ is a positive constant (Theorem~\ref{t.weak}).
+
+In Section~\ref{sec.fb}, again for fixed $\varepsilon$, we analyze the regularity of the free boundary and show that, up to a set of $\cH^{N-1}$-measure zero, $\partial\{u_\varepsilon>0\}$ is locally a $C^{1,\beta}$ surface and, in the case $N=2$, the free boundary has no exceptional points (Theorem~\ref{t.fb}). The proof of this result follows almost exactly the lines in \cite{AC}, so we only remark the significant differences and refer to \cite{AC} for further details.
+
+In Section~\ref{sec.small} we analyze the behavior of the solutions to $(P_\varepsilon)$ for small $\varepsilon$. We prove that, if $\Gamma_D\neq\emptyset$, the positivity set of the minimizer $u_\varepsilon$ has measure $\alpha$ (Theorem~\ref{t.alpha}).
+
+Finally, in Section~\ref{sec.main}, we go back to our original problem and show, under some mild assumptions on the solutions $\phi_0$ to $(P_\alpha)$, that they are also solutions to $(P_\varepsilon)$ for small $\varepsilon$, so they inherit the properties of the solutions to $(P_\varepsilon)$ (Theorem~\ref{t.orig}). These extra assumptions are satisfied, for instance, if $\Omega$ is a ball (Corollary~\ref{c.ball}). In the general case, without the assumption that $\Gamma_D\neq\emptyset$, we prove that the set of $\alpha$'s for which there is a solution to $(P_\alpha)$ with smooth free boundary is dense in $(0,|\Omega|)$ (Theorem~\ref{t.dense}). Then, we show that the minimizers of $(P_\varepsilon)$ converge (up to a subsequence) to a solution to $(P_\alpha)$ (Theorem~\ref{t.conv}). We believe that this last result might be of interest in numerical approximations.
+
+\section{The penalized problem}\label{sec.pen}
+
+In this section, we consider the penalized problem $(P_\varepsilon)$ stated in the introduction and prove the existence of a minimizer and some regularity properties.
+
+\begin{theorem}\label{t.reg}
+There exists a solution to the problem $(P_\varepsilon)$. Moreover, any such solution $u_\varepsilon$ has the following properties:
+\begin{enumerate}
+\item $u_\varepsilon$ is locally Lipschitz continuous in $\Omega$.
+\item For every $D\subset\subset\Omega$, there exist constants $C,c>0$ such that for every $x\in D\cap\{u_\varepsilon>0\}$,
+\[
+c\,\dist(x,\partial\{u_\varepsilon>0\})\le u_\varepsilon(x)\le C\,\dist(x,\partial\{u_\varepsilon>0\}).
+\]
+\item For every $D\subset\subset\Omega$, there exists a constant $c>0$ such that for $x\in\partial\{u_\varepsilon>0\}$ and $B_r(x)\subset D$,
+\[
+c\le\frac{|B_r(x)\cap\{u_\varepsilon>0\}|}{|B_r(x)|}\le1-c.
+\]
+\end{enumerate}
+The constants may depend on $\varepsilon$.
+\end{theorem}
+
+The proof will be divided into a series of steps for the reader's convenience.
+
+\begin{proof}[Proof of existence]
+Let $(u_n)\subset K$ be a minimizing sequence for $\cJ_\varepsilon$. Then $\cJ_\varepsilon(u_n)$ is bounded and so $\|u_n\|_{H^1(\Omega)}\le C$. Therefore there exists a subsequence (that we still call $u_n$) and a function $u_\varepsilon\in H^1(\Omega)$ such that
+\[
+u_n\rightharpoonup u_\varepsilon\ \text{weakly in } H^1(\Omega),\qquad u_n\to u_\varepsilon\ \text{strongly in } L^q(\partial\Omega),\qquad u_n\to u_\varepsilon\ \text{a.e. } \Omega.
+\]
+Thus, $u_\varepsilon\ge0$, $\|u_\varepsilon\|_{L^q(\Gamma_N)}=1$, $u_\varepsilon=\varphi_0$ on $\Gamma_D$,
+\[
+|\{u_\varepsilon>0\}|\le\liminf_{n\to\infty}|\{u_n>0\}|\qquad\text{and}\qquad\|u_\varepsilon\|_{H^1(\Omega)}\le\liminf_{n\to\infty}\|u_n\|_{H^1(\Omega)}.
+\]
+Hence $u_\varepsilon\in K$ and, since $F_\varepsilon$ is nondecreasing and continuous,
+\[
+\cJ_\varepsilon(u_\varepsilon)\le\liminf_{n\to\infty}\cJ_\varepsilon(u_n)=\inf_{v\in K}\cJ_\varepsilon(v),
+\]
+therefore $u_\varepsilon$ is a minimizer of $\cJ_\varepsilon$ in $K$.
+\end{proof}
+
+\begin{remark}\label{r.sub}
+Any minimizer $u=u_\varepsilon$ of $\cJ_\varepsilon$ satisfies the inequality
+\begin{equation}\label{sub}
+\Delta u-u\ge0\quad\text{in }\Omega
+\end{equation}
+in the sense of distributions. In fact, this can be seen by performing one side perturbations. Namely, we let $v=(u-t\varphi)^+$ with $t>0$ and $\varphi\in C^\infty_0(\Omega)$, $\varphi\ge0$. Then $v\in K$ (the trace is not modified), $\{v>0\}\subset\{u>0\}$, so that $F_\varepsilon(|\{v>0\}|)\le F_\varepsilon(|\{u>0\}|)$, and $\cJ(v)\le\cJ(u-t\varphi)$ since $\cJ(w^+)\le\cJ(w)$ for every $w\in H^1(\Omega)$. Hence $\cJ(u)\le\cJ(u-t\varphi)$ for every $t>0$, and we get
+\[
+\int_\Omega\nabla u\nabla\varphi+u\varphi\,dx\le0.
+\]
+In particular, $u$ is subharmonic in $\Omega$ (recall that $u\ge0$).
+\end{remark}
+
+In the remaining of the section we will remove the subscript $\varepsilon$ from the solution of $(P_\varepsilon)$. For the proof of properties (1)--(3), we apply the ideas developed in \cite{AC}. To this end, we need a series of lemmas.
+
+\begin{lemma}\label{l.lip0}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. There exists a constant $C=C(N,\Omega,\varepsilon)$ such that for every ball $B_r\subset\subset\Omega$
+\[
+\frac1r\avint_{\partial B_r}u\ge C\quad\text{implies}\quad u>0\text{ in }B_r.
+\]
+\end{lemma}
+
+\begin{proof}
+The idea is similar to that of Lemma~3.2 in \cite{AC}. Let $v$ be the solution to
+\begin{equation}\label{harm.rep}
+\begin{cases}
+v=u & \text{in }\Omega\setminus B_r,\\
+\Delta v=v & \text{in }B_r.
+\end{cases}
+\end{equation}
+Then $v\in K$, $v>0$ in $B_r$ (unless $u\equiv0$ on $\partial B_r$, in which case there is nothing to prove). We claim that
+\begin{equation}\label{pyth}
+\|u-v\|^2_{H^1(\Omega)}=\|u\|^2_{H^1(\Omega)}-\|v\|^2_{H^1(\Omega)}.
+\end{equation}
+In fact, $\int_{B_r}\nabla v\nabla(v-u)+v(v-u)\,dx=0$ since $v-u\in H^1_0(B_r)$. This implies
+\begin{equation}\label{pyth2}
+\int_{B_r}\nabla u\nabla v+uv\,dx=\int_{B_r}|\nabla v|^2+v^2\,dx.
+\end{equation}
+This equality implies the claim since $u=v$ in $\Omega\setminus B_r$.
+
+By \eqref{sub}, $u\le v$ in $B_r$. Now, by \eqref{pyth}, since $u$ is a minimizer and $u=v$ in $\Omega\setminus B_r$, we have
+\begin{equation}\label{key}
+\int_\Omega|\nabla(u-v)|^2+(u-v)^2\,dx\le F_\varepsilon(|\{v>0\}|)-F_\varepsilon(|\{u>0\}|)\le\frac1\varepsilon|\{u=0\}\cap B_r|.
+\end{equation}
+Now, as in \cite{AC}, the idea is to control $|\{u=0\}\cap B_r|$ from above by the left hand side of \eqref{key}. By replacing $u(x)$ by $u(x_0+rx)/r$ we can assume that $B_r=B_1(0)$ (the equation becomes $\Delta v=r^2v$). For $|z|\le\frac12$ we consider the change of variables from $B_1$ into itself such that $z$ becomes the new origin. We call $u_z(x)=u((1-|x|)z+x)$, $v_z(x)=v((1-|x|)z+x)$ and define
+\[
+r_\xi=\inf\{r\ :\ \tfrac18\le r\le1\text{ and }u_z(r\xi)=0\},
+\]
+if this set is nonempty. Observe that this change of variables leaves the boundary fixed. Now, for almost every $\xi\in\partial B_1$ we have
+\begin{equation}\label{fund}
+v_z(r_\xi\xi)=\int_{r_\xi}^1\frac{d}{dr}(u_z-v_z)(r\xi)\,dr\le\sqrt{1-r_\xi}\left(\int_{r_\xi}^1|\nabla(u_z-v_z)(r\xi)|^2\,dr\right)^{1/2}.
+\end{equation}
+Let us see that
+\begin{equation}\label{lowv}
+v_z(r_\xi\xi)\ge C(N,\Omega)(1-r_\xi)\avint_{\partial B_1}u.
+\end{equation}
+In fact $v_z(r_\xi\xi)=v((1-r_\xi)z+r_\xi\xi)$ and if $|(1-r_\xi)z+r_\xi\xi|\le\frac34$, by Harnack's inequality applied to a solution to $\Delta v-r^2v=0$ in $B_1$ with $r\le1$, $v_z(r_\xi\xi)\ge C_Nv(0)$. Clearly \eqref{lowv} follows from
+\begin{equation}\label{mvp}
+v(0)\ge a_N\avint_{\partial B_1}v=a_N\avint_{\partial B_1}u.
+\end{equation}
+But \eqref{mvp} is a consequence of the mean value property of solutions to the Schrödinger equation $\Delta v-r^2v=0$, namely
+\[
+v(0)=\frac1{\mathbb{J}(r)}\avint_{\partial B_1(0)}v,\qquad\text{where }\mathbb{J}(r)=\Gamma(N/2)\left(\frac r2\right)^{1-\frac N2}I_{\frac{N-2}2}(r),
+\]
+and $I_{\frac{N-2}2}$ is the modified Bessel function; $\mathbb{J}$ is increasing and $\mathbb{J}(0)=1$, so that we can take $a_N=1/\mathbb{J}(1)$. See Theorem~9.9 in \cite{LL} for this result.
+
+Now, if $|(1-r_\xi)z+r_\xi\xi|\ge\frac34$ we prove by a comparison argument that inequality \eqref{lowv} also holds. In fact, first observe that we can assume that $\avint_{\partial B_1}v=\avint_{\partial B_1}u=1$. So that, by \eqref{mvp} and Harnack's inequality, $v\ge C_Na_N$ in $B_{3/4}$. Let $w(x)=e^{-\mu|x|^2}-e^{-\mu}$. There exists $\mu=\mu(N,a_N)$ such that
+\[
+\begin{cases}
+\Delta w\ge w & \text{in } B_1\setminus B_{3/4},\\
+w\le C_Na_N & \text{on }\partial B_{3/4},\\
+w=0 & \text{on }\partial B_1,
+\end{cases}
+\]
+so that, since $\Delta v\le v$ (recall $r\le1$ and $v\ge0$), there holds that $v\ge w\ge C(1-|x|)$ in $B_1\setminus B_{3/4}$. Therefore,
+\[
+v_z(r_\xi\xi)\ge C\big(1-|(1-r_\xi)z+r_\xi\xi|\big)\avint_{\partial B_1}u\ge C(1-r_\xi)\avint_{\partial B_1}u
+\]
+since $|z|\le\frac12$. So that \eqref{lowv} holds for every $r_\xi\ge\frac18$. By \eqref{fund} and \eqref{lowv} we have
+\[
+c\sqrt{1-r_\xi}\avint_{\partial B_1}u\le\left(\int_{r_\xi}^1|\nabla(u_z-v_z)|^2(r\xi)\,dr\right)^{1/2}.
+\]
+Hence
+\[
+c^2\int_{\partial B_1}(1-r_\xi)\,dS_\xi\left(\avint_{\partial B_1}u\right)^2\le\int_{\partial B_1}\int_{r_\xi}^1|\nabla(u_z-v_z)|^2(r\xi)\,dr\,dS_\xi\le C\int_{B_1}|\nabla(u_z-v_z)|^2\,dx.
+\]
+Since
+\[
+\int_{\partial B_1}(1-r_\xi)\,dS_\xi\ge c\int_{B_1\setminus B_{1/4}(z)}\chi_{\{u=0\}}\,dx,
+\]
+we have
+\[
+c^2\,|\{x\in B_1\setminus B_{1/4}(z)\ :\ u(x)=0\}|\left(\avint_{\partial B_1}u\right)^2\le C\int_{B_1}|\nabla(u_z-v_z)|^2\,dx\le K\int_{B_1}|\nabla(u-v)|^2\,dx.
+\]
+Finally, we integrate over $z\in B_{1/2}(0)$ and use \eqref{key} (rescaled) to obtain
+\begin{equation}\label{29}
+|B_1\cap\{u=0\}|\left(\avint_{\partial B_1}u\right)^2\le K\int_{B_1}|\nabla(u-v)|^2\,dx\le\frac K\varepsilon|B_1\cap\{u=0\}|.
+\end{equation}
+Therefore we either have $u>0$ almost everywhere in $B_1$ or else $\avint_{\partial B_1}u\le\sqrt{K/\varepsilon}$. Hence we deduce that if
+\[
+\avint_{\partial B_1}u>\sqrt{K/\varepsilon}=C(N,\Omega,\varepsilon)
+\]
+then $|B_1\cap\{u=0\}|=0$. So that by \eqref{key} $u=v>0$ in $B_1$.
+\end{proof}
+
+Now we can prove the Lipschitz continuity of the minimizer $u$.
+
+\begin{proof}[Proof of Theorem~\ref{t.reg}~(1)]
+The proof follows as in \cite[Lemma~3.3]{AC}. In fact, let $D\subset\subset D'\subset\subset\Omega$ and $x\in D\cap\{u>0\}$. Let $r>0$ be the largest number such that $B_r(x)\subset\{u>0\}\cap D'$. As in \cite{AC} we prove by using Lemma~\ref{l.lip0} that $\{u>0\}$ is open and, if $r<\dist(D,\partial D')$,
+\[
+\frac1r\avint_{\partial B_r(x)}u\le C
+\]
+with $C$ independent of either $u$ or $x$. Since $u>0$ in $B_r(x)$, it is a solution to $\Delta u=u$ in $B_r(x)$. In fact, let $v$ be the solution to $\Delta v=v$ in $B_r(x)$, $v=u$ on $\Omega\setminus B_r(x)$. Then $\{v>0\}=\{u>0\}$ and
+\[
+0\le\|u-v\|^2_{H^1(\Omega)}=\|u\|^2_{H^1(\Omega)}-\|v\|^2_{H^1(\Omega)}=\cJ_\varepsilon(u)-\cJ_\varepsilon(v)\le0.
+\]
+So that $u=v$ in $B_r(x)$. Hence, there is a universal constant such that
+\[
+|\nabla u(x)|\le C\left\{r\|u\|_{L^\infty(B_r(x))}+\frac1r\avint_{\partial B_r(x)}u\right\}.
+\]
+Now, since $u$ is subharmonic in $\Omega$ (Remark~\ref{r.sub}) and $D'\subset\subset\Omega$, there holds that $u$ is bounded in $D'$ by a constant that depends on the $H^1$ norm of $u$ in $\Omega$, which is bounded by a constant that depends only on $\Omega$ and $\varepsilon$. Therefore, $|\nabla u(x)|\le C$ with $C$ depending only on $N,\Omega,\varepsilon,D$ and $D'$.
+\end{proof}
+
+In order to prove the nondegeneracy of $u$ we need the following Lemma (see \cite[Lemma~3.4]{AC}).
+
+\begin{lemma}\label{l.nondeg}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. For $0<\kappa<1$ there exists a constant $c=c(\kappa,N,\Omega,\varepsilon)$ such that for every ball $B_r(x_0)\subset\subset\Omega$,
+\[
+\frac1r\avint_{\partial B_r(x_0)}u\le c\quad\text{implies that}\quad u=0\ \text{in }B_{\kappa r}(x_0).
+\]
+\end{lemma}
+
+\begin{proof}
+As in \cite[Lemma~3.4]{AC}, we consider the function
+\begin{equation}\label{phiN}
+\phi^N_s(x)=\begin{cases}
+\dfrac{s}{N-2}\left(\left(\dfrac{s}{|x|}\right)^{N-2}-1\right) & \text{for } N\ge3,\\[10pt]
+s\log\dfrac{s}{|x|} & \text{for } N=2,\\[6pt]
+s-|x| & \text{for } N=1.
+\end{cases}
+\end{equation}
+For simplicity let us take $\bar u(x)=\frac1ru(x_0+rx)$,
+\[
+\bar F_\varepsilon(s)=\begin{cases}\frac1\varepsilon\left(s-\frac\alpha{r^N}\right) & \text{if } s>\frac\alpha{r^N},\\[4pt] \varepsilon\left(s-\frac\alpha{r^N}\right) & \text{if } s\le\frac\alpha{r^N},\end{cases}
+\qquad
+\bar\cJ_\varepsilon(w)=\int_{\Omega_r}|\nabla w|^2+r^2w^2\,dx+\bar F_\varepsilon(|\{w>0\}|),
+\]
+where $\Omega_r=\frac1r(\Omega-x_0)$. So that $\cJ_\varepsilon(u)=r^N\bar\cJ_\varepsilon(\bar u)$.
+
+Now, let $v(x)=\dfrac{\gamma\sqrt\kappa}{-\phi^N_\kappa(\sqrt\kappa)}\max(-\phi^N_\kappa(x),0)$ where, since $\bar u$ is subharmonic,
+\[
+\gamma:=\frac1{\sqrt\kappa}\sup_{B_{\sqrt\kappa}}\bar u\le C_1(N,\kappa)\avint_{\partial B_1}\bar u=C_1(N,\kappa)\frac1r\avint_{\partial B_r(x_0)}u.
+\]
+Hence, $v\ge\bar u$ on $\partial B_{\sqrt\kappa}$, and therefore if
+\[
+w=\begin{cases}\min(\bar u,v) & \text{in }B_{\sqrt\kappa},\\ \bar u & \text{in }\Omega_r\setminus B_{\sqrt\kappa},\end{cases}
+\]
+then $w$ is admissible (it is nonnegative and coincides with $\bar u$ near $\partial\Omega_r$), and $\bar\cJ_\varepsilon(\bar u)\le\bar\cJ_\varepsilon(w)$. Since $w=0$ in $B_\kappa$, $w=\bar u$ in $\Omega_r\setminus B_{\sqrt\kappa}$ and $\{w>0\}\subset\{\bar u>0\}$, using that $\bar F_\varepsilon(A)-\bar F_\varepsilon(B)\ge\varepsilon(A-B)$ if $A\ge B$, we get
+\[
+\int_{B_\kappa}|\nabla\bar u|^2+r^2\bar u^2\,dx+\varepsilon|B_\kappa\cap\{\bar u>0\}|\le\int_{B_{\sqrt\kappa}\setminus B_\kappa}|\nabla w|^2+r^2w^2\,dx-\int_{B_{\sqrt\kappa}\setminus B_\kappa}|\nabla\bar u|^2+r^2\bar u^2\,dx.
+\]
+Using that $\min(\bar u,v)=\bar u-(\bar u-v)^+$, $\Delta v=0$ in $B_{\sqrt\kappa}\setminus B_\kappa$, $v=0$ on $\partial B_\kappa$, $(\bar u-v)^+=0$ on $\partial B_{\sqrt\kappa}$, and $v\ge0$, we compute
+\[
+\begin{aligned}
+&\int_{B_{\sqrt\kappa}\setminus B_\kappa}|\nabla w|^2+r^2w^2-|\nabla\bar u|^2-r^2\bar u^2\,dx\\
+&\quad=-\int_{B_{\sqrt\kappa}\setminus B_\kappa}\nabla(\bar u-v)^+\nabla(\bar u+v)\,dx-r^2\int_{B_{\sqrt\kappa}\setminus B_\kappa}(\bar u-v)^+(\bar u+v)\,dx\\
+&\quad\le-2\int_{B_{\sqrt\kappa}\setminus B_\kappa}\nabla(\bar u-v)^+\nabla v\,dx-2r^2\int_{B_{\sqrt\kappa}\setminus B_\kappa}(\bar u-v)^+v\,dx
+\le2\int_{\partial B_\kappa}\bar u\,|\nabla v|\,dS\le C_2(N,\kappa)\,\gamma\int_{\partial B_\kappa}\bar u.
+\end{aligned}
+\]
+(In the first inequality we used that $(\bar u-v)^+(\bar u-v)=((\bar u-v)^+)^2\ge0$ and $\nabla(\bar u-v)^+\nabla(\bar u-v)=|\nabla(\bar u-v)^+|^2\ge0$.) Therefore,
+\begin{equation}\label{211}
+\int_{B_\kappa}|\nabla\bar u|^2+r^2\bar u^2\,dx+\varepsilon|B_\kappa\cap\{\bar u>0\}|\le C_2(N,\kappa)\,\gamma\int_{\partial B_\kappa}\bar u.
+\end{equation}
+Recall that $\gamma$ is controlled by $\frac1r\avint_{\partial B_r(x_0)}u$, so that $\gamma$ will be small if $\frac1r\avint_{\partial B_r(x_0)}u$ is small. On the other hand, by the trace inequality in $W^{1,1}(B_\kappa)$, since $\nabla\bar u=0$ a.e. in $\{\bar u=0\}$ and $\bar u\le\sqrt\kappa\gamma\le\gamma$ in $B_\kappa$,
+\[
+\begin{aligned}
+\int_{\partial B_\kappa}\bar u&\le C_3(N,\kappa)\int_{B_\kappa}|\nabla\bar u|+\bar u\,dx
+\le C_3(N,\kappa)\left\{\frac12\int_{B_\kappa}|\nabla\bar u|^2\,dx+\frac12|B_\kappa\cap\{\bar u>0\}|+\gamma|B_\kappa\cap\{\bar u>0\}|\right\}\\
+&\le\frac{C_3(N,\kappa)}{\min(1,\varepsilon)}\left\{\int_{B_\kappa}|\nabla\bar u|^2+r^2\bar u^2\,dx+\varepsilon|B_\kappa\cap\{\bar u>0\}|\right\},
+\end{aligned}
+\]
+if $\gamma\le1/2$. So that, by \eqref{211}, if $\gamma$ is small enough ($\gamma\le1/2$ and $C_2(N,\kappa)C_3(N,\kappa)\gamma<\min(1,\varepsilon)$), we deduce that $\int_{\partial B_\kappa}\bar u=0$ and then, by \eqref{211}, $|B_\kappa\cap\{\bar u>0\}|=0$. That is, $u=0$ in $B_{\kappa r}(x_0)$ and the lemma is proved.
+\end{proof}
+
+We can now prove the nondegeneracy of $u$.
+
+\begin{proof}[Proof of Theorem~\ref{t.reg}~(2)]
+Let $x\in D\cap\{u>0\}$ and $r=\dist(x,\{u=0\})$, which we may assume smaller than $\dist(D,\partial\Omega)$. As we proved in \eqref{mvp}, since $\Delta u=u$ in $B_r(x)$, there holds that
+\[
+u(x)\ge a_N\avint_{\partial B_r(x)}u.
+\]
+Since $u(x)>0$, Lemma~\ref{l.nondeg} (with $\kappa=1/2$) gives
+\[
+\frac1r\avint_{\partial B_r(x)}u\ge c,
+\]
+where $c$ is the constant in Lemma~\ref{l.nondeg} for $\kappa=1/2$ (otherwise $u$ would vanish in $B_{r/2}(x)$). Thus, $u(x)\ge ca_N\,r$. The upper bound clearly follows from the Lipschitz continuity of $u$. Hence (2) is proved.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{t.reg}~(3)]
+In order to prove the uniform positive density of $\{u>0\}$ and $\{u=0\}$ at every free boundary point we proceed as in \cite[Lemma~3.7]{AC}. The only difference being that the function $v$ that we have to take is the one in \eqref{harm.rep}. This ends the proof of Theorem~\ref{t.reg}.
+\end{proof}
+
+\begin{corollary}\label{c.dens}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Let $D\subset\subset\Omega$. There exist constants $c,C>0$ depending only on $N,\Omega,D$ and $\varepsilon$ such that for $B_r(x)\subset D$ and $x\in\partial\{u>0\}$,
+\begin{equation}\label{212}
+c\le\frac1r\avint_{\partial B_r(x)}u\le C.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+It follows easily from Lemmas~\ref{l.lip0} and \ref{l.nondeg}.
+\end{proof}
+
+\begin{lemma}\label{l.measure}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Then $u$ satisfies, for every $\varphi\in C^\infty_0(\Omega)$ such that $\supp\varphi\subset\{u>0\}$,
+\begin{equation}\label{213}
+\int_\Omega\nabla u\nabla\varphi+u\varphi\,dx=0.
+\end{equation}
+Moreover, the application
+\[
+\lambda(\varphi):=-\int_\Omega\nabla u\nabla\varphi+u\varphi\,dx
+\]
+from $C^\infty_0(\Omega)$ into $\R$ defines a nonnegative Radon measure with support on $\Omega\cap\partial\{u>0\}$.
+\end{lemma}
+
+\begin{proof}
+The proof follows exactly as in \cite[Lemma~4.2]{AC}.
+\end{proof}
+
+\begin{theorem}\label{t.growth}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Let $D\subset\subset\Omega$. Then, there exist constants $C,c>0$ such that for $B_r(x)\subset D$ and $x\in\partial\{u>0\}$,
+\[
+cr^{N-1}\le\int_{B_r(x)}d\lambda\le Cr^{N-1}.
+\]
+\end{theorem}
+
+\begin{proof}
+For $n$ large enough, let $u_n=u*\rho_n$ where $\rho_n$ are the standard mollifiers. Then, since $u_n\ge0$,
+\[
+\int_{B_r(x)}\lambda*\rho_n\,dx=\int_{B_r(x)}\Delta u_n-u_n\,dx=\int_{\partial B_r(x)}\nabla u_n\cdot\nu\,dS-\int_{B_r(x)}u_n\le\omega_{N-1}\sup_{\partial B_r(x)}|\nabla u_n|\,r^{N-1}\le Cr^{N-1}
+\]
+since $|\nabla u_n|\le\sup|\nabla u|\le C$ for a certain constant $C$ depending on $D$. By taking the limit $n\to\infty$ we get $\int_{B_r(x)}d\lambda\le Cr^{N-1}$. The other inequality follows as in the proof of \cite[Theorem~4.3]{AC} by taking as $G_y(z)$ the (positive) Green function of $-\Delta+\mathrm{Id}$ with homogeneous Dirichlet boundary conditions in the ball $B_r(x)$. Then, for $0<\kappa<1/2$ and $y\in B_{\kappa r}(x)$ one uses the inequality
+\[
+v(y)\ge Cv(x)\ge Ca_N\avint_{\partial B_r(x)}u
+\]
+for $v$ the solution to $\Delta v-v=0$ in $B_r(x)$, $v=u$ on $\partial B_r(x)$, that follows from Harnack's inequality and \eqref{mvp}.
+\end{proof}
+
+\begin{theorem}[Representation Theorem]\label{t.repr}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Then,
+\begin{enumerate}
+\item $\cH^{N-1}(D\cap\partial\{u>0\})<\infty$ for every $D\subset\subset\Omega$.
+\item There exists a Borel function $q_u$ such that $\Delta u-u=q_u\,\cH^{N-1}\lfloor\partial\{u>0\}$.
+\item For $D\subset\subset\Omega$ there are constants $0<c\le C<\infty$ depending on $N,\Omega,D$ and the constants in \eqref{212} such that for $B_r(x)\subset D$ and $x\in\partial\{u>0\}$,
+\[
+c\le q_u(x)\le C,\qquad cr^{N-1}\le\cH^{N-1}(B_r(x)\cap\partial\{u>0\})\le Cr^{N-1}.
+\]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The proof follows exactly as that of \cite[Theorem~4.5]{AC}.
+\end{proof}
+
+\begin{remark}\label{r.red}
+Let $u\in K$ be a solution to $(P_\varepsilon)$ and $D\subset\subset\Omega$. Then $D\cap\{u>0\}$ has finite perimeter. Thus, the reduced boundary $\partial_\red\{u>0\}$ is defined as well as the measure theoretic normal $\nu(x)$ for $x\in\partial_\red\{u>0\}$. See \cite{Fe}. If the free boundary $\partial\{u>0\}$ is a regular surface then $q_u=-\partial_\nu u$. In Theorem~\ref{t.ident} it is shown that this is true for almost all points in the reduced boundary.
+\end{remark}
+
+\begin{proposition}\label{p.blowup}
+Let $u\in K$ be a solution to $(P_\varepsilon)$ and let $B_{\rho_k}(x_k)\subset\Omega$ be a sequence of balls with $\rho_k\to0$, $x_k\to x_0\in\Omega$ and $u(x_k)=0$. Let
+\[
+u_k(x):=\frac1{\rho_k}u(x_k+\rho_kx).
+\]
+We call $u_k$ a blow-up sequence with respect to $B_{\rho_k}(x_k)$. Since $u$ is locally Lipschitz continuous, there exists a blow-up limit $u_0:\R^N\to\R$ satisfying \eqref{212} with the same constants when $x_k\in\partial\{u>0\}$, and such that, for a subsequence,
+\[
+\begin{aligned}
+&u_k\to u_0\ \text{in } C^\beta_{\mathrm{loc}}(\R^N)\ \text{for every } 0<\beta<1,\qquad
+\nabla u_k\to\nabla u_0\ \text{weakly-$*$ in } L^\infty_{\mathrm{loc}}(\R^N),\\
+&\partial\{u_k>0\}\to\partial\{u_0>0\}\ \text{locally in Hausdorff distance},\qquad
+\chi_{\{u_k>0\}}\to\chi_{\{u_0>0\}}\ \text{in } L^1_{\mathrm{loc}}(\R^N),\\
+&\Delta u_0=0\ \text{in }\{u_0>0\}.
+\end{aligned}
+\]
+Moreover if $x_k\in\partial\{u>0\}$, then $0\in\partial\{u_0>0\}$.
+\end{proposition}
+
+\begin{proof}
+It follows as in \cite[Section~4.7]{AC} observing that $\Delta u_k-\rho_k^2u_k=0$ in $\{u_k>0\}$.
+\end{proof}
+
+\begin{theorem}[Identification of $q_u$]\label{t.ident}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Then, for $\cH^{N-1}$-almost every $x_0\in\partial_\red\{u>0\}$,
+\[
+u(x_0+x)=q_u(x_0)\langle x,\nu(x_0)\rangle^-+o(|x|)\qquad\text{for }x\to0,
+\]
+with $\nu(x_0)$ the outward unit normal to $\partial\{u>0\}$ in the measure theoretic sense.
+\end{theorem}
+
+\begin{proof}
+It follows exactly as \cite[Theorem~4.8 and Remark~4.9]{AC}.
+\end{proof}
+
+\begin{remark}\label{r.redfull}
+Observe that by Theorem~\ref{t.reg}~(3), $\cH^{N-1}(\partial\{u>0\}\setminus\partial_\red\{u>0\})=0$. See \cite{Fe}.
+\end{remark}
+
+Now we get a more precise identification of $q_u$.
+
+\begin{theorem}\label{t.const}
+Let $u\in K$ be a solution to $(P_\varepsilon)$ and $q_u$ the function in Theorem~\ref{t.ident}. Then there exists a constant $\lambda_u$ such that
+\begin{align}
+&\limsup_{\substack{x\to x_0\\u(x)>0}}|\nabla u(x)|=\lambda_u\qquad\text{for every } x_0\in\Omega\cap\partial\{u>0\},\label{214}\\
+&q_u(x_0)=\lambda_u\qquad\text{for } \cH^{N-1}\text{-a.e. } x_0\in\Omega\cap\partial\{u>0\}.\label{215}
+\end{align}
+Moreover, if $B$ is a ball contained in $\{u=0\}$ touching the boundary $\partial\{u>0\}$ at $x_0$, then
+\begin{equation}\label{216}
+\limsup_{\substack{x\to x_0\\u(x)>0}}\frac{u(x)}{\dist(x,B)}=\lambda_u.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We follow the ideas of \cite[Theorem~3]{AAC} and \cite[Theorem~5.1 and Lemma~5.2]{Le2}. Let $x_0,x_1\in\partial\{u>0\}$ and $\rho_k\to0^+$. For $i=0,1$ let $x_{i,k}\to x_i$ with $u(x_{i,k})=0$ such that $B_{\rho_k}(x_{i,k})\subset\Omega$ and such that the blow-up sequence
+\[
+u_{i,k}(x)=\frac1{\rho_k}u(x_{i,k}+\rho_kx)
+\]
+has a limit $u_i(x)=\lambda_i\langle x,\nu_i\rangle^-$, with $0<\lambda_i<\infty$ and $\nu_i$ a unit vector. We will prove that $\lambda_0=\lambda_1$. From this, the Theorem will follow as in \cite{Le2}.
+
+Assume that $\lambda_1<\lambda_0$. Then, we will perturb the minimizer $u$ near $x_0$ and $x_1$ and get an admissible function with less energy, which is a contradiction. We perform a perturbation that increases the measure of the positivity set in a neighborhood of $x_{0,k}$ and decreases its measure in a neighborhood of $x_{1,k}$. We perform this perturbation in such a way that we change the measure of the positivity set by an amount of order $o(t)\rho_k^N+o(\rho_k^N)$.
+
+To this end, we take a nonnegative $C^\infty_0$ symmetric function $\Phi$ supported in the unit interval, and for $t>0$ small, we define
+\[
+\tau_k(x)=\begin{cases}
+x+t\rho_k\Phi\left(\frac{|x-x_{0,k}|}{\rho_k}\right)\nu_0 & \text{for } x\in B_{\rho_k}(x_{0,k}),\\[6pt]
+x-t\rho_k\Phi\left(\frac{|x-x_{1,k}|}{\rho_k}\right)\nu_1 & \text{for } x\in B_{\rho_k}(x_{1,k}),\\[6pt]
+x & \text{elsewhere},
+\end{cases}
+\]
+which is a diffeomorphism if $t$ is small enough. Now, let $v_k(x)=u(\tau_k^{-1}(x))$, which are admissible functions (they are nonnegative and coincide with $u$ near $\partial\Omega$). Moreover, since $\|D\tau_k^{-1}\|\le C$ independently of $k$ for $t$ small enough, there holds that $\|\nabla v_k\|_{L^\infty}\le C$ independently of $k$. Also, we have
+\begin{equation}\label{217}
+F_\varepsilon(|\{v_k>0\}|)-F_\varepsilon(|\{u>0\}|)=o(t)\rho_k^N+o(\rho_k^N).
+\end{equation}
+In fact, $v_k=u$ in $\Omega\setminus(B_{\rho_k}(x_{0,k})\cup B_{\rho_k}(x_{1,k}))$ and
+\[
+|\{v_k>0\}\cap B_{\rho_k}(x_{i,k})|-|\{u>0\}\cap B_{\rho_k}(x_{i,k})|=(-1)^i\rho_k^N\left(t\int_{B_1\cap\{y_1=0\}}\Phi(|y|)\,d\cH^{N-1}_y+o_i(t)\right)+o(\rho_k^N),
+\]
+since $\Phi(|y|)$ is radially symmetric and $\chi_{\{u_{i,k}>0\}}\to\chi_{\{\langle x,\nu_i\rangle<0\}}$ in $L^1_{\mathrm{loc}}(\R^N)$; \eqref{217} follows since $F_\varepsilon$ is Lipschitz. Similar computations involving also the development of $\nabla v_k$ in terms of $\nabla u$ and $D\tau_k$ give
+\begin{equation}\label{218}
+\int_\Omega|\nabla v_k|^2\,dx-\int_\Omega|\nabla u|^2\,dx=\rho_k^N\left((\lambda_1^2-\lambda_0^2)\,t\int_{B_1(0)\cap\{y_1=0\}}\Phi(|y|)\,d\cH^{N-1}_y+o(t)\right)+o(\rho_k^N).
+\end{equation}
+See \cite{AAC} or \cite{Le2} for detailed computations. It remains to estimate the difference of the $L^2$ norms. Since $u(x_{i,k})=0$ and $u$ is Lipschitz, there holds that $u(x)\le C\rho_k$ in $B_{\rho_k}(x_{i,k})$. On the other hand,
+\[
+0=u(x_{i,k})=v_k(\tau_k(x_{i,k}))=v_k\big(x_{i,k}+(-1)^it\rho_k\Phi(0)\nu_i\big).
+\]
+Thus, $v_k(z)\le C|z-x_{i,k}-(-1)^it\rho_k\Phi(0)\nu_i|\le K\rho_k$ if $z\in B_{\rho_k}(x_{i,k})$. Therefore,
+\begin{equation}\label{219}
+\int_\Omega v_k^2\,dx-\int_\Omega u^2\,dx=O(\rho_k^{N+2})=o(\rho_k^N).
+\end{equation}
+Thus, we get from \eqref{217}, \eqref{218} and \eqref{219}, for $t$ small enough and $k$ large enough, that $\cJ_\varepsilon(v_k)<\cJ_\varepsilon(u)$, a contradiction.
+\end{proof}
+
+Summing up, we have the following theorem.
+
+\begin{theorem}\label{t.weak}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Then $u$ is a weak solution to the following free boundary problem
+\[
+\begin{cases}
+-\Delta u+u=0 & \text{in }\{u>0\}\cap\Omega,\\[2pt]
+\dfrac{\partial u}{\partial\nu}=\lambda_u & \text{on }\partial\{u>0\}\cap\Omega,
+\end{cases}
+\]
+where $\lambda_u$ is the constant in Theorem~\ref{t.const}. More precisely, $\cH^{N-1}$-a.e. point $x_0\in\partial\{u>0\}$ belongs to $\partial_\red\{u>0\}$ and
+\[
+u(x_0+x)=\lambda_u\langle x,\nu(x_0)\rangle^-+o(|x|)\qquad\text{for } x\to0.
+\]
+\end{theorem}
+
+Finally, we get an estimate of the gradient of $u$ that will be needed in order to get the regularity of the free boundary.
+
+\begin{theorem}\label{t.grad}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Given $D\subset\subset\Omega$, there exist constants $C=C(N,\varepsilon,D)$, $r_0=r_0(N,D)>0$ and $\gamma=\gamma(N,\varepsilon,D)>0$ such that, if $x_0\in D\cap\partial\{u>0\}$ and $r<r_0$, then
+\[
+\sup_{B_r(x_0)}|\nabla u|\le\lambda_u(1+Cr^\gamma).
+\]
+\end{theorem}
+
+\begin{proof}
+The proof follows the lines of the proof of \cite[Theorem~4.1]{ACF}. Let $U_k=\big(|\nabla u|-\lambda_u-\frac1k\big)^+$ and $U_0=\big(|\nabla u|-\lambda_u\big)^+$. By \eqref{214} we know that $U_k$ vanishes in a neighborhood of the free boundary. Also, the support of $U_k$ is contained in $\{u>0\}$. Since $\Delta u=u$ in $\{u>0\}$, we have $\Delta|\nabla u|\ge|\nabla u|$ there in the weak sense (Bochner's formula and Kato's inequality), and therefore $U_k$ satisfies $\Delta U_k\ge U_k$ in $\Omega\cap\{u>0\}$ and vanishes in a neighborhood of the free boundary. We extend $U_k$ by zero into $\{u=0\}$ and set
+\[
+h_k(r)=\sup_{B_r(x_0)}U_k,\qquad h_0(r)=\sup_{B_r(x_0)}U_0,
+\]
+for any $r<r_0=\dist(D,\partial\Omega)$ and $x_0\in D\cap\partial\{u>0\}$. Then, $h_k(r)-U_k$ is a nonnegative supersolution of $\Delta v=v$ in the ball $B_r(x_0)$ and $h_k(r)-U_k=h_k(r)$ in $B_r(x_0)\cap\{u=0\}$. Applying the weak Harnack inequality (see \cite[p.~246]{GT}) with $1\le p<N/(N-2)$, we get
+\[
+\inf_{B_{r/2}(x_0)}\big(h_k(r)-U_k\big)\ge cr^{-N/p}\|h_k(r)-U_k\|_{L^p(B_r(x_0))}\ge ch_k(r),
+\]
+since, by Theorem~\ref{t.reg}~(3), $|B_r(x_0)\cap\{u=0\}|\ge cr^N$. Taking now $k\to\infty$ we obtain $\inf_{B_{r/2}(x_0)}(h_0(r)-U_0)\ge ch_0(r)$ for some $0<c<1$, which is the same as $\sup_{B_{r/2}(x_0)}U_0\le(1-c)h_0(r)$. Therefore $h_0(r/2)\le(1-c)h_0(r)$, from which it follows that $h_0(r)\le Cr^\gamma$ for some $C>0$, $0<\gamma<1$, and now the conclusion of the Theorem follows.
+\end{proof}
+
+\section{Regularity of the free boundary}\label{sec.fb}
+
+At this point we have that our minimizer $u_\varepsilon$ meets the conditions of the regularity theory developed in \cite{AC}. The only difference being the equation satisfied by $u_\varepsilon$ in $\{u_\varepsilon>0\}$. We will recall some definitions and we will point out the only significant difference with \cite{AC}. The rest of the proof of the regularity then follows as Sections~7 and 8 of \cite{AC} with only minor modifications. Throughout this section we will remove the subscript $\varepsilon$.
+
+\begin{definition}[Flat free boundary points]
+Let $0<\sigma_+,\sigma_-\le1$ and $\tau>0$. We say that $u$ is of class $F(\sigma_+,\sigma_-;\tau)$ in $B_\rho=B_\rho(0)$ if
+\begin{enumerate}
+\item $0\in\partial\{u>0\}$ and
+\[
+u=0\quad\text{for } x_N\ge\sigma_+\rho,\qquad u(x)\ge-\lambda_u(x_N+\sigma_-\rho)\quad\text{for } x_N\le-\sigma_-\rho.
+\]
+\item $|\nabla u|\le\lambda_u(1+\tau)$ in $B_\rho$.
+\end{enumerate}
+If the origin is replaced by $x_0$ and the direction $e_N$ by the unit vector $\nu$ we say that $u$ is of class $F(\sigma_+,\sigma_-;\tau)$ in $B_\rho(x_0)$ in direction $\nu$.
+\end{definition}
+
+Observe that the results in Section~\ref{sec.pen} imply that the minimizer $u$ of $\cJ_\varepsilon$ is in the class $F(\sigma,1;\sigma)$ in $B_\rho(x_0)$ in direction $\nu_u(x_0)$ for every $x_0\in\partial_\red\{u>0\}$ with $\sigma=\sigma(\rho)\to0$ as $\rho\to0$. The following lemma (\cite[Lemma~7.2]{AC}) is the only one that requires a non obvious modification.
+
+\begin{lemma}\label{l.flat}
+There is a constant $C=C(N)$ such that $u\in F(\sigma,1;\sigma)$ in $B_\rho(x_0)$ in direction $\nu$ implies $u\in F(2\sigma,C\sigma;\sigma)$ in $B_{\rho/2}(x_0)$ in direction $\nu$.
+\end{lemma}
+
+\begin{proof}
+Clearly, by a change of variables, we may assume that $x_0=0$ and $\nu=e_N$. Let $\bar u(x)=u(\rho x)/(\lambda_u\rho)$; then $|\nabla\bar u|\le1+\sigma$ and $\bar u\in F(\sigma,1;\sigma)$ in $B_1$. That is, $\bar u=0$ if $x_N>\sigma$. Define
+\[
+\eta(x')=\begin{cases}\exp\left(\dfrac{-9|x'|^2}{1-9|x'|^2}\right) & \text{for } |x'|<\frac13,\\[6pt] 0 & \text{otherwise},\end{cases}
+\]
+and choose $s\ge0$ maximal with the property that $\bar u=0$ in $\{x_N>\sigma-s\eta(x')\}$. Now, the proof follows as in \cite[Lemma~7.2]{AC} with the only difference that the comparison function $v$ must be the solution to $\Delta v=\rho^2\bar u$ in $D=B_1\cap\{x_N<\sigma-s\eta(x')\}$ instead of a harmonic function. The estimate $\partial_{-\nu}v\le1+C\sigma$ follows from
+\[
+|\nabla(v+x_N)|\le C\Big[\sup_D(v+x_N)+\rho^2\Big]\le C\sigma\qquad\text{in } D\cap B_{1/2}
+\]
+if $\rho^2\le C\sigma$, since $\Delta(v+x_N)=\rho^2\bar u$ in $D$, $v+x_N\le C\sigma$ in $D$ and $|\bar u(x)|\le2$.
+\end{proof}
+
+Once this lemma is established the following regularity result follows.
+
+\begin{theorem}\label{t.fb}
+Let $u\in K$ be a solution to $(P_\varepsilon)$. Then $\partial_\red\{u>0\}$ is a $C^{1,\beta}$ surface locally in $\Omega$ and the remainder of the free boundary has $\cH^{N-1}$-measure zero. Moreover, if $N=2$ then the whole free boundary is a $C^{1,\beta}$ surface.
+\end{theorem}
+
+\section{Behavior of the minimizer for small $\varepsilon$}\label{sec.small}
+
+To complete the analysis of the problem, we will now show that if $\varepsilon$ is small enough, then $|\{u_\varepsilon>0\}|=\alpha$. To this end, we need to prove that the constant $\lambda_\varepsilon:=\lambda_{u_\varepsilon}$ is bounded from above and below by positive constants independent of $\varepsilon$. We perform this task in a series of lemmas.
+
+\begin{lemma}\label{l.meas}
+Let $u_\varepsilon\in K$ be a solution to $(P_\varepsilon)$, $0<\varepsilon\le1$. Then, there exist constants $C,c>0$ independent of $\varepsilon$ such that
+\begin{equation}\label{41}
+c\le|\{u_\varepsilon>0\}|\le\alpha+C\varepsilon.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Fix $w\in K$ with $|\{w>0\}|=\alpha$. Then $\cJ_\varepsilon(u_\varepsilon)\le\cJ_\varepsilon(w)=\cJ(w)$, and since $F_\varepsilon\ge-\varepsilon\alpha\ge-\alpha$, we obtain that $\|u_\varepsilon\|_{H^1(\Omega)}$ and $F_\varepsilon(|\{u_\varepsilon>0\}|)$ are bounded uniformly in $\varepsilon$. Hence $|\{u_\varepsilon>0\}|\le\alpha+C\varepsilon$. For the lower bound, we proceed as follows: by the Sobolev trace embedding, for some $1<p<2$ such that $p(N-1)/(N-p)>q$, and by Hölder's inequality (recall that $\nabla u_\varepsilon=0$ a.e. on $\{u_\varepsilon=0\}$),
+\[
+1\le\|u_\varepsilon\|_{L^q(\partial\Omega)}\le C\|u_\varepsilon\|_{W^{1,p}(\Omega)}\le C\|u_\varepsilon\|_{H^1(\Omega)}|\{u_\varepsilon>0\}|^\theta,\qquad\theta=\frac1p-\frac12.
+\]
+(If $\Gamma_D\neq\emptyset$ we use instead $\|u_\varepsilon\|_{L^q(\Gamma_N)}=1$.) Since $\|u_\varepsilon\|_{H^1(\Omega)}$ is uniformly bounded, the lower bound follows.
+\end{proof}
+
+\begin{lemma}\label{l.upper}
+Let $u_\varepsilon\in K$ be a solution to $(P_\varepsilon)$. Then, there exists a constant $C>0$ independent of $\varepsilon$ such that $\lambda_\varepsilon:=\lambda_{u_\varepsilon}\le C$.
+\end{lemma}
+
+\begin{proof}
+Let $D\subset\subset\Omega$ be a smooth connected open set such that $\omega=|D|>\alpha$ and $|\Omega\setminus D|<c/2$, where $c$ is the constant in Lemma~\ref{l.meas}. Then, $|D\cap\{u_\varepsilon>0\}|\le\alpha+C\varepsilon<\omega$ for $\varepsilon$ small enough. On the other hand,
+\[
+|D\cap\{u_\varepsilon>0\}|\ge|\{u_\varepsilon>0\}|-|\Omega\setminus D|\ge c-|\Omega\setminus D|\ge c/2>0.
+\]
+Therefore by the relative isoperimetric inequality in $D$ we have
+\[
+\cH^{N-1}(D\cap\partial\{u_\varepsilon>0\})\ge c_0\min\{|D\cap\{u_\varepsilon>0\}|,|D\cap\{u_\varepsilon=0\}|\}^{\frac{N-1}N}\ge c_1>0.
+\]
+Now, take $\varphi\in C^\infty_0(\Omega)$ as a test function in Lemma~\ref{l.measure} such that $0\le\varphi\le1$, $\varphi\equiv1$ in $D$ and $\|\nabla\varphi\|_\infty\le C=C(\dist(D,\partial\Omega))$ to get, since $\|u_\varepsilon\|_{H^1(\Omega)}$ is bounded independently of $\varepsilon$ and by Theorems~\ref{t.repr} and \ref{t.const},
+\[
+C\ge-\int_\Omega\nabla u_\varepsilon\nabla\varphi+u_\varepsilon\varphi\,dx=\lambda(\varphi)\ge\lambda_\varepsilon\cH^{N-1}(D\cap\partial_\red\{u_\varepsilon>0\})\ge\lambda_\varepsilon c_1.
+\]
+This completes the proof of the lemma.
+\end{proof}
+
+The uniform lower bound follows similarly to \cite[Lemma~6]{AAC}. We only make a sketch of the proof for the reader's convenience. It is at this point where we need the hypothesis that $\Gamma_D\neq\emptyset$.
+
+\begin{lemma}\label{l.lower}
+Let $\Gamma_D\neq\emptyset$ be the closure of a relatively open subset of $\partial\Omega$. Let $\varphi_0\in H^1(\Omega)$ with $\varphi_0\ge c_0>0$ on $\Gamma_D$. Let $u_\varepsilon\in K$ be a solution to $(P_\varepsilon)$. Then
+\begin{enumerate}
+\item $u_\varepsilon$ is positive in a neighborhood of $\Gamma_D$ (depending on $\varepsilon$).
+\item There exists a constant $c>0$ independent of $\varepsilon$ such that $c<\lambda_\varepsilon:=\lambda_{u_\varepsilon}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Let us first prove (1). In fact, arguing as in \eqref{29}, given $y_0\in\Gamma_D$ there exists a constant $K>0$ independent of $\varepsilon$ such that
+\[
+|\Omega_r\cap\{u=0\}|\left(\frac1r\avint_{\partial\Omega_r}u\right)^2\le K\int_{\Omega_r}|\nabla(u-v)|^2\,dx,
+\]
+where $\Omega_r=\Omega\cap B_r(y_0)$ and $v$ is the solution of $\Delta v=v$ in $\Omega_r$, $v=u$ on $\partial\Omega_r$. Therefore,
+\[
+\frac{c_0^2}{r^2}|\Omega_r\cap\{u=0\}|\le K\big(\|u\|^2_{H^1(\Omega_r)}-\|v\|^2_{H^1(\Omega_r)}\big)\le\frac C\varepsilon|\Omega_r\cap\{u=0\}|.
+\]
+So that $u>0$ in $\Omega_r$ for small $r$ depending on $\varepsilon$.
+
+In order to see (2) we proceed as in \cite[Lemma~6]{AAC}. Let $y_0\in\Gamma_D$ and let $D_t$, $0\le t\le1$, be a family of open sets with smooth boundary and uniformly (in $\varepsilon$ and $t$) bounded curvatures such that $D_0$ is an exterior tangent ball at $y_0$, $D_1$ contains a free boundary point, $D_t\cap\partial\Omega\subset\Gamma_D$ and $D_0\subset\subset D_t$ for $t>0$. Let $t\in(0,1)$ be the first time such that $D_t$ touches the free boundary and let $x_0\in\partial D_t\cap\partial\{u_\varepsilon>0\}\cap\Omega$. Now, take $w$ the solution to $\Delta w=w$ in $D_t\setminus D_0$ with $w=c_0$ on $\partial D_0$ and $w=0$ on $\partial D_t$. Thus $w\le u_\varepsilon$ in $D_t\cap\Omega$ and $\partial_{-\nu}w(x_0)\ge c\,c_0$ with $c$ independent of $\varepsilon$; therefore, for $r$ small enough,
+\[
+\frac1r\avint_{\partial B_r(x_0)}u_\varepsilon\ge\frac1r\avint_{\partial B_r(x_0)}w\ge\bar c\,c_0
+\]
+with $\bar c$ independent of $\varepsilon$. If $v_0$ is the solution to $\Delta v=v$ in $B_r(x_0)$, $v=u_\varepsilon$ on $\partial B_r(x_0)$, then, by \eqref{29}, we have
+\[
+c|B_r(x_0)\cap\{u_\varepsilon=0\}|\le|B_r(x_0)\cap\{u_\varepsilon=0\}|\left(\frac1r\avint_{\partial B_r(x_0)}u_\varepsilon\right)^2\le K\int_{B_r(x_0)}|\nabla(u_\varepsilon-v_0)|^2\,dx\le K\big(\|u_\varepsilon\|^2_{H^1(B_r(x_0))}-\|v_0\|^2_{H^1(B_r(x_0))}\big).
+\]
+Let now $\delta_r=|B_r(x_0)\cap\{u_\varepsilon=0\}|$ and let $x_1\in\partial\{u_\varepsilon>0\}$ be such that the free boundary is smooth in a neighborhood of $x_1$. We perturb $\{u_\varepsilon>0\}$ in a neighborhood of $x_1$ so that the measure of the perturbed set is decreased by an amount $\delta_r$ (cf. Theorem~\ref{t.const}). Let $\Phi$ be a smooth nonnegative function supported in $B_\kappa(x_1)$ with $\kappa>0$ small. For $x\in B_\kappa(x_1)$ we write $x=\sigma+s\nu(\sigma)$ with $\sigma\in\partial\{u_\varepsilon>0\}$ and $s\in\R$, where $\nu(\sigma)$ is the outer unit normal to the free boundary at $\sigma$. We define the change of variables $y=x-\Phi(\sigma)\tau\nu(\sigma)$ with $\tau>0$ small, and the deformed set $D_{\delta_r}$ such that $D_{\delta_r}\cap B_\kappa(x_1)=\{y\ :\ x\in\{u_\varepsilon>0\}\cap B_\kappa(x_1)\}$. Observe that if $r$ is small we can perform this perturbation in such a way that it decreases the measure of $\{u_\varepsilon>0\}$ by exactly $\delta_r$. Also, observe that $\delta_r\to0$ as $r\to0$. Now let $v_r$ be the solution of
+\begin{equation}\label{42}
+\begin{cases}
+\Delta v=v & \text{in } D_{\delta_r}\cap B_\kappa(x_1),\\
+v=0 & \text{on }\partial D_{\delta_r}\cap B_\kappa(x_1),\\
+v=u_\varepsilon & \text{on }\partial B_\kappa(x_1)\cap D_{\delta_r};
+\end{cases}
+\end{equation}
+then $v_r$ verifies $\frac{\partial v_r}{\partial\nu}=-\lambda_\varepsilon+o(1)$ as $r\to0$ on $\partial\{v_r>0\}\cap B_\kappa(x_1)$. On the other hand, $u_\varepsilon=\lambda_\varepsilon\tau\Phi+o_\varepsilon(\tau)$ on $\partial\{v_r>0\}\cap B_\kappa(x_1)$, with $\tau\int\Phi\,d\cH^{N-1}=\delta_r+o(\delta_r)$. Thus
+\[
+\int_{B_\kappa(x_1)}|\nabla v_r|^2+v_r^2\,dx-\int_{B_\kappa(x_1)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx
+=-\int_{\partial\{v_r>0\}\cap B_\kappa(x_1)}\frac{\partial v_r}{\partial\nu}u_\varepsilon\,dS+o_\varepsilon(\delta_r)=\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r).
+\]
+Now we extend $v_r$ by zero to $B_\kappa(x_1)\setminus D_{\delta_r}$ and define
+\[
+w_r=\begin{cases}v_r & \text{in } B_\kappa(x_1),\\ v_0 & \text{in } B_r(x_0),\\ u_\varepsilon & \text{elsewhere}.\end{cases}
+\]
+Then $|\{w_r>0\}|=|\{u_\varepsilon>0\}|$ and $w_r=u_\varepsilon$ on $\partial\Omega$, thus
+\[
+\begin{aligned}
+0\le\cJ_\varepsilon(w_r)-\cJ_\varepsilon(u_\varepsilon)&=\int_{B_r(x_0)}|\nabla v_0|^2+v_0^2\,dx-\int_{B_r(x_0)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx\\
+&\quad+\int_{B_\kappa(x_1)}|\nabla v_r|^2+v_r^2\,dx-\int_{B_\kappa(x_1)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx
+\le-\frac cK\delta_r+\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r),
+\end{aligned}
+\]
+for every $r>0$ small. Therefore, $\lambda_\varepsilon^2\ge c/K$.
+\end{proof}
+
+Now we are in a position to prove the main result of this section, namely that for $\varepsilon$ small the measure of the positivity set is exactly $\alpha$.
+
+\begin{theorem}\label{t.alpha}
+Let $\Gamma_D\neq\emptyset$ be the closure of a relatively open subset of $\partial\Omega$. Let $\varphi_0\in H^1(\Omega)$ with $\varphi_0\ge c_0>0$ on $\Gamma_D$. Let $u_\varepsilon\in K$ be a solution to $(P_\varepsilon)$. Then, for $\varepsilon$ small,
+\begin{equation}\label{43}
+|\{u_\varepsilon>0\}|=\alpha.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Arguing by contradiction, assume first that $|\{u_\varepsilon>0\}|>\alpha$. Let $x_1\in\partial\{u_\varepsilon>0\}\cap\Omega$ be a regular point (the free boundary is nonempty since $0<|\{u_\varepsilon=0\}|$ by \eqref{41}). We will proceed as in the proof of the previous lemma. Given $\delta>0$, we perturb the domain $\{u_\varepsilon>0\}$ in a neighborhood $B_\kappa(x_1)$ of $x_1$, decreasing its measure by $\delta$. We choose $\delta$ small so that the measure of the perturbed set is still larger than $\alpha$. Then we let $v$ be the solution to \eqref{42} extended by zero to the rest of $B_\kappa(x_1)$ and equal to $u_\varepsilon$ in the rest of $\Omega$. We have, by Lemma~\ref{l.upper},
+\[
+0\le\cJ_\varepsilon(v)-\cJ_\varepsilon(u_\varepsilon)=\int_\Omega|\nabla v|^2+v^2-\int_\Omega|\nabla u_\varepsilon|^2+u_\varepsilon^2+F_\varepsilon(|\{v>0\}|)-F_\varepsilon(|\{u_\varepsilon>0\}|)
+\le\lambda_\varepsilon^2\delta+o_\varepsilon(\delta)-\frac1\varepsilon\delta\le\Big(C^2-\frac1\varepsilon\Big)\delta+o_\varepsilon(\delta)<0,
+\]
+if $\varepsilon<\varepsilon_0$ and then $\delta<\delta_0(\varepsilon)$. A contradiction.
+
+Now assume that $|\{u_\varepsilon>0\}|<\alpha$. We proceed as in the previous case but this time we perturb in a neighborhood of $x_1$ the set $\{u_\varepsilon>0\}$ increasing the measure by $\delta$. Then we construct the function $v$ as before, and if $\delta$ is small enough $|\{v>0\}|<\alpha$. Then, by Lemma~\ref{l.lower},
+\[
+0\le\cJ_\varepsilon(v)-\cJ_\varepsilon(u_\varepsilon)\le-\lambda_\varepsilon^2\delta+o_\varepsilon(\delta)+\varepsilon\delta\le(-c^2+\varepsilon)\delta+o_\varepsilon(\delta)<0,
+\]
+if $\varepsilon<\varepsilon_1$ and then $\delta<\delta_0(\varepsilon)$. Again a contradiction that ends the proof.
+\end{proof}
+
+As a consequence of the previous theorem, we get
+
+\begin{corollary}\label{c.Kalpha}
+Let $\Gamma_D\neq\emptyset$ be the closure of a relatively open subset of $\partial\Omega$. Let $\varphi_0\in H^1(\Omega)$ with $\varphi_0\ge c_0>0$ on $\Gamma_D$. Then, there exists a minimizer $u$ of $\cJ(v)$ in the set
+\[
+K_\alpha=\{v\in H^1(\Omega)\ :\ v\ge0,\ \|v\|_{L^q(\Gamma_N)}=1,\ v=\varphi_0\text{ on }\Gamma_D,\ |\{v>0\}|=\alpha\}.
+\]
+This minimizer can be chosen in such a way that it is locally Lipschitz continuous in $\Omega$ and the free boundary $\partial\{u>0\}\cap\Omega$ is locally a $C^{1,\beta}$ surface up to a set of $\cH^{N-1}$ measure zero. In the case $N=2$ the free boundary is locally a $C^{1,\beta}$ surface.
+\end{corollary}
+
+\begin{proof}
+From our previous results we have \eqref{43} for every $\varepsilon$ small enough. Therefore we can take $u=u_\varepsilon$: for $v\in K_\alpha$ we have $\cJ(u_\varepsilon)=\cJ_\varepsilon(u_\varepsilon)\le\cJ_\varepsilon(v)=\cJ(v)$. The desired regularity of $u$ and its free boundary follows from the results of Sections~\ref{sec.pen} and \ref{sec.fb}.
+\end{proof}
+
+\section{Main results}\label{sec.main}
+
+In this last section we go back to our original minimization problem related to the best Sobolev trace constant. Here we prove that any extremal is a locally Lipschitz continuous function and the boundary of the hole $\partial\{u>0\}\cap\Omega$ is locally $C^{1,\beta}$ up to a set of $\cH^{N-1}$ measure zero. We begin with the following.
+
+\begin{theorem}\label{t.orig}
+Let $\phi_0$ be a minimizer for $(P_\alpha)$. Assume that there exists a positive constant $c$ such that $\phi_0>c$ in a ball $B_0'\subset\Omega$ (resp. on $B_0'\cap\partial\Omega$ where $B_0'$ is a ball centered on $\partial\Omega$). Then $\phi_0$ is a minimizer of $\cJ_\varepsilon$ in
+\[
+K_2=\{v\in H^1(\Omega)\ :\ v\ge0,\ \|v\|_{L^q(\partial\Omega)}=1,\ v=\phi_0\text{ in }B_0\}
+\]
+(resp. $\phi_0/k$ is a minimizer of $\cJ_\varepsilon$ in $K=\{v\in H^1(\Omega):v\ge0,\ \|v\|_{L^q(\Gamma_N)}=1,\ v=\phi_0/k\text{ on }\Gamma_D\}$ with $\Gamma_D=\partial\Omega\cap\overline{B_0}$, $\Gamma_N=\partial\Omega\setminus\Gamma_D$), for every $\varepsilon$ small enough. Here, $B_0$ is a ball compactly contained in $B_0'$ (resp. a smaller concentric ball) and $k=\|\phi_0\|_{L^q(\Gamma_N)}$. In particular, $\phi_0$ is locally Lipschitz continuous in $\Omega$ and the free boundary $\partial\{\phi_0>0\}\cap\Omega$ is locally a $C^{1,\beta}$ surface up to a set of zero $\cH^{N-1}$ measure. In the case $N=2$ the free boundary is locally a $C^{1,\beta}$ surface.
+\end{theorem}
+
+\begin{proof}
+We will make the proof for the first case; the results of Sections~\ref{sec.pen}--\ref{sec.small} hold with the same proofs when the Dirichlet condition on $\Gamma_D$ is replaced by the condition $v=\phi_0$ in the ball $B_0$, where $\phi_0\ge c>0$. Let $\varepsilon$ be small enough so that any minimizer $u_\varepsilon$ of $\cJ_\varepsilon$ in $K_2$ verifies $|\{u_\varepsilon>0\}|=\alpha$. Then, it follows that $\phi_0$ is one of such minimizers and so the conclusions of the theorem follow. In fact, as $\phi_0$ minimizes $(P_\alpha)$ we have
+\begin{equation}\label{51}
+\cJ_\varepsilon(\phi_0)=\int_\Omega|\nabla\phi_0|^2+|\phi_0|^2\,dx\le\int_\Omega|\nabla v|^2+|v|^2\,dx
+\end{equation}
+for any $v\in H^1(\Omega)$, $v\ge0$, such that $\|v\|_{L^q(\partial\Omega)}=1$ and $|\{v>0\}|=\alpha$. In particular \eqref{51} holds for $v=u_\varepsilon$. Thus $\cJ_\varepsilon(\phi_0)\le\cJ_\varepsilon(u_\varepsilon)=\inf_{v\in K_2}\cJ_\varepsilon(v)$.
+
+For the second case, if $v\in K$ and $|\{v>0\}|=\alpha$, then $w=kv$ satisfies $w=\phi_0$ on $\Gamma_D$, $\|w\|^q_{L^q(\partial\Omega)}=\|\phi_0\|^q_{L^q(\Gamma_D)}+k^q=1$ and $|\{w>0\}|=\alpha$, hence $\cJ(\phi_0)\le\cJ(w)=k^2\cJ(v)$, that is, $\cJ(\phi_0/k)\le\cJ(v)$, and the argument is the same. This ends the proof.
+\end{proof}
+
+In particular, by the symmetry results for minimizers of $(P_\alpha)$ in balls of \cite{FBRW1} we have the following corollary.
+
+\begin{corollary}\label{c.ball}
+Let $\Omega=B(x_0,r)$ be a ball and let $\phi_0$ be a minimizer of $(P_\alpha)$. Then $\phi_0$ is locally Lipschitz continuous in $B(x_0,r)$ and the free boundary $\partial\{\phi_0>0\}\cap B(x_0,r)$ is locally a $C^{1,\beta}$ surface up to a set of zero $\cH^{N-1}$ measure. In the case $N=2$ the free boundary is locally a $C^{1,\beta}$ surface.
+\end{corollary}
+
+\begin{proof}
+In \cite[Theorem~1.4]{FBRW1} it was proved that, for $p=2$, any minimizer $\phi_0$ of $(P_\alpha)$ in the case that $\Omega$ is a ball $B_r(x_0)$ is spherically symmetric; in particular, for any $c_0>0$, $\{\phi_0\ge c_0\}\cap\partial B_r(x_0)$ is a spherical cap. Since $\|\phi_0\|_{L^q(\partial\Omega)}=1$, there exists $c_0>0$ such that $\{\phi_0\ge 2c_0\}\cap\partial B_r(x_0)$ is a cap with nonempty relative interior. Hence the conditions of Theorem~\ref{t.orig} are satisfied.
+\end{proof}
+
+In the general case, for the problem $(P_\alpha)$ we can prove that the set of $\alpha$'s for which there exist minimizers with smooth free boundary is dense in $(0,|\Omega|)$. More precisely,
+
+\begin{theorem}\label{t.dense}
+For any $0<\alpha<|\Omega|$ there exists $\alpha_\varepsilon\to\alpha$ as $\varepsilon\to0$ such that there exists a solution $\phi_\varepsilon$ of $(P_{\alpha_\varepsilon})$ which is locally Lipschitz continuous in $\Omega$ and has a locally $C^{1,\beta}$ free boundary up to a set of zero $\cH^{N-1}$-measure. In the case $N=2$ the free boundary is a locally $C^{1,\beta}$ surface.
+\end{theorem}
+
+\begin{proof}
+Let $u_\varepsilon$ be a minimizer of $\cJ_\varepsilon$ in $K_1$. We already know that $\alpha_\varepsilon:=|\{u_\varepsilon>0\}|\le\alpha+C\varepsilon$ (see \eqref{41}). Let us see that $\alpha_\varepsilon\to\alpha$ as $\varepsilon\to0$. If not, there exists a sequence $\varepsilon_j\to0$ such that $\alpha_{\varepsilon_j}=|\{u_{\varepsilon_j}>0\}|\le\theta<\alpha$. Let $\phi_0$ be a minimizer of $(P_\alpha)$. The function $S$ is strictly decreasing (this is the strict monotonicity of the optimal constant with respect to the measure of the hole, proved in \cite[Section~2]{FBRW1}; recall that here $\alpha$ is the measure of the positivity set), so we have
+\[
+\cJ(\phi_0)=S(\alpha)<S(\theta)\le S(\alpha_{\varepsilon_j})\le\cJ(u_{\varepsilon_j})=\cJ_{\varepsilon_j}(u_{\varepsilon_j})-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\le\cJ_{\varepsilon_j}(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})=\cJ(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\le\cJ(\phi_0)+C\varepsilon_j,
+\]
+a contradiction. Now, taking $\phi_\varepsilon=u_\varepsilon$ we see that $\phi_\varepsilon$ is a minimizer of $(P_{\alpha_\varepsilon})$. In fact, let $v$ be an admissible function for $(P_{\alpha_\varepsilon})$; then
+\[
+\cJ(v)+F_\varepsilon(\alpha_\varepsilon)=\cJ_\varepsilon(v)\ge\cJ_\varepsilon(\phi_\varepsilon)=\cJ(\phi_\varepsilon)+F_\varepsilon(\alpha_\varepsilon),
+\]
+therefore $\cJ(v)\ge\cJ(\phi_\varepsilon)$. The regularity follows from Sections~\ref{sec.pen} and \ref{sec.fb}. The theorem is proved.
+\end{proof}
+
+Finally, we have the following result.
+
+\begin{theorem}\label{t.conv}
+Let $u_\varepsilon$ be a minimizer of $\cJ_\varepsilon$ in $K_1$. Then there exists $\phi_0\in H^1(\Omega)$, a solution to $(P_\alpha)$, such that, up to a subsequence, $u_\varepsilon\to\phi_0$ in $H^1(\Omega)$.
+\end{theorem}
+
+\begin{proof}
+In the proof of Theorem~\ref{t.dense} we showed that $|\{u_\varepsilon>0\}|\to\alpha$ as $\varepsilon\to0$. It is easy to see that $\cJ_\varepsilon(u_\varepsilon)$ is bounded uniformly in $\varepsilon$ and so $u_\varepsilon$ is uniformly bounded in $H^1(\Omega)$. Therefore, passing to a subsequence if necessary, there exists $u_0\in H^1(\Omega)$ such that
+\[
+u_\varepsilon\rightharpoonup u_0\ \text{weakly in } H^1(\Omega),\qquad u_\varepsilon\to u_0\ \text{strongly in } L^q(\partial\Omega),\qquad u_\varepsilon\to u_0\ \text{a.e. }\Omega.
+\]
+Thus, $u_0\ge0$, $\|u_0\|_{L^q(\partial\Omega)}=1$, $|\{u_0>0\}|\le\lim_{\varepsilon\to0}|\{u_\varepsilon>0\}|=\alpha$ and $\|u_0\|_{H^1(\Omega)}\le\liminf_{\varepsilon\to0}\|u_\varepsilon\|_{H^1(\Omega)}$. Let us call $\phi_0=u_0$ and let us see that $\phi_0$ is a solution to $(P_\alpha)$. In fact, let $v\in H^1(\Omega)$, $v\ge0$, be such that $|\{v>0\}|=\alpha$ and $\|v\|_{L^q(\partial\Omega)}=1$. Then $\cJ(v)=\cJ_\varepsilon(v)\ge\cJ_\varepsilon(u_\varepsilon)$. Now, since $\liminf_{\varepsilon\to0}F_\varepsilon(|\{u_\varepsilon>0\}|)\ge0$, there holds that
+\begin{equation}\label{52}
+\cJ(v)\ge\liminf_{\varepsilon\to0}\cJ_\varepsilon(u_\varepsilon)\ge\liminf_{\varepsilon\to0}\cJ(u_\varepsilon)\ge\cJ(\phi_0).
+\end{equation}
+It remains to see that $|\{\phi_0>0\}|=\alpha$. Assume not; then $\alpha_1:=|\{\phi_0>0\}|<\alpha$. So, by the strict monotonicity of $S(\cdot)$ there holds that $S(\alpha)<S(\alpha_1)$ but $S(\alpha)=\inf_v\cJ(v)\ge\cJ(\phi_0)\ge S(\alpha_1)$, a contradiction. Now, taking $v=\phi_0$ in \eqref{52},
+\[
+\cJ(\phi_0)\le\liminf_{\varepsilon\to0}\cJ(u_\varepsilon)\le\liminf_{\varepsilon\to0}\cJ_\varepsilon(u_\varepsilon)\le\cJ(\phi_0).
+\]
+Hence, $\|\phi_0\|_{H^1(\Omega)}=\liminf_{\varepsilon\to0}\|u_\varepsilon\|_{H^1(\Omega)}$ and so, by taking a further subsequence if necessary, the convergence is actually strong.
+\end{proof}
+
+\begin{remark}\label{r.final}
+We believe that, as in the previous cases, the minimizers $u_\varepsilon$ of $\cJ_\varepsilon$ in $K_1$ will already be solutions to $(P_\alpha)$ for $\varepsilon$ small. Nevertheless, despite the fact that the result of Theorem~\ref{t.conv} does not give regularity of the minimizer $\phi_0$, we believe that it could be of interest in numerical approximations of the solution to $(P_\alpha)$.
+\end{remark}
+
+\subsection*{Acknowledgements} We wish to thank Prof. Luis Caffarelli for suggesting this approach to our optimization problem and for providing us with useful references.
+
+\begin{thebibliography}{99}
+\bibitem{Ad} R. A. Adams, \emph{Sobolev spaces}. Pure and Applied Mathematics 65, Academic Press, New York--London, 1975.
+\bibitem{AAC} N. Aguilera, H. W. Alt and L. A. Caffarelli, An optimization problem with volume constraint. \emph{SIAM J. Control Optim.} \textbf{24} (1986), no.~2, 191--198.
+\bibitem{ACS} N. Aguilera, L. A. Caffarelli and J. Spruck, An optimization problem in heat conduction. \emph{Ann. Scuola Norm. Sup. Pisa Cl. Sci. (4)} \textbf{14} (1988), no.~3, 355--387.
+\bibitem{AC} H. W. Alt and L. A. Caffarelli, Existence and regularity for a minimum problem with free boundary. \emph{J. Reine Angew. Math.} \textbf{325} (1981), 105--144.
+\bibitem{ACF} H. W. Alt, L. A. Caffarelli and A. Friedman, A free boundary problem for quasilinear elliptic equations. \emph{Ann. Scuola Norm. Sup. Pisa Cl. Sci. (4)} \textbf{11} (1984), 1--44.
+\bibitem{Au} T. Aubin, Équations différentielles non linéaires et problème de Yamabe concernant la courbure scalaire. \emph{J. Math. Pures Appl.} \textbf{55} (1976), 269--296.
+\bibitem{DH} O. Druet and E. Hebey, The AB program in geometric analysis: sharp Sobolev inequalities and related problems. \emph{Mem. Amer. Math. Soc.} \textbf{160} (2002), no.~761.
+\bibitem{Fe} H. Federer, \emph{Geometric measure theory}. Springer-Verlag, Berlin--Heidelberg--New York, 1969.
+\bibitem{dPF} M. del Pino and C. Flores, Asymptotic behavior of best constants and extremals for trace embeddings in expanding domains. \emph{Comm. Partial Differential Equations} \textbf{26} (2001), no.~11-12, 2189--2210.
+\bibitem{FBR} J. Fernández Bonder and J. D. Rossi, Asymptotic behavior of the best Sobolev trace constant in expanding and contracting domains. \emph{Commun. Pure Appl. Anal.} \textbf{1} (2002), no.~3, 359--378.
+\bibitem{FBRW1} J. Fernández Bonder, J. D. Rossi and N. Wolanski, On the best Sobolev trace constant and extremals in domains with holes. \emph{Bull. Sci. Math.} \textbf{130} (2006), no.~7, 565--579.
+\bibitem{GT} D. Gilbarg and N. S. Trudinger, \emph{Elliptic partial differential equations of second order}. Springer-Verlag, New York, 1983.
+\bibitem{He} A. Henrot, Minimization problems for eigenvalues of the Laplacian. \emph{J. Evol. Equ.} \textbf{3} (2003), no.~3, 443--461.
+\bibitem{Ka} B. Kawohl, \emph{Rearrangements and convexity of level sets in PDE}. Lecture Notes in Math. 1150, Springer-Verlag, 1985.
+\bibitem{Le1} C. Lederman, An optimization problem in elasticity. \emph{Differential Integral Equations} \textbf{8} (1995), 2025--2044.
+\bibitem{Le2} C. Lederman, A free boundary problem with a volume penalization. \emph{Ann. Scuola Norm. Sup. Pisa Cl. Sci. (4)} \textbf{23} (1996), no.~2, 249--300.
+\bibitem{LZ} Y. Li and M. Zhu, Sharp Sobolev trace inequalities on Riemannian manifolds with boundaries. \emph{Comm. Pure Appl. Math.} \textbf{50} (1997), 449--487.
+\bibitem{LL} E. H. Lieb and M. Loss, \emph{Analysis}. Graduate Studies in Mathematics 14, 2nd edition, Amer. Math. Soc., 2001.
+\bibitem{St} M. W. Steklov, Sur les problèmes fondamentaux en physique mathématique. \emph{Ann. Sci. École Norm. Sup.} \textbf{19} (1902), 455--490.
+\bibitem{Te} E. Teixeira, A nonlinear optimization problem in heat conduction. \emph{Calc. Var. Partial Differential Equations}, to appear.
+\end{thebibliography}
+
+\end{document}

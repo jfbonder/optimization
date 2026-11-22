@@ -1,0 +1,454 @@
+\documentclass[11pt]{amsart}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1.15in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{proposition}{Proposition}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+\numberwithin{equation}{section}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cS}{\mathcal{S}}
+\DeclareMathOperator{\capa}{Cap}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\dist}{dist}
+
+\title[Sobolev trace constant in domains with holes]{On the best Sobolev trace constant and extremals in domains with holes}
+\author{Julián Fernández Bonder, Julio D. Rossi and Noemi Wolanski}
+
+\address{Julián Fernández Bonder and Noemi Wolanski\hfill\break\indent
+Departamento de Matemática, FCEyN, UBA (1428) Buenos Aires, Argentina.}
+\email{jfbonder@dm.uba.ar, wolanski@dm.uba.ar}
+\address{Julio D. Rossi\hfill\break\indent
+Departamento de Matemática, Universidad Católica de Chile, Casilla 306, Correo 22, Santiago, Chile,
+on leave from Departamento de Matemática, FCEyN, UBA (1428) Buenos Aires, Argentina.}
+\email{jrossi@mat.puc.cl}
+
+\thanks{Supported by ANPCyT PICT No. 03-05009, CONICET PIP0660/98, UBA X431 and Fundación Antorchas. J.D. Rossi and N. Wolanski are members of CONICET.}
+\thanks{\textit{Published as:} Bull. Sci. Math. \textbf{130} (2006), no.~7, 565--579. This is a revised version; the differences with the published text are listed at the beginning of the Introduction.}
+\subjclass[2000]{35J20, 35P30, 49K20}
+\keywords{Sobolev trace constant, $p$-Laplacian, eigenvalue optimization problems, $p$-capacity}
+
+\begin{document}
+
+\begin{abstract}
+We study the dependence of the Sobolev trace constant for functions defined in a bounded domain that vanish in a subset. First we find that there exists an optimal subset that makes the trace constant smaller among all the subsets with prescribed and positive Lebesgue measure. Second, we study the behavior of the best constant when the hole is allowed to have zero Lebesgue measure. We show that this constant depends upper semicontinuously on the subset with respect to the Hausdorff distance, that it is continuous when $p>N$ or along non-increasing families of holes, and we discuss when it is equal to the Sobolev trace constant without the vanishing restriction.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection*{Differences with the published version}
+This text is a revised version of the paper published in Bull. Sci. Math. \textbf{130} (2006), 565--579. Its results and proofs are those of the published version, except for the following changes.
+\begin{enumerate}
+\item \emph{Continuity with respect to the Hausdorff distance (Theorem~\ref{t.cont}).} The published version stated that $\cS_{A_n}\to\cS_A$ and that the extremals converge whenever $d(A_n,A)\to0$, for every $p$. This is false when $1<p\le N$: holes made of finitely many points have zero $p$-capacity and converge in Hausdorff distance to a ball (Remark~\ref{r.counter}). The flaw in the published proof is the step ``by symmetry'', since approximating an extremal of $\cS_{A_n}$ by functions vanishing near $A$ cannot be done uniformly in $n$. The theorem now states (a) upper semicontinuity for every $p$, with the published proof, and (b) continuity and convergence of the extremals when $p>N$ or when $A\subset A_n$ (for instance, for non-increasing families of holes), with a new proof. The abstract and the introduction were changed accordingly.
+\item \emph{Capacity (definition \eqref{cap} and Theorem~\ref{t.cap}).} The published version used the homogeneous capacity $\inf\int_{\R^N}|\nabla\phi|^p$. With that definition every bounded set has zero capacity when $p=N$, so Theorem~\ref{t.cap} fails for $p=N$, and the published proof (Gagliardo--Nirenberg--Sobolev inequality) only works for $p<N$. We now use the Sobolev capacity $\inf\|\phi\|^p_{W^{1,p}(\R^N)}$, which has the same null sets for $p<N$, so the statements for $p<N$ do not change. The proof of Theorem~\ref{t.cap} becomes simpler, and the proof of Corollary~\ref{c.cap} now also estimates $\|\phi_n\|_{L^p}$.
+\item \emph{Symmetry (proof of Theorem~\ref{t.sym}).} The zero set of the spherical symmetrization $u^*$ consists of caps centred at $-re_N$, not at $re_N$. The symmetric optimal hole is therefore defined as $\{u^*=0\}$ (after a reflection), and the fact that it has measure exactly $\alpha$ is deduced from Theorem~\ref{t.DE}. The published proof claimed directly that $(u^*,A^*)$ is admissible. The statement does not change.
+\item \emph{Existence (proof of Theorem~\ref{t.DE}).} The densities $\phi_n$ converge weakly-$*$ in $L^\infty$, instead of weakly in $L^{p'}$; this is what preserves $\int\phi\ge\alpha$. In the final chain of inequalities, $S(\alpha_1)$ (which was undefined there) is replaced by $S(|D_1|)$.
+\item \emph{Minor points.} We made explicit that $1<p<\infty$ and that $p_*=\infty$ for $p\ge N$. We clarified that $C^\infty_0(\overline\Omega\setminus A)$ denotes functions smooth up to $\partial\Omega$ that vanish near $A$. The notation $\cS_A$ for the capacitary constant is now distinct from $S_A$. Remark~\ref{r.trace} was made precise, and typos and references were corrected.
+\end{enumerate}
+
+\medskip
+
+Given $\Omega\subset\R^N$ a smooth bounded domain, we study the best Sobolev trace constant corresponding to the embedding of $W^{1,p}(\Omega)$ into $L^q(\partial\Omega)$ for functions that vanish on a fixed subset of $\Omega$, that we will call $A$. Throughout the paper $1<p<\infty$, and we consider subcritical exponents $1\le q<p_*$, where $p_*=p(N-1)/(N-p)$ if $p<N$ and $p_*=\infty$ if $p\ge N$, so that the immersion $W^{1,p}(\Omega)\hookrightarrow L^q(\partial\Omega)$ is compact.
+
+To begin with, we consider a subset $A\subset\Omega$ with positive measure and define the best Sobolev trace constant associated with this set, that is
+\begin{equation}\label{SA}
+S_A=\inf\left\{\frac{\int_\Omega |\nabla u|^p+|u|^p\,dx}{\left(\int_{\partial\Omega}|u|^q\,dS\right)^{p/q}} \ :\ u\in W^{1,p}(\Omega),\ u\not\equiv0 \text{ on }\partial\Omega \text{ and } u=0 \text{ a.e. in } A\right\}.
+\end{equation}
+As a consequence of the compact immersion, there exist extremals for $S_A$. An extremal for $S_A$ is a weak solution to
+\begin{equation}\label{eq}
+\begin{cases}
+-\Delta_p u+|u|^{p-2}u=0 & \text{in } \Omega\setminus A,\\[2pt]
+|\nabla u|^{p-2}\dfrac{\partial u}{\partial\nu}=\lambda|u|^{q-2}u & \text{on }\partial\Omega,\\[4pt]
+u=0 & \text{in } A,
+\end{cases}
+\end{equation}
+where $\Delta_pu=\operatorname{div}(|\nabla u|^{p-2}\nabla u)$ is the $p$-Laplacian, $\partial/\partial\nu$ is the outer unit normal derivative and $\lambda$ depends on the normalization of $u$. For instance, if $\|u\|_{L^q(\partial\Omega)}=1$, then $\lambda=S_A$. The existence of weak solutions to \eqref{eq} when $A=\emptyset$ has been studied in \cite{FBR1}. Of special importance is the case $q=p$ in which the equation and boundary condition in \eqref{eq} have the same scaling. In this case, \eqref{eq} can be considered as a nonlinear eigenvalue problem. This nonlinear eigenvalue problem, in the case $A=\emptyset$, has been studied in \cite{FBR1,MR}. The linear case $p=2$ has been widely studied and is known as the Steklov eigenvalue problem in the literature. In this case, $S_A$ is the first eigenvalue, see \cite{St}.
+
+So we are studying a nonlinear generalization of a very classical eigenvalue problem by adding the restriction that the functions involved vanish on a subset $A$. Up to our knowledge, this problem was not studied before. Our results are new even in the linear case.
+
+Optimal design problems are usually formulated as problems of minimization of the energy stored in the design under a prescribed loading. Solutions of these problems are unstable to perturbations of the loading. The stable optimal design problem is formulated as minimization of the stored energy of the project under the most unfavorable loading. This most dangerous loading is one that maximizes the stored energy over the class of admissible functions. The problem is reduced to minimization of Steklov eigenvalues. See \cite{CC}.
+
+In view of the above discussion, our first concern is to consider the following optimization problem: for a fixed $0<\alpha<|\Omega|$, find a set $A_0$ of measure $\alpha$ that minimizes $S_A$ among all subsets $A\subset\Omega$ of measure $\alpha$. We prove that such a set exists and, in the case that $\Omega$ is a ball, we prove that there exists an optimal set that is spherically symmetric in the sense of \cite{Sp} (see Section~\ref{sec.sym} for the definition). Moreover, in the case $p=2$ we prove that every optimal set is spherically symmetric. On the other hand, we also prove that there does not exist a set $A$ that maximizes $S_A$. Moreover, we prove that $\sup S_A=+\infty$ where the supremum is taken over all sets $A$ of given measure $\alpha$.
+
+We also give a result about the semicontinuity of $S_A$ with respect to the ``hole'' $A$.
+
+Optimization problems for eigenvalues of elliptic operators have been widely studied in the past, and are still an area of intensive research. For a comprehensive description of the current developments in the field and very interesting open problems, we refer to \cite{He}. In \cite{De} the author studies an optimization problem for the second Neumann eigenvalue of the Laplacian with $A\subset\partial\Omega$. He proves the existence of an optimal window $A_0$ and shows that, when $\Omega$ is a ball, $A_0$ is spherically symmetric in the sense of \cite{Sp}. Our approach to the optimization problem follows closely the one in \cite{De}. Optimal design problems have been widely studied not only for eigenvalue problems. See for instance \cite{AAC,Ka,Le}.
+
+When trying to give sense to a best Sobolev trace constant for functions that vanish in a set of zero Lebesgue measure a different approach has to be made. For a closed set $A\subset\Omega$ we consider the space
+\begin{equation}\label{WA}
+W^{1,p}_A(\Omega)=\overline{C^\infty_0(\overline\Omega\setminus A)},
+\end{equation}
+where $C^\infty_0(\overline\Omega\setminus A)$ denotes the restrictions to $\overline\Omega$ of smooth functions that vanish in a neighborhood of $A$, and the closure is taken in the $W^{1,p}$-norm. That is, $W^{1,p}_A(\Omega)$ stands for the set of functions of the Sobolev space $W^{1,p}(\Omega)$ that can be approximated by smooth functions that vanish in a neighborhood of $A$. In this context the best Sobolev trace constant is defined as
+\begin{equation}\label{cSA}
+\cS_A=\inf_{u\in W^{1,p}_A(\Omega)\setminus W^{1,p}_0(\Omega)}\frac{\int_\Omega|\nabla u|^p+|u|^p\,dx}{\left(\int_{\partial\Omega}|u|^q\,dS\right)^{p/q}}.
+\end{equation}
+In this case we prove that this problem only makes sense if $A$ is a set with positive $p$-capacity (see \eqref{cap}). More precisely, we prove that $\cS_A=\cS_\emptyset$ if and only if the $p$-capacity of $A$ is zero. Note that $\cS_\emptyset=S_\emptyset$ is the usual Sobolev trace constant from $W^{1,p}(\Omega)$ into $L^q(\partial\Omega)$.
+
+Observe that the constants $S_A$ and $\cS_A$ need not be the same. For a discussion on this relation, see the end of Section~\ref{sec.cap}.
+
+Finally, we address the problem of the continuity of $\cS_A$ with respect to $A$. Here the natural topology for the sets $A$ is given by the Hausdorff distance. We prove that $\cS_A$ is upper semicontinuous in this topology, that it is continuous (together with the extremals) if $p>N$ or if the holes are non-increasing, and we show by an example that continuity fails in general when $p\le N$.
+
+In order to finish this introduction, let us comment briefly on related work. First we comment on works related to the dependence of the Sobolev trace constant with respect to variations of the domain. In \cite{dPF} the authors analyze the behavior of extremals and best Sobolev trace constants in expanding domains for $p=2$ and $q>2$. They prove that the extremals develop a peak near the point where the mean curvature of the boundary attains a maximum. Also in \cite{FBR2} the authors analyze the dependence of the best Sobolev trace constant and extremals in expanding and contracting domains for $p>1$ and $1\le q<p_*$. Finally, in \cite{FBMR} the behavior of the Sobolev trace constant and extremals in thin domains is analyzed.
+
+\subsection{Main results}
+Now we state the main results of the paper. Our first result is the sequential lower semicontinuity of $S_A$.
+
+\begin{theorem}\label{t.semi}
+Let $A_n\subset\Omega$ be sets of positive measure such that
+\[
+\chi_{A_n}\overset{*}{\rightharpoonup}\chi_{A_0}\quad\text{in } L^\infty(\Omega),
+\]
+where $\chi_A$ is the characteristic function of the set $A$. Then
+\[
+S_{A_0}\le\liminf_{n\to\infty}S_{A_n},
+\]
+where $S_A$ is given by \eqref{SA}.
+\end{theorem}
+
+We remark that the continuity is not true in general. See Remark~\ref{r.nocont}.
+
+This semicontinuity result suggests that a minimizer for $S_A$ among sets $A$ of fixed positive Lebesgue measure exists. However, there is a major difficulty here because of the fact that sets of prescribed positive Lebesgue measure are not compact with respect to the topology of Theorem~\ref{t.semi}. We overcome this difficulty in the next theorem. Our result concerning the existence of an optimal design for the constant $S_A$ is as follows.
+
+\begin{theorem}\label{t.exist}
+Given $0<\alpha<|\Omega|$, let us define
+\begin{equation}\label{Salpha}
+S(\alpha):=\inf_{A\subset\Omega,\ |A|=\alpha}S_A.
+\end{equation}
+Then, there exists a set $A_0\subset\Omega$ such that $|A_0|=\alpha$ and $S_{A_0}=S(\alpha)$.
+\end{theorem}
+
+On the other hand, there is no upper bound for $S_A$.
+
+\begin{theorem}\label{t.sup}
+Let $0<\alpha<|\Omega|$. Then,
+\[
+\sup_{A\subset\Omega,\ |A|=\alpha}S_A=\infty.
+\]
+\end{theorem}
+
+Next we study symmetry properties of optimal sets $A_0$ in the special case where $\Omega$ is a ball. To this end, we need the definition of spherical symmetrization (see \cite{Sp}). Given a measurable set $A\subset\R^N$, the spherical symmetrization $A^*$ of $A$ is defined as follows: for each $r$, take $A\cap\partial B(0,r)$ and replace it by the spherical cap of the same area and center $re_N$. The union of these caps is $A^*$. We have the following result.
+
+\begin{theorem}\label{t.sym}
+Let $\Omega=B(0,1)$ and $0<\alpha<|B(0,1)|$. Then, there exists an optimal hole of measure $\alpha$ which is spherically symmetric, that is $A^*=A$. Moreover, when $p=2$, every optimal hole is spherically symmetric.
+\end{theorem}
+
+Now we state the results that allow us to consider the case $|A|=0$. For simplicity we will consider closed sets $A$. First, we study when $\cS_A$ is equal to the usual Sobolev trace constant, that is, when $\cS_A=S_\emptyset$. For this purpose we recall the definition of the (Sobolev) $p$-capacity (see \cite{AH,EG}). For $A\subset\Omega$, define
+\begin{equation}\label{cap}
+\capa_p(A)=\inf\Big\{\|\phi\|^p_{W^{1,p}(\R^N)}\ :\ \phi\in W^{1,p}(\R^N)\cap C^\infty(\R^N),\ A\subset\{\phi\ge1\}^\circ\Big\}.
+\end{equation}
+For $1<p<N$ this capacity has the same null sets as the homogeneous capacity $\inf\int_{\R^N}|\nabla\phi|^p$ of \cite{EG}. For $p\ge N$ the inhomogeneous definition \eqref{cap} is the relevant one: with the homogeneous definition every bounded set would have zero capacity when $p=N$. When $p>N$, every nonempty set has positive capacity. We have
+
+\begin{theorem}\label{t.cap}
+Let $A\subset\Omega$ be closed. Then $W^{1,p}_A(\Omega)=W^{1,p}(\Omega)$ if and only if $\capa_p(A)=0$.
+\end{theorem}
+
+As a corollary we obtain
+
+\begin{corollary}\label{c.cap}
+$\capa_p(A)=0$ if and only if $\cS_A=S_\emptyset$.
+\end{corollary}
+
+Next, we look at the dependence of $\cS_A$ under perturbations of $A$ with respect to the Hausdorff distance.
+
+\begin{theorem}\label{t.cont}
+Let $A,A_n\subset\Omega$ be closed sets such that $d(A_n,A)\to0$ as $n\to\infty$, where $d(A_n,A)$ is the Hausdorff distance between $A_n$ and $A$. Then:
+\begin{enumerate}
+\item[(a)] $\displaystyle\limsup_{n\to\infty}\cS_{A_n}\le\cS_A$.
+\item[(b)] If, in addition, either $p>N$, or $A\subset A_n$ for every $n$, then
+\[
+\lim_{n\to\infty}\cS_{A_n}=\cS_A,
+\]
+and if we denote by $u_n$ an extremal for $\cS_{A_n}$ normalized such that $\|u_n\|_{L^q(\partial\Omega)}=1$, there exists a subsequence $u_{n_k}$ such that
+\begin{equation}\label{conv.ext}
+\lim_{k\to\infty}u_{n_k}=u\quad\text{strongly in } W^{1,p}(\Omega),
+\end{equation}
+and $u$ is an extremal for $\cS_A$.
+\end{enumerate}
+\end{theorem}
+
+\begin{remark}\label{r.counter}
+Without the additional hypotheses of (b), the constant $\cS_A$ is not continuous with respect to the Hausdorff distance when $1<p\le N$. Indeed, let $A=\overline{B_\rho(x_0)}\subset\Omega$ and let $A_n\subset A$ be finite sets such that $d(A_n,A)\to0$ (for instance, finite $1/n$-nets of $A$). When $p\le N$ points have zero $p$-capacity, so $\capa_p(A_n)=0$ and, by Corollary~\ref{c.cap}, $\cS_{A_n}=S_\emptyset$ for every $n$. On the other hand $\capa_p(A)>0$, hence $\cS_A>S_\emptyset$. The same example (with $A_n$ finite sets) shows that the extremals do not converge to an extremal of $\cS_A$.
+\end{remark}
+
+The rest of the paper is organized as follows. In Section~\ref{sec.opt} we prove the existence of an optimal set $A$ and its symmetry properties when $\Omega$ is a ball. In Section~\ref{sec.cap} we prove our results involving the $p$-capacity of a subset and the dependence of the Sobolev trace constant on the subset $A$. Throughout the paper, by $C$ we mean a constant that may vary from line to line but remains independent of the relevant quantities.
+
+\section{The optimization problem}\label{sec.opt}
+
+In this section, we prove the sequential lower semicontinuity of the best Sobolev trace constant $S_A$ with respect to $A$ (Theorem~\ref{t.semi}). Then following ideas from \cite{De}, we prove that if we consider holes with positive and fixed measure a minimizing hole does exist (Theorem~\ref{t.exist}). Moreover, we prove that a maximizing hole does not exist (Theorem~\ref{t.sup}). Finally, we study the symmetry properties of minimizing holes when $\Omega$ is a ball (Theorem~\ref{t.sym}).
+
+\subsection{Semicontinuity result}
+
+\begin{proof}[Proof of Theorem~\ref{t.semi}]
+Let $A_n,A\subset\Omega$ be such that $\chi_{A_n}\overset{*}{\rightharpoonup}\chi_A$ in $L^\infty(\Omega)$. Let $u_n\in W^{1,p}(\Omega)$ be an extremal for $S_{A_n}$ normalized such that $\|u_n\|_{L^q(\partial\Omega)}=1$ and $u_n\ge0$. Let $\alpha=\liminf S_{A_n}$. Without loss of generality, we may assume that $\alpha<\infty$ and that $S_{A_n}\to\alpha$. Then, there exists a constant $C$ such that $\|u_n\|_{W^{1,p}(\Omega)}\le C$. Thus, there exists a function $u\in W^{1,p}(\Omega)$ such that, for a subsequence that we still call $u_n$,
+\begin{equation}\label{conv1}
+\begin{aligned}
+u_n&\rightharpoonup u &&\text{weakly in } W^{1,p}(\Omega),\\
+u_n&\to u &&\text{strongly in } L^p(\Omega),\\
+u_n&\to u &&\text{strongly in } L^q(\partial\Omega).
+\end{aligned}
+\end{equation}
+In particular, $\|u\|_{L^q(\partial\Omega)}=1$, $u\ge0$ and $\|u\|_{W^{1,p}(\Omega)}\le\liminf\|u_n\|_{W^{1,p}(\Omega)}$.
+
+We claim that $u$ is an admissible function in the characterization of $S_A$. To this end, observe that by \eqref{conv1} and by our hypotheses on $A_n$ and $A$,
+\[
+\int_A u\,dx=\lim_{n\to\infty}\int_{A_n}u_n\,dx=0.
+\]
+As $u\ge0$, the claim follows. Now,
+\[
+S_A\le\|u\|^p_{W^{1,p}(\Omega)}\le\liminf_{n\to\infty}\|u_n\|^p_{W^{1,p}(\Omega)}=\liminf_{n\to\infty}S_{A_n}.
+\]
+The proof is now complete.
+\end{proof}
+
+\begin{remark}\label{r.nocont}
+The continuity of $S_A$ with respect to $A$ in the sense of Theorem~\ref{t.semi} does not hold in general. For instance, take $A_n=B_r(x_0)\cup B_{1/n}(x_1)$ and $A=B_r(x_0)$. It is easy to see that $\chi_{A_n}\overset{*}{\rightharpoonup}\chi_A$. If $p>N$, as $W^{1,p}(\Omega)\hookrightarrow C(\overline\Omega)$ and an extremal $u_n$ for $S_{A_n}$ vanishes at $x_1$, then $u_n\to u$ uniformly and so $u(x_1)=0$. On the other hand, if $S_A=\lim S_{A_n}$ then $u$ would be an extremal for $S_A$. Thus $u$ is a weak solution of \eqref{eq} which implies, by the strong maximum principle (see \cite{Va}), that $u>0$ in $\Omega\setminus A$. A contradiction. For general $p$, we can take $A_n=B_r(x_0)\cup\big((0,1/n)\times\Sigma\big)$ where $\Sigma$ is a portion of the hyperplane $\{x_1=0\}$ and $A=B_r(x_0)$. Arguing in a similar fashion as before, using $W^{1,p}(\Omega)\hookrightarrow L^p(\Sigma)$, we get $S_A<\lim S_{A_n}$.
+\end{remark}
+
+\subsection{Existence of an optimal hole}
+In order to prove Theorem~\ref{t.exist}, we define the functional
+\[
+J(u)=\int_\Omega|\nabla u|^p+|u|^p\,dx
+\]
+and try to minimize it on the set
+\[
+D(\Omega,\alpha)=\Big\{(u,\chi)\in W^{1,p}(\Omega)\times L^\infty(\Omega)\ :\ \int_{\partial\Omega}|u|^q=1,\ \chi^2=\chi,\ \int_\Omega\chi=\alpha,\ u\chi=0 \text{ a.e. }\Omega\Big\}.
+\]
+It will be useful to consider the larger set
+\[
+E(\Omega,\alpha)=\Big\{(u,\phi)\in W^{1,p}(\Omega)\times L^\infty(\Omega)\ :\ \int_{\partial\Omega}|u|^q=1,\ 0\le\phi\le1,\ \int_\Omega\phi\ge\alpha,\ u\phi=0 \text{ a.e. }\Omega\Big\},
+\]
+and to minimize $J$ there. Theorem~\ref{t.exist} follows from the following theorem.
+
+\begin{theorem}\label{t.DE}
+There exists $(u,\chi)\in D(\Omega,\alpha)$ that minimizes $J(u)$ on $D(\Omega,\alpha)$. Moreover, every minimizer of $J(u)$ on $E(\Omega,\alpha)$ actually belongs to $D(\Omega,\alpha)$.
+\end{theorem}
+
+\begin{proof}
+Let $(u_n,\phi_n)$ be a minimizing sequence of $J(u)$ on $E(\Omega,\alpha)$. Observe that by taking $(|u_n|,\chi_{\supp(\phi_n)})$ we may assume that $u_n\ge0$ and $\phi_n$ is a characteristic function. Moreover, as $(u_n,\phi_n)$ is a minimizing sequence, we get $\|u_n\|_{W^{1,p}(\Omega)}\le C$. Hence, taking a subsequence if necessary, we may assume that there exists $u\in W^{1,p}(\Omega)$ such that
+\begin{equation}\label{conv2}
+\begin{aligned}
+u_n&\rightharpoonup u &&\text{weakly in } W^{1,p}(\Omega),\\
+u_n&\to u &&\text{strongly in } L^q(\partial\Omega),\\
+u_n&\to u &&\text{strongly in } L^p(\Omega).
+\end{aligned}
+\end{equation}
+For the functions $\phi_n$ we have $0\le\phi_n\le1$, and so, for a further subsequence,
+\begin{equation}\label{conv3}
+\phi_n\overset{*}{\rightharpoonup}\phi\quad\text{weakly-$*$ in } L^\infty(\Omega),
+\end{equation}
+for some function $\phi\in L^\infty(\Omega)$ with $0\le\phi\le1$ and $\int_\Omega\phi\ge\alpha$.
+
+Observe that, by \eqref{conv2} and \eqref{conv3}, $u\ge0$, $\int_{\partial\Omega}u^q=1$ and $\int_\Omega u\phi=0$. So $u\phi=0$ a.e. in $\Omega$. Therefore, by the weak lower semicontinuity of $J$, the pair $(u,\phi)$ is a minimizer for $J$ on $E(\Omega,\alpha)$.
+
+Now, we want to construct a minimizer on $D(\Omega,\alpha)$. To this end let us replace $\phi$ by $\chi=\chi_{\supp(\phi)}$. Then $(u,\chi)\in E(\Omega,\alpha)$ is still a minimizer. In order to see that $(u,\chi)\in D(\Omega,\alpha)$ we only need to check that $\int_\Omega\chi=\alpha$. This will follow from the fact that $S(\alpha)$ is a strictly increasing function of $\alpha$. Recall that $S(\alpha)$ is defined in \eqref{Salpha}. In fact, if $\int_\Omega\chi=\alpha_1>\alpha$, we have that $(u,\chi)\in D(\Omega,\alpha_1)$ and so $S(\alpha_1)\le J(u)=S(\alpha)$. This contradicts the strict monotonicity. The same argument applies to every minimizer of $J$ on $E(\Omega,\alpha)$.
+
+It remains to show the strict monotonicity property. The fact that $S(\alpha)$ is nondecreasing is a direct consequence of the inclusions
+\[
+\Big\{u\ :\ \exists\,\chi,\ \chi^2=\chi,\ \int_\Omega\chi\,dx=\alpha,\ u\chi=0\Big\}\subset\Big\{u\ :\ \exists\,\chi,\ \chi^2=\chi,\ \int_\Omega\chi\,dx=\alpha_1,\ u\chi=0\Big\}
+\]
+when $\alpha>\alpha_1$.
+
+In order to show that the monotonicity is strict let us consider $\alpha_0<\alpha_2$. From our previous calculations it follows that there exists $(u,\chi)\in E(\Omega,\alpha_2)$ that minimizes $J$ in $E(\Omega,\alpha_2)$ with $\chi^2=\chi$. By replacing $\chi$ by the characteristic function of a smaller set of measure $\alpha_2$ we may assume that $(u,\chi)\in D(\Omega,\alpha_2)$ and $S(\alpha_2)=J(u)$. Let $D=\supp\chi$ and let $0<\delta<\alpha_2-\alpha_0$. We may replace $D$ by a closed subset of measure $\alpha_2-\delta>\alpha_0$, that we will still call $D$. Hence, we will assume that $D$ is closed.
+
+Let $\tilde\Omega$ be the connected component of $\Omega\setminus D$ that contains the boundary of $\Omega$ in its boundary. Let us cover $\partial\tilde\Omega\setminus\partial\Omega$ with finitely many balls $B_\varepsilon(x_j)$ of radius $\varepsilon$ ($\varepsilon$ small, such that $|B_{2\varepsilon}|<\alpha_2-\alpha_0-\delta$). If the measure of $B_\varepsilon(x_j)\cap D$ is zero for every $j$ we may replace $D$ by a smaller closed set of the same measure by removing $B_\varepsilon(x_j)\cap D$ for every $j$. Therefore we may assume that, for some $j$, $B_\varepsilon(x_j)\cap D$ has positive measure (otherwise repeating this argument a finite number of times we would obtain that $D$ has measure zero, a contradiction). So, let $x_0\in\partial\tilde\Omega\setminus\partial\Omega$ be such that $|B_\varepsilon(x_0)\cap D|>0$ and let $D_1=D\setminus B_{2\varepsilon}(x_0)$. Then $\alpha_0<|D_1|<\alpha_2-\delta$.
+
+Let $u_1$ be such that $J(u_1)=S_{D_1}$. As $u_1$ is a nonnegative solution of $\Delta_pu_1=u_1^{p-1}$ in $\Omega\setminus D_1$, we obtain that $u_1>0$ in $B_\varepsilon(x_0)$. If not, using Harnack's inequality we find that $u_1=0$ in $\tilde\Omega$, a contradiction with the fact that $\int_{\partial\Omega}|u_1|^q=1$.
+
+On the other hand, $J(u)\ge J(u_1)$ and if $J(u)=J(u_1)=S_{D_1}$ we would have that $u$ is a solution of $\Delta_pu=u^{p-1}$ in $\Omega\setminus D_1$. As before we deduce that $u$ is positive in $B_\varepsilon(x_0)$, which contradicts the fact that $u=0$ in $D$. Hence $J(u)>J(u_1)$. Therefore
+\[
+S(\alpha_0)\le S(|D_1|)\le S_{D_1}=J(u_1)<J(u)=S(\alpha_2),
+\]
+and the strict monotonicity is proved. This ends the proof of the theorem.
+\end{proof}
+
+Now we prove that a maximal hole does not exist.
+
+\begin{proof}[Proof of Theorem~\ref{t.sup}]
+Let $\varepsilon>0$ and let $\delta=\delta(\varepsilon)$ be such that
+\[
+A_\varepsilon=\{x\in\Omega\ :\ \varepsilon<\dist(x,\partial\Omega)<\delta\}
+\]
+has measure $\alpha$. We will see that $S_{A_\varepsilon}\to\infty$ as $\varepsilon\to0$. In fact, let $u_\varepsilon$ be an extremal for $S_{A_\varepsilon}$ normalized so that $\|u_\varepsilon\|_{L^q(\partial\Omega)}=1$. Let $\Omega_\varepsilon=\{x\in\Omega\ :\ \dist(x,\partial\Omega)>\varepsilon\}$. Observe that $u_\varepsilon$ vanishes in $A_\varepsilon$ and, in $\{\dist(x,\partial\Omega)\ge\delta\}$, it is a solution to
+\[
+\begin{cases}
+\Delta_pv=|v|^{p-2}v & \text{in }\{\dist(x,\partial\Omega)>\delta\},\\
+v=0 & \text{on }\{\dist(x,\partial\Omega)=\delta\}.
+\end{cases}
+\]
+Thus, $u_\varepsilon=0$ in $\Omega_\varepsilon$ and so $u_\varepsilon\to0$ a.e. in $\Omega$. If $S_{A_\varepsilon}$ were bounded then, up to a subsequence, there would exist a function $u\in W^{1,p}(\Omega)$ such that
+\[
+\begin{aligned}
+u_\varepsilon&\rightharpoonup u &&\text{weakly in } W^{1,p}(\Omega),\\
+u_\varepsilon&\to u &&\text{strongly in } L^p(\Omega)\text{ and a.e. in }\Omega,\\
+u_\varepsilon&\to u &&\text{strongly in } L^q(\partial\Omega).
+\end{aligned}
+\]
+Since $u_\varepsilon\to0$ a.e. in $\Omega$, we get $u=0$, while $\|u\|_{L^q(\partial\Omega)}=1$. We arrive at a contradiction.
+\end{proof}
+
+\subsection{Symmetry properties of optimal holes}\label{sec.sym}
+In this subsection, we consider the case $\Omega=B(0,1)$ and investigate if the optimal hole constructed in the previous section inherits some symmetry from the domain. To this end, we recall the definition of spherical symmetrization that we have given in the introduction. Given a measurable set $A\subset\R^N$, the spherical symmetrization $A^*$ of $A$ is constructed as follows: for each $r$, take $A\cap\partial B(0,r)$ and replace it by the spherical cap of the same area and center $re_N$. This can be done for almost every $r$. The union of these caps is $A^*$. Now, the spherical symmetrization $u^*$ of a measurable function $u\ge0$ is constructed by symmetrizing the super-level sets so that, for every $t$, $\{u^*\ge t\}=\{u\ge t\}^*$. See \cite{Sp} for more details. The following theorem is proved in \cite{Sp}.
+
+\begin{theorem}\label{t.sperner}
+Let $u\in W^{1,p}(B(0,1))$, $u\ge0$, and let $u^*$ be its spherical symmetrization. Then $u^*\in W^{1,p}(B(0,1))$ and
+\begin{align}
+\int_{B(0,1)}|\nabla u^*|^p\,dx&\le\int_{B(0,1)}|\nabla u|^p\,dx,\label{sp1}\\
+\int_{B(0,1)}|u^*|^p\,dx&=\int_{B(0,1)}|u|^p\,dx,\label{sp2}\\
+\int_{\partial B(0,1)}|u^*|^q\,dS&=\int_{\partial B(0,1)}|u|^q\,dS.\label{sp3}
+\end{align}
+\end{theorem}
+
+With these preliminaries, we are ready to prove Theorem~\ref{t.sym}.
+
+\begin{proof}[Proof of Theorem~\ref{t.sym}]
+Let $(u,A)$ be an extremal for $J$, with $u\ge0$, and $u^*$ the spherical symmetrization of $u$. Since the positivity set of $u^*$ is $\{u>0\}^*$, on almost every sphere $\partial B(0,r)$ the zero set $\{u^*=0\}$ is a spherical cap centered at $-re_N$ with the same area as $\{u=0\}\cap\partial B(0,r)$. After the reflection $x_N\mapsto-x_N$ (which we perform tacitly, so that the caps are centered at $re_N$), the set $A^*:=\{u^*=0\}$ is spherically symmetric and $|A^*|=|\{u=0\}|\ge\alpha$. By Theorem~\ref{t.sperner}, $(u^*,\chi_{A^*})\in E(\Omega,\alpha)$ and $J(u^*)\le J(u)$, so it is a minimizer of $J$ on $E(\Omega,\alpha)$, and by Theorem~\ref{t.DE} we get $|A^*|=\alpha$. So the first part of the theorem follows.
+
+Assume now that $p=2$. In this case, it is proved in \cite{De} that if equality holds in \eqref{sp1} then for each $0<r\le1$ there exists a rotation $R_r$ such that
+\begin{equation}\label{rot}
+u|_{\partial B(0,r)}=(u^*\circ R_r)|_{\partial B(0,r)}.
+\end{equation}
+We can assume that the axis of symmetry $e_N$ was taken so that $R_1=\mathrm{Id}$. Let $w=u-u^*$. Then $w$ satisfies
+\[
+\begin{cases}
+\Delta w=w & \text{in } B(0,1)\setminus(A\cup A^*),\\
+w=0 & \text{on }\partial B(0,1),\\
+\dfrac{\partial w}{\partial\nu}=0 & \text{on }\partial B(0,1).
+\end{cases}
+\]
+Since $u^*=u\not\equiv0$ on $\partial B(0,1)$ there exists an open set $D$ in $B(0,1)\setminus(A\cup A^*)$ with $\partial D\cap\partial B(0,1)\neq\emptyset$. By Holmgren's uniqueness theorem there holds that $w=0$ in $D$ and by analytic continuation, $w=0$ in the connected component of $B(0,1)\setminus(A\cup A^*)$ that contains the set $D$. Thus, $w=0$ in every connected component $D_i$ such that $\partial D_i\cap\partial B(0,1)\neq\emptyset$.
+
+Let $K=\partial\big(B(0,1)\setminus\bigcup D_i\big)\subset(A\cup A^*)$. Observe that $K=K_1\cup K_2$ where $K_1\subset\partial B(0,1)\cap(A\cup A^*)$ and $K_2\subset\partial(\bigcup D_i)\cap(A\cup A^*)$. If $x\in K_1$ then either $u(x)=0$ or $u^*(x)=0$, but $u=u^*$ on $\partial B(0,1)$. Thus $u=u^*=0$ in $K_1$. If $x\in K_2$ then $w(x)=0$ since $K_2\subset\overline{\bigcup D_i}$. As either $u(x)=0$ or $u^*(x)=0$ we have again that $u=u^*=0$ in $K_2$. Finally, since both $u$ and $u^*$ are extremals for $J$, it follows that $u=u^*=0$ in $B(0,1)\setminus\bigcup D_i$. So we have proved that $w=u-u^*=0$ in $B(0,1)\setminus(A\cup A^*)$.
+
+It remains to show that $A=A^*$ and that $w=0$ in $B(0,1)$. To this end, assume that $B=A^*\setminus A\neq\emptyset$. Then $\partial B=(\partial A^*\setminus A)\cup(\partial A\cap A^*)$, so $w=0$ on $\partial B$. In the interior, $w=u$ and so it verifies $\Delta w=w$. Therefore, $w=0$ in $B$. Arguing in a similar way we conclude that $w=0$ in $A\cup A^*$, as we wanted to show.
+\end{proof}
+
+\section{Capacitary setting}\label{sec.cap}
+
+In this section we consider general closed sets that may have zero Lebesgue measure. First, we analyze when the Sobolev trace constant sees the set $A$. This is the content of Theorem~\ref{t.cap}. Then, we study the dependence of $\cS_A$ with respect to $A$ in Hausdorff distance. We end this section with a discussion about the relationship between $S_A$ and $\cS_A$.
+
+\begin{proof}[Proof of Theorem~\ref{t.cap}]
+Let $\Omega\subset\R^N$ be a bounded smooth domain and take $A$ a closed subset of $\Omega$ such that $\capa_p(A)=0$. From \eqref{cap}, it follows that for every $\varepsilon>0$ there exists $\phi_\varepsilon\in W^{1,p}(\R^N)\cap C^\infty(\R^N)$ such that $\|\phi_\varepsilon\|^p_{W^{1,p}(\R^N)}<\varepsilon$ and $\phi_\varepsilon\ge1$ in a neighborhood of $A$. Composing with a smooth function $\eta:\R\to[0,1]$ with $\eta(s)=0$ for $s\le0$, $\eta(s)=1$ for $s\ge1$ and $|\eta'|\le2$, we may assume that $0\le\phi_\varepsilon\le1$, $\phi_\varepsilon\equiv1$ in a neighborhood of $A$, and $\|\phi_\varepsilon\|^p_{W^{1,p}(\R^N)}\le2^p\varepsilon$.
+
+Take now $u\in C^\infty(\overline\Omega)$ and define $u_\varepsilon=(1-\phi_\varepsilon)u\in W^{1,p}_A(\Omega)$. Then
+\[
+\|u-u_\varepsilon\|_{W^{1,p}(\Omega)}=\|\phi_\varepsilon u\|_{W^{1,p}(\Omega)}.
+\]
+We will show that $\|\phi_\varepsilon u\|_{W^{1,p}(\Omega)}\to0$ as $\varepsilon\to0$. From this fact, the result will follow since $C^\infty(\overline\Omega)$ is dense in $W^{1,p}(\Omega)$. Now,
+\[
+\|\phi_\varepsilon u\|^p_{W^{1,p}(\Omega)}\le C\left(\int_\Omega|\nabla\phi_\varepsilon|^p|u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|\nabla u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|u|^p\,dx\right)
+\le C\big(\|u\|^p_\infty+\|\nabla u\|^p_\infty\big)\|\phi_\varepsilon\|^p_{W^{1,p}(\R^N)},
+\]
+so that
+\begin{equation}\label{est}
+\|u-u_\varepsilon\|^p_{W^{1,p}(\Omega)}\le C\varepsilon.
+\end{equation}
+
+Assume now that $C^\infty_0(\overline\Omega\setminus A)$ is dense in $W^{1,p}(\Omega)$. We will show that $\capa_p(A)=0$. By hypothesis, for every $\varepsilon>0$, there exists $u_\varepsilon\in C^\infty(\overline\Omega)$ vanishing in a neighborhood of $A$ such that $\|1-u_\varepsilon\|_{W^{1,p}(\Omega)}<\varepsilon$. Take $\phi_\varepsilon=1-u_\varepsilon$; then $\phi_\varepsilon\in W^{1,p}(\Omega)$ and $\phi_\varepsilon=1$ in a neighborhood of $A$. As $\Omega$ is smooth, it has the extension property: there exists $\bar\phi_\varepsilon\in W^{1,p}(\R^N)$ with $\bar\phi_\varepsilon=\phi_\varepsilon$ in $\Omega$ such that
+\[
+\|\bar\phi_\varepsilon\|_{W^{1,p}(\R^N)}\le E\|\phi_\varepsilon\|_{W^{1,p}(\Omega)}<E\varepsilon.
+\]
+Regularizing $\bar\phi_\varepsilon$ by convolution with a mollifier of radius smaller than $\frac12\dist(A,\partial\Omega)$ and smaller than half the size of the neighborhood of $A$ where $\phi_\varepsilon=1$, we obtain an admissible function for \eqref{cap} with $W^{1,p}$-norm less than $E\varepsilon$. Hence $\capa_p(A)=0$, as we wanted to show.
+\end{proof}
+
+With this theorem, we easily prove Corollary~\ref{c.cap}.
+
+\begin{proof}[Proof of Corollary~\ref{c.cap}]
+If $\capa_p(A)=0$, then $W^{1,p}_A(\Omega)=W^{1,p}(\Omega)$ by Theorem~\ref{t.cap}, hence $\cS_A=S_\emptyset$. We only need to see that if $\cS_A=S_\emptyset$ then $\capa_p(A)=0$. Let $u$ be an extremal for $\cS_A$. As $\cS_A=S_\emptyset$, $u$ is also an extremal for $S_\emptyset$. Therefore, $u$ is a weak solution to
+\[
+\begin{cases}
+-\Delta_pu+|u|^{p-2}u=0 & \text{in }\Omega,\\[2pt]
+|\nabla u|^{p-2}\dfrac{\partial u}{\partial\nu}=\lambda|u|^{q-2}u & \text{on }\partial\Omega.
+\end{cases}
+\]
+By known regularity theory (see \cite{To}) and the strong maximum principle (see \cite{Va}) it follows that $u\in C^{1,\beta}(\overline\Omega)$ and $u>0$ in $\overline\Omega$; hence $u\ge m>0$ in $\overline\Omega$ for some constant $m$. As $u\in W^{1,p}_A(\Omega)$, there exists a sequence $u_n\in C^\infty_0(\overline\Omega\setminus A)$ such that $u_n\to u$ in $W^{1,p}(\Omega)$. Let $\phi_n=1-u_n/u$. Observe that $\phi_n\equiv1$ in a neighborhood of $A$. Moreover,
+\[
+\|\nabla\phi_n\|_{L^p(\Omega)}=\Big\|\frac1u\nabla(u-u_n)+\frac1{u^2}\nabla u\,(u_n-u)\Big\|_{L^p(\Omega)}\le C\|\nabla(u_n-u)\|_{L^p(\Omega)}+C\|\nabla u\|_{L^\infty(\Omega)}\|u-u_n\|_{L^p(\Omega)},
+\]
+and $\|\phi_n\|_{L^p(\Omega)}\le m^{-1}\|u-u_n\|_{L^p(\Omega)}$. Then, for every $\varepsilon>0$ there exists $n_0$ such that $\|\phi_n\|_{W^{1,p}(\Omega)}<\varepsilon$ if $n\ge n_0$. Now the result follows by extending $\phi_n$ to $\R^N$ and regularizing, as at the end of the proof of Theorem~\ref{t.cap}.
+\end{proof}
+
+\begin{remark}\label{r.trace}
+If the set $A$ is a regular surface of dimension $k$, then there exists a trace operator $T:W^{1,p}(\Omega)\to L^p(A)$ if $k>N-p$. This relates to Theorem~\ref{t.cap} by the fact that sets of Hausdorff dimension less than $N-p$ have zero $p$-capacity, while compact sets of positive $\mathcal{H}^{N-p}$ measure have positive $p$-capacity (see \cite{AH,EG}).
+\end{remark}
+
+Now we study the dependence of $\cS_A$ with respect to $A$ in Hausdorff distance. Recall that the Hausdorff distance is defined by
+\[
+d(A_1,A_2)=\inf\{r>0\ :\ A_1\subset B_r(A_2)\text{ and }A_2\subset B_r(A_1)\},
+\]
+where $B_r(A)=\bigcup_{x\in A}B_r(x)$ is the usual fattening of $A$. We will use the following characterization of $W^{1,p}_A(\Omega)$ when $p>N$: a function $u\in W^{1,p}(\Omega)$ (which is continuous on $\overline\Omega$) belongs to $W^{1,p}_A(\Omega)$ if and only if $u=0$ on $A$. This is a particular case of the theorem of Bagby and Havin--Hedberg on spectral synthesis in Sobolev spaces, since for $p>N$ the only set of zero $p$-capacity is the empty set; see \cite[Chapter~9]{AH}. (A direct proof for $p>N$: if $u=0$ on $A$, the functions $\eta_\delta(u^+)-\eta_\delta(u^-)$, with $\eta_\delta(s)=(s-\delta)^+$, vanish in a neighborhood of $A$ by continuity, converge to $u$ in $W^{1,p}(\Omega)$ as $\delta\to0$, and can be regularized without destroying this property.)
+
+\begin{proof}[Proof of Theorem~\ref{t.cont}]
+(a) Let $A_\varepsilon=B_\varepsilon(A)$. Assume that $d(A_n,A)\to0$ as $n\to\infty$; then, given $\varepsilon>0$ there exists $n_0$ such that $A_n\subset A_\varepsilon$ if $n\ge n_0$, and therefore
+\begin{equation}\label{incl}
+W^{1,p}_{\overline{A_{\varepsilon}}}(\Omega)\subset W^{1,p}_{A_n}(\Omega)\qquad\text{if } n\ge n_0.
+\end{equation}
+Let $u\in W^{1,p}_A(\Omega)$ be an extremal for $\cS_A$ normalized such that $\|u\|_{L^q(\partial\Omega)}=1$, and denote $S=S_\emptyset\le\cS_A$. Given $\delta>0$ there exists $u_\delta\in C^\infty_0(\overline\Omega\setminus A)$ such that $\|u-u_\delta\|_{W^{1,p}(\Omega)}\le\delta$. The support of $u_\delta$ is at positive distance from $A$, so that
+\begin{equation}\label{supp}
+\supp(u_\delta)\subset\overline\Omega\setminus A_{2\varepsilon}
+\end{equation}
+if $\varepsilon=\varepsilon(\delta)$ is small enough. Now, by \eqref{incl} and \eqref{supp}, $u_\delta\in W^{1,p}_{A_n}(\Omega)$ for $n\ge n_0(\varepsilon(\delta))$, so, by the trace inequality $\|v\|_{L^q(\partial\Omega)}\le S^{-1/p}\|v\|_{W^{1,p}(\Omega)}$,
+\[
+\cS_{A_n}\le\frac{\|u_\delta\|^p_{W^{1,p}(\Omega)}}{\|u_\delta\|^p_{L^q(\partial\Omega)}}\le\frac{\big(\|u\|_{W^{1,p}(\Omega)}+\|u_\delta-u\|_{W^{1,p}(\Omega)}\big)^p}{\big(\|u\|_{L^q(\partial\Omega)}-\|u_\delta-u\|_{L^q(\partial\Omega)}\big)^p}\le\frac{(\cS_A^{1/p}+\delta)^p}{(1-S^{-1/p}\delta)^p}\le\cS_A+C_1\delta,
+\]
+where $C_1$ is a constant that depends on $S$ and $\cS_A$. This proves (a).
+
+(b) Let $u_n$ be an extremal for $\cS_{A_n}$ normalized such that $\|u_n\|_{L^q(\partial\Omega)}=1$, so that $\|u_n\|^p_{W^{1,p}(\Omega)}=\cS_{A_n}$, which is bounded by (a). Hence, for a subsequence $u_{n_k}$ such that $\cS_{A_{n_k}}\to\liminf_n\cS_{A_n}$, there exists $u\in W^{1,p}(\Omega)$ such that (for a further subsequence)
+\begin{equation}\label{conv4}
+\begin{aligned}
+u_{n_k}&\rightharpoonup u &&\text{weakly in } W^{1,p}(\Omega),\\
+u_{n_k}&\to u &&\text{strongly in } L^q(\partial\Omega).
+\end{aligned}
+\end{equation}
+We claim that $u\in W^{1,p}_A(\Omega)$ under either of the hypotheses in (b).
+
+If $A\subset A_n$ for every $n$, then $W^{1,p}_{A_n}(\Omega)\subset W^{1,p}_A(\Omega)$; since $W^{1,p}_A(\Omega)$ is a closed subspace, it is weakly closed, and the claim follows.
+
+If $p>N$, by Morrey's embedding the sequence $u_{n_k}$ is bounded in $C^{0,1-N/p}(\overline\Omega)$, hence (for a further subsequence) $u_{n_k}\to u$ uniformly in $\overline\Omega$. Given $x\in A$, let $x_k\in A_{n_k}$ with $|x_k-x|\le d(A_{n_k},A)\to0$. Since $u_{n_k}\in W^{1,p}_{A_{n_k}}(\Omega)$ we have $u_{n_k}(x_k)=0$, and therefore
+\[
+|u(x)|\le|u(x)-u(x_k)|+|u(x_k)-u_{n_k}(x_k)|\le C|x-x_k|^{1-N/p}+\|u-u_{n_k}\|_\infty\to0.
+\]
+So $u=0$ on $A$, and by the characterization recalled before the proof, $u\in W^{1,p}_A(\Omega)$.
+
+Now, by \eqref{conv4}, $\|u\|_{L^q(\partial\Omega)}=1$, so $u\notin W^{1,p}_0(\Omega)$ and
+\[
+\cS_A\le\|u\|^p_{W^{1,p}(\Omega)}\le\liminf_{k\to\infty}\|u_{n_k}\|^p_{W^{1,p}(\Omega)}=\liminf_{n\to\infty}\cS_{A_n}\le\limsup_{n\to\infty}\cS_{A_n}\le\cS_A.
+\]
+Therefore $\cS_{A_n}\to\cS_A$, $u$ is an extremal for $\cS_A$, and $\|u_{n_k}\|_{W^{1,p}(\Omega)}\to\|u\|_{W^{1,p}(\Omega)}$; by the uniform convexity of $W^{1,p}(\Omega)$, $u_{n_k}\to u$ strongly in $W^{1,p}(\Omega)$. Applying the same argument to an arbitrary subsequence we obtain \eqref{conv.ext}. The proof is now complete.
+\end{proof}
+
+\subsection{Relationship between $S_A$ and $\cS_A$}
+It is easy to see that $S_A\le\cS_A$. The other inequality is not true in general. Moreover, the constant $S_A$ is not modified if we change the set $A$ by a set of zero Lebesgue measure while $\cS_A$ will be modified unless the variation of $A$ is of zero $p$-capacity. For example, if $A$ is a smooth closed hypersurface piece contained in $\Omega$ and $p>1$, then $S_A=S_\emptyset$ (the restriction in \eqref{SA} is void since $|A|=0$). On the other hand $\cS_A>S_\emptyset=S_A$, since $\capa_p(A)>0$ (Corollary~\ref{c.cap}); indeed an extremal for $\cS_A$ has zero trace on $A$. However, if $A$ is the closure of an open set with regular boundary, both constants agree. This leads to the question of the existence of a representative of the set $A$ for both constants to agree. We believe that this is an interesting problem.
+
+\subsection*{Acknowledgements} We want to thank R. Durán for valuable help.
+
+\begin{thebibliography}{99}
+\bibitem{AH} D. R. Adams and L. I. Hedberg, \emph{Function spaces and potential theory}. Grundlehren der Mathematischen Wissenschaften 314, Springer-Verlag, Berlin, 1996.
+\bibitem{AAC} N. Aguilera, H. W. Alt and L. A. Caffarelli, An optimization problem with volume constraint. \emph{SIAM J. Control Optim.} \textbf{24} (1986), no.~2, 191--198.
+\bibitem{CC} A. Cherkaev and E. Cherkaeva, Optimal design for uncertain loading condition. In: \emph{Homogenization}, 193--213, Ser. Adv. Math. Appl. Sci. 50, World Sci. Publishing, River Edge, NJ, 1999.
+\bibitem{De} J. Denzler, Windows of given area with minimal heat diffusion. \emph{Trans. Amer. Math. Soc.} \textbf{351} (1999), 569--580.
+\bibitem{EG} L. C. Evans and R. F. Gariepy, \emph{Measure theory and fine properties of functions}. Studies in Advanced Mathematics, CRC Press, Boca Raton, FL, 1992.
+\bibitem{dPF} M. del Pino and C. Flores, Asymptotic behavior of best constants and extremals for trace embeddings in expanding domains. \emph{Comm. Partial Differential Equations} \textbf{26} (2001), no.~11-12, 2189--2210.
+\bibitem{FBMR} J. Fernández Bonder, S. Martínez and J. D. Rossi, The behavior of the best Sobolev trace constant and extremals in thin domains. \emph{J. Differential Equations}, to appear.
+\bibitem{FBR1} J. Fernández Bonder and J. D. Rossi, Existence results for the $p$-Laplacian with nonlinear boundary conditions. \emph{J. Math. Anal. Appl.} \textbf{263} (2001), 195--223.
+\bibitem{FBR2} J. Fernández Bonder and J. D. Rossi, Asymptotic behavior of the best Sobolev trace constant in expanding and contracting domains. \emph{Commun. Pure Appl. Anal.} \textbf{1} (2002), no.~3, 359--378.
+\bibitem{He} A. Henrot, Minimization problems for eigenvalues of the Laplacian. \emph{J. Evol. Equ.} \textbf{3} (2003), no.~3, 443--461.
+\bibitem{Ka} B. Kawohl, \emph{Rearrangements and convexity of level sets in PDE}. Lecture Notes in Math. 1150, Springer-Verlag, 1985.
+\bibitem{Le} C. Lederman, An optimization problem in elasticity. \emph{Differential Integral Equations} \textbf{8} (1995), 2025--2044.
+\bibitem{MR} S. Martínez and J. D. Rossi, Isolation and simplicity for the first eigenvalue of the $p$-Laplacian with a nonlinear boundary condition. \emph{Abstr. Appl. Anal.} \textbf{7} (2002), no.~5, 287--293.
+\bibitem{Sp} E. Sperner, Spherical symmetrization and eigenvalue estimates. \emph{Math. Z.} \textbf{176} (1981), 75--86.
+\bibitem{St} M. W. Steklov, Sur les problèmes fondamentaux en physique mathématique. \emph{Ann. Sci. École Norm. Sup.} \textbf{19} (1902), 455--490.
+\bibitem{To} P. Tolksdorf, Regularity for a more general class of quasilinear elliptic equations. \emph{J. Differential Equations} \textbf{51} (1984), 126--150.
+\bibitem{Va} J. L. Vázquez, A strong maximum principle for some quasilinear elliptic equations. \emph{Appl. Math. Optim.} \textbf{12} (1984), no.~3, 191--202.
+\end{thebibliography}
+
+\end{document}
