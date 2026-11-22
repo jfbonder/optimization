@@ -1,0 +1,56 @@
+"""Movies comparing the two complete pipelines from the same initial hole:
+
+    Alg. 1 (element swapping) -> Alg. 3 (shape flow), and
+    Alg. 2 (penalised rearrangement) -> Alg. 3 (shape flow).
+
+Alg. 1 is stopped when the best eigenvalue has not improved during 40
+iterations; Alg. 2 stops by itself.  Alg. 3 then starts from the best hole.
+Three panels: hole (pipeline 1), hole (pipeline 2), both eigenvalue curves.
+
+Usage:  python pipeline_movies.py [disk|lshape|handle|bigdisk ...]
+"""
+import json
+import sys
+
+from common import MOV, RES
+import steklov_holes as sh
+from steklov_holes import algorithms as al
+from steklov_holes import plotting as pl
+from optimal_holes import config
+
+N_SWAP = lambda k: max(1, 10 - k // 20)
+
+
+def run(name):
+    c = config(name)
+    alpha = c["alpha"]
+    mesh = c["mesh"](c["h"])
+    S = sh.P1System(mesh)
+    start = tuple(json.load(open(f"{RES}/holes_{name}.json"))["start_movie"])
+    h0 = al.initial_hole(mesh, alpha, center=start)
+    remesh_args = dict(fd=c["fd"], bbox=c["bbox"], h=c["h"], h_fine=c["h_fine"], corners=c["corners"])
+    flow_kw = dict(n_iter=150, smooth=25, patience=15, record=True, remesh_args=remesh_args)
+
+    sw = al.swap_algorithm(S, h0, alpha, n_iter=300, n_swap=N_SWAP, tabu=10, patience=40, record=True)
+    fa = sw.info["frames"]
+    fa.append(dict(fa[-1], hole=sw.hole.copy(), u=sw.u.copy(), lam=float(sw.lam),
+                   area=float(mesh.areas[sw.hole].sum()), label="swap (best hole)"))
+    fl_a = al.shape_gradient_flow(mesh, sw.hole, alpha, **flow_kw)
+    fa = fa + fl_a.info["frames"]
+
+    re = al.rearrangement(S, h0, alpha, record=True)
+    fl_b = al.shape_gradient_flow(mesh, re.hole, alpha, **flow_kw)
+    fb = re.info["frames"] + fl_b.info["frames"]
+
+    summary = dict(domain=name, start=list(start), alg1_iters=len(sw.history) - 1, alg1=float(sw.lam),
+                   alg1_flow=float(fl_a.lam), alg2_iters=len(re.info["frames"]) - 1, alg2=float(re.lam),
+                   alg2_flow=float(fl_b.lam))
+    print(summary)
+    json.dump(summary, open(f"{RES}/pipeline_{name}.json", "w"), indent=1)
+    pl.make_pipeline_movie(fa, fb, f"{MOV}/{name}_pipelines.mp4",
+                           title=c["title"] + "  —  same initial hole", fps=10)
+
+
+if __name__ == "__main__":
+    for n in sys.argv[1:] or ["lshape", "handle", "disk", "bigdisk"]:
+        run(n)

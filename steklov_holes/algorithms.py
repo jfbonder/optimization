@@ -120,7 +120,8 @@ def interface_edges(mesh: Mesh, hole):
 # ---------------------------------------------------------------------------
 
 def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
-                   decrease_every=None, verbose=False, record=False, keep_off_boundary=False):
+                   decrease_every=None, verbose=False, record=False, keep_off_boundary=False,
+                   patience=None):
     """Element-swapping algorithm of Section 3.2 of the paper.
 
     At each step the hole triangles adjacent to the interface faces with the
@@ -128,7 +129,9 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
     adjacent to faces with the smallest |du_h/dnu| are added until |A_h| >=
     alpha.  A triangle removed during the last ``tabu`` steps cannot be added
     back (the anti-cycling strategy described in the paper).
-    ``n_swap`` may be an int or a callable k -> int.
+    ``n_swap`` may be an int or a callable k -> int.  If ``patience`` is given,
+    the iteration stops when the best eigenvalue has not improved (by a
+    relative amount 1e-6) during ``patience`` consecutive iterations.
     """
     mesh = sys.mesh
     areas = mesh.areas
@@ -139,6 +142,7 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
     hist, ar = [lam], [areas[hole].sum()]
     removed_at = np.full(mesh.n_elements, -10 ** 9)
     frames = [_frame(mesh, hole, u, lam, "swap")] if record else []
+    last_improvement = 0
     for k in range(n_iter):
         g2 = np.sum(sys.element_grad(u) ** 2, axis=1)
         idx, ins, out = interface_edges(mesh, hole)
@@ -190,10 +194,14 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
         lam, u = eig_hard(sys, hole, v0=u)
         hist.append(lam)
         ar.append(area)
+        if lam < best[0] * (1 - 1e-6):
+            last_improvement = k
         if lam < best[0]:
             best = (lam, hole.copy(), u)
         if record:
             frames.append(_frame(mesh, hole, u, lam, "swap"))
+        if patience is not None and k - last_improvement >= patience:
+            break
         if verbose and k % 10 == 0:
             print(f"[swap] it {k:4d} lambda={lam:.6f} best={best[0]:.6f}")
     return Result(mesh, best[1], best[0], best[2], hist, ar, {"method": "swap", "frames": frames})
@@ -472,7 +480,46 @@ def remesh(mesh: Mesh, hole, fd, bbox, h, h_fine, width=None, seed=0, smooth_pas
         side[better] = np.sum((c[better] - proj[better]) * nrm[k[better]], axis=1)
     close = best_d < 3 * h_fine
     newhole[close] = side[close] > 0
-    return new, newhole
+    return new, remove_islands(new, newhole)
+
+
+def remove_islands(mesh: Mesh, hole, rel=0.05):
+    """Remove connected components of the hole whose area is below ``rel``
+    times the total hole area (spurious islands created by the transfer of the
+    hole to a new mesh), and fill small components of the complement that do
+    not touch dOmega."""
+    import scipy.sparse as sp
+    from scipy.sparse.csgraph import connected_components
+
+    nb = mesh.neighbours()
+    m = mesh.n_elements
+    rows = np.repeat(np.arange(m), 3)
+    cols = nb.ravel()
+    ok = cols >= 0
+    rows, cols = rows[ok], cols[ok]
+    areas = mesh.areas
+    hole = hole.copy()
+    for target in (True, False):
+        mask = hole == target
+        keep = mask[rows] & mask[cols]
+        G = sp.csr_matrix((np.ones(keep.sum()), (rows[keep], cols[keep])), shape=(m, m))
+        ncomp, lab = connected_components(G, directed=False)
+        lab = np.where(mask, lab, -1)
+        comp_area = np.bincount(lab[mask], weights=areas[mask], minlength=ncomp)
+        total = comp_area.sum()
+        if target:
+            small = comp_area < rel * total
+            hole[mask & small[np.maximum(lab, 0)]] = False
+        else:
+            # components of the complement not touching the boundary: fill if small
+            onb = np.zeros(mesh.n_nodes, bool)
+            onb[mesh.boundary_nodes] = True
+            touches = np.zeros(ncomp, bool)
+            el_b = np.any(onb[mesh.t], axis=1) & mask
+            touches[lab[el_b]] = True
+            small = (comp_area < rel * total) & ~touches
+            hole[mask & small[np.maximum(lab, 0)]] = True
+    return hole
 
 
 def locate(mesh: Mesh, x, k=12):
