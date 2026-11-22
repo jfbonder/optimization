@@ -21,6 +21,7 @@ Este repositorio contiene:
 - [8. Referencia de la API](#8-referencia-de-la-api)
 - [9. Cómo reproducir todo](#9-cómo-reproducir-todo)
 - [10. Limitaciones conocidas y trabajo futuro](#10-limitaciones-conocidas-y-trabajo-futuro)
+- [11. Licencia](#11-licencia)
 
 ---
 
@@ -344,3 +345,9 @@ Los tests verifican:
 - **Malla.** El mallador DistMesh es simple; para mallas grandes conviene usar `gmsh`.
 - **Posibles mejoras:** un paso de Newton con la segunda variación, regularización por curvatura, una representación por conjuntos de nivel y una extensión a 3D.
 - **Problema abierto:** probar la Conjetura 2.8 (optimalidad global de la bola centrada para $R>R^*(r)$). La estrategia propuesta (asintótica de agujeros chicos, *blow-up* y problema sobredeterminado exterior, y unicidad local por la no degeneración $c_\ell>0$) está esbozada en el trabajo revisado.
+
+## 11. Licencia
+
+- **Código** (`steklov_holes/`, `experiments/`, `tests/`): licencia **MIT**, ver [`LICENSE`](LICENSE).
+- **Textos de los trabajos** (los PDF de la raíz y los fuentes LaTeX y PDF de `paper*/`): **no** están cubiertos por la licencia MIT. Sus derechos pertenecen a los autores y, en el caso de las versiones publicadas, a las editoriales respectivas.
+
