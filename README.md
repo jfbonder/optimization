@@ -35,6 +35,8 @@ Este repositorio contiene:
 
 Cada carpeta contiene `main.tex` (fuente reconstruida a partir del PDF), `main.pdf` (compilado) y `CHANGES.md`. **Al comienzo de la Introducción de cada trabajo revisado hay una subsección "Differences with the published version"** que detalla exactamente qué cambia respecto del texto publicado. `CHANGES.md` reproduce esa lista.
 
+En los tres trabajos se mantienen las direcciones de los autores de entonces (donde se hizo el trabajo). Debajo de cada una se agrega una línea *Current address* con la afiliación actual, y los emails son los actuales. El trabajo de *Annali* indica explícitamente que el código está disponible en este repositorio (Introducción, §3.3 y un párrafo final *Code availability*).
+
 Notas sobre las referencias:
 - Del paper de Bull. Sci. Math. no pude confirmar el DOI. El número (no. 7) aparece en una sola fuente; conviene verificarlo.
 - Para el paper de SICON, algunas fuentes indican 2005 y otras 2006 (vol. 44, no. 5); tampoco pude ver el DOI.
@@ -72,10 +74,16 @@ que es el primer autovalor de $-\Delta u+u=0$ en $\Omega\setminus A$, $\partial_
 
 **Discretización.** Elementos finitos P1. El problema discreto es $\mathbf A\mathbf u=\lambda\mathbf B\mathbf u$, con $\mathbf B$ (masa de borde) semidefinida. Se calcula el mayor $\mu=1/\lambda$ de $\mathbf B\mathbf u=\mu\mathbf A\mathbf u$ con Lanczos (ARPACK) y una factorización LU de $\mathbf A$. Con unos $10^4$ nodos, cada resolución lleva centésimas de segundo; el original usaba `fmincon`. Los agujeros discretos son uniones de triángulos (la clase $\mathcal O_h$ del paper): $|A_h|\ge\alpha$ y al sacar el último triángulo queda $<\alpha$. Por eso $|A_h|-\alpha=O(h^2)$.
 
-**Algoritmo 1: intercambio de triángulos (el del paper original).** Usa la derivada de forma $\lambda_1'(A)[V]=-\int_{\partial A}(\partial_\nu u)^2\langle V,\nu\rangle$. En cada paso saca del agujero los triángulos de la interfaz con $|\partial_\nu u_h|$ grande y agrega los de $|\partial_\nu u_h|$ chico. Se implementó con las mejoras que sugería el propio paper: varios intercambios al principio y cada vez menos ($m_k=\max(1,10-\lfloor k/20\rfloor)$), y una lista tabú contra ciclos. Su comportamiento:
+**Algoritmo 1: intercambio de triángulos (el del paper original).** Usa la derivada de forma $\lambda_1'(A)[V]=-\int_{\partial A}(\partial_\nu u)^2\langle V,\nu\rangle$. En cada paso saca del agujero los triángulos de la interfaz con $|\partial_\nu u_h|$ grande y agrega los de $|\partial_\nu u_h|$ chico. Se implementó con las mejoras que sugería el propio paper:
+- varios intercambios al principio y cada vez menos ($m_k=\max(1,10-\lfloor k/20\rfloor)$);
+- una lista tabú contra ciclos;
+- si la interfaz anterior no ofrece suficientes triángulos para recuperar la medida, se recalcula la interfaz del agujero actual;
+- se detiene cuando el mejor valor no mejora en 40 iteraciones (máximo 300).
+
+Su comportamiento:
 - no es monótono;
-- mueve la interfaz de a una capa de triángulos;
-- no sale de configuraciones críticas (por ejemplo, el disco centrado).
+- mueve la interfaz de a una capa de triángulos, lo que lo hace lento cuando el agujero tiene que trasladarse lejos;
+- a diferencia del Algoritmo 2, puede salir de configuraciones críticas como la bola centrada.
 
 **Algoritmo 2: reordenamiento penalizado (nuevo).** Se relaja la condición $u=0$ en $A$ con una penalización:
 $$\lambda_\beta(\chi)=\min\frac{\int|\nabla v|^2+v^2+\beta\int\chi v^2}{\int_{\partial\Omega}v^2}.$$
@@ -83,14 +91,16 @@ Es el análogo discreto de la relajación de [BRW 2006] y de la penalización de
 - $\lambda_\beta(\chi_k)$ es **monótona no creciente** en $k$;
 - $\lambda_\beta\uparrow\lambda_{1,h}$ cuando $\beta\to\infty$; se usa continuación en $\beta$ de $10$ a $10^5$;
 - converge en pocas iteraciones y puede cambiar la topología del agujero;
-- puede quedar en mínimos locales, así que se prueba desde varios agujeros iniciales (`multistart`).
+- puede quedar en mínimos locales, así que se prueba desde varios agujeros iniciales (`multistart`);
+- la bola centrada es un punto fijo, porque es crítica: si arranca ahí, no se mueve.
 
 **Algoritmo 3: flujo de gradiente de forma con malla móvil y refinamiento adaptativo (nuevo).** Es la idea de "mover los triángulos" y "refinar cerca del agujero". Con $g=(\partial_\nu u)^2$ y la velocidad normal $V=g-\bar g$, que conserva el volumen, se tiene $\lambda'=-\int(g-\bar g)^2\le0$. Cada paso:
 1. Se mueven los nodos de la interfaz con $(\tau V+\delta)\nu$. La corrección $\delta=(|A_h|-\alpha)/|\partial A_h|$ restaura el volumen y $\tau$ se elige con *backtracking*. Los puntos de contacto con $\partial\Omega$ se deslizan tangencialmente.
 2. El desplazamiento se extiende armónicamente a toda la malla.
-3. Cuando la calidad de la malla se deteriora, se remalla (DistMesh) con tamaño $h_{\rm fine}$ cerca de la interfaz suavizada, creciendo hasta $h$ lejos de ella.
+3. Cuando la calidad de la malla se deteriora, se remalla (DistMesh) con tamaño $h_{\rm fine}$ cerca de la interfaz suavizada, creciendo hasta $h$ lejos de ella. Después de remallar se eliminan las islas espurias de elementos mal clasificados.
+4. El flujo se detiene cuando, dos veces, no encuentra paso de descenso justo después de remallar. Sólo se acepta un agujero cuyo volumen difiera de $\alpha$ en menos del 0.1 %.
 
-**Estrategia recomendada:** Algoritmo 2 (con varios inicios) para la topología, seguido del Algoritmo 3 para resolver la frontera libre.
+**Estrategia recomendada:** correr los dos métodos discretos (Algoritmos 1 y 2, ambos baratos) desde unos pocos agujeros iniciales y pasar el mejor resultado al Algoritmo 3, que resuelve la frontera libre.
 
 ## 4. Resultados numéricos
 
@@ -98,10 +108,10 @@ Es el análogo discreto de la relajación de [BRW 2006] y de la penalización de
 
 | Dominio | Alg. 1 (original): mejor $\lambda$ (s/corrida) | Alg. 2: mejor $\lambda$ (s/corrida) | Alg. 1 + 3: $\lambda$ (tiempo total) | Alg. 2 + 3: $\lambda$ (tiempo total) |
 |---|---|---|---|---|
-| Disco unidad, $\alpha=\pi/2$ | **1.24772** (1.5 s) | 1.24998 (0.4 s) | 1.23987 (72 s) | **1.23977** (222 s) |
-| L (tres cuadrados), $\alpha=1/2$ | 0.46808 (1.4 s) | **0.46695** (0.2 s) | 0.46653 (25 s) | **0.46652** (20 s) |
-| Dos discos con un mango, $\alpha=\pi$ | 0.50433 (0.9 s) | **0.50410** (0.1 s) | **0.50344** (38 s) | 0.50349 (15 s) |
-| Disco $B_3$, $\alpha=\pi/4$ | 0.82684 (3.0 s) | **0.82675** (1.2 s) | 0.82680 (170 s) | **0.82670** (173 s) |
+| Disco unidad, $\alpha=\pi/2$ | **1.24772** (1.4 s) | 1.24998 (0.3 s) | 1.24000 (17 s) | **1.23987** (19 s) |
+| L (tres cuadrados), $\alpha=1/2$ | 0.46808 (1.3 s) | **0.46695** (0.2 s) | 0.46656 (12 s) | 0.46656 (8 s) |
+| Dos discos con un mango, $\alpha=\pi$ | 0.50433 (0.7 s) | **0.50410** (0.1 s) | **0.50332** (6 s) | 0.50354 (9 s) |
+| Disco $B_3$, $\alpha=\pi/4$ | 0.82684 (2.6 s) | **0.82675** (1.1 s) | 0.82684 (11 s) | **0.82675** (11 s) |
 
 El Algoritmo 1 se detiene cuando el mejor valor no mejora en 40 iteraciones (máximo 300). El tiempo total es el del algoritmo discreto desde el mejor inicio más el del Algoritmo 3.
 
@@ -126,11 +136,11 @@ Observaciones:
 - **Traslación del disco centrado:** la segunda derivada de $\lambda_1(B_r(te_1))$ calculada por FEM (con malla que se deforma con el agujero) coincide con la fórmula exacta de la Proposición 2.6, por ejemplo $+1.21\cdot10^{-2}$ contra $+1.22\cdot10^{-2}$ para $R=3$, $r=0.5$. El cambio de signo se produce exactamente en $R^*(r)$.
 - **Validación:** en la corona $B_1\setminus B_{0.5}$ el FEM converge como $O(h^2)$ al valor exacto 1.6088088…
 
-**Películas** (`movies/*_pipelines.mp4`, una por dominio): **las dos cadenas completas desde el mismo agujero inicial, en tiempo real de cómputo**.
+**Películas** (`movies/*_pipelines.mp4`, una por dominio): **las dos cadenas completas desde el mismo agujero inicial, en tiempo normalizado**. Cada película dura 20 s, y en el título figura cuántos segundos de cómputo equivalen a 1 s de película.
 - A la izquierda, Alg. 1 → Alg. 3. Al Algoritmo 1 se lo detiene cuando el mejor $\lambda$ no mejora en 40 iteraciones, y entonces se pasa al Algoritmo 3.
 - En el centro, Alg. 2 → Alg. 3.
 - A la derecha, las dos curvas de $\lambda$ en función del **tiempo de cómputo** (segundos), en los mismos ejes; una línea punteada marca el paso al Algoritmo 3.
-- La película avanza a ritmo constante en ese tiempo. La cadena más rápida termina antes y queda quieta, con su tiempo total anotado, mientras la otra sigue.
+- La película avanza a ritmo constante en el tiempo de cómputo, reescalado a la duración de la película. La cadena más rápida termina antes y queda quieta, con su tiempo total anotado, mientras la otra sigue.
 - En los títulos se muestran la fase, el número de iteración y el tiempo transcurrido.
 - El tiempo medido excluye el costo de grabar los cuadros: en el Algoritmo 2, cada cuadro requiere un cálculo extra del autovalor duro, que no forma parte del método.
 - Las genera `experiments/pipeline_movies.py`; los tiempos y valores quedan en `experiments/results/pipeline_*.json`.
@@ -197,6 +207,7 @@ Conclusión:
 
 ```
 ├── README.md                         este archivo
+├── LICENSE                           licencia MIT (sólo el código)
 ├── requirements.txt
 ├── aunum-final.pdf  bon-ros-wol5.pdf  bonder.pdf     versiones finales originales
 ├── paper1_sobolev_trace_holes/       Bull. Sci. Math. revisado (main.tex, main.pdf, CHANGES.md)
@@ -205,12 +216,12 @@ Conclusión:
 │   └── tables/                       tablas LaTeX generadas por experiments/make_tables.py
 ├── paper3_free_boundary_regularity/  SIAM J. Control Optim. revisado
 ├── steklov_holes/                    paquete Python
-│   ├── mesh.py        mallas (DistMesh, disco, corona, L, dos discos con mango, refinamiento)
-│   ├── fem.py         ensamblado P1: rigidez, masa, masa de borde, gradientes por elemento
+│   ├── mesh.py        mallas (DistMesh, disco, corona, L, dos discos con mango, semidisco meridiano, refinamiento)
+│   ├── fem.py         ensamblado P1 (también axisimétrico, peso 2πr): rigidez, masa, masa de borde, gradientes
 │   ├── eigen.py       primer autopar (agujero duro, Dirichlet, penalizado; chequeo denso)
 │   ├── radial.py      fórmulas exactas: λ1(R,r), R*(r), Θ''(0), coeficientes c_ℓ
 │   ├── algorithms.py  Algoritmos 1, 2 y 3, multistart, búsqueda local, remallado
-│   └── plotting.py    figuras (agujero binario + autofunción) y películas
+│   └── plotting.py    figuras (agujero binario + autofunción, vista 3D de sólidos de revolución) y películas
 ├── experiments/
 │   ├── translation.py       traslación del disco centrado (Tabla y Figura)
 │   ├── second_variation.py  diagrama de regímenes en el plano (r, R)
@@ -218,6 +229,8 @@ Conclusión:
 │   ├── compare_methods.py   original vs nuevo desde los mismos inicios: tabla de valores y tiempos, figuras
 │   ├── pipeline_movies.py   películas de las cadenas Alg. 1 → 3 y Alg. 2 → 3 desde el mismo inicio
 │   ├── convergence.py       convergencia en h (L, α = 1)
+│   ├── annulus_ball.py      anillo y bolas de R^3 (axisimétrico): valores, figuras y películas
+│   ├── figures_annulus_ball.py  figuras del anillo y de las bolas (secciones y vista 3D)
 │   ├── make_tables.py       tablas LaTeX a partir de los JSON
 │   └── results/             resultados en JSON y logs
 ├── movies/                           películas MP4 de las iteraciones
@@ -260,12 +273,13 @@ pl.make_movie(res.info["frames"] + flow.info["frames"], "disco.mp4", fps=4)
 ## 8. Referencia de la API
 
 **`steklov_holes.mesh`**
-- `disk(h, radius, center)`, `annulus(h, R, r, hole_center)`, `lshape(h)`, `two_disks_with_handle(h, ...)`: generan mallas `Mesh`.
+- `disk(h, radius, center)`, `annulus(h, R, r, hole_center)`, `lshape(h)`, `two_disks_with_handle(h, ...)`, `half_disk(h, R)` (semisección meridiana de la bola de $\mathbb R^3$, axisimétrica): generan mallas `Mesh`.
 - `distmesh2d(fd, h0, bbox, pfix, fh)`: mallador general a partir de una función distancia con signo (`d_circle`, `d_rectangle`, `d_union`, `d_difference`).
-- `Mesh`: atributos `p`, `t`, `bedges`, `edges`, `e2t`, `areas`, `centroids`, `h`; métodos `refine()` y `deform(D)`.
+- `Mesh`: atributos `p`, `t`, `bedges`, `edges`, `e2t`, `areas`, `centroids`, `h`, `axisymmetric`; métodos `refine()` y `deform(D)`.
 
 **`steklov_holes.fem.P1System(mesh, steklov_edges=None)`**
-- Matrices `K` (rigidez), `M` (masa), `A = K + M` y `B` (masa de borde).
+- Matrices `K` (rigidez), `M` (masa), `A = K + M` y `B` (masa de borde); `measure` (área de cada elemento, o volumen de revolución si la malla es axisimétrica).
+- Si `mesh.axisymmetric` es verdadero, todas las integrales llevan peso $2\pi r$, y la condición de Steklov se aplica en el borde fuera del eje.
 - Métodos `weighted_mass(w)`, `element_l2sq(u)` y `element_grad(u)`.
 
 **`steklov_holes.eigen`**
@@ -279,19 +293,20 @@ pl.make_movie(res.info["frames"] + flow.info["frames"], "disco.mp4", fps=4)
 - `c_ell(ell, R, r, N)`, `mu_ell`, `translation_second_derivative(R, r, N)`, `R_crit`.
 
 **`steklov_holes.algorithms`**
-- `swap_algorithm(S, hole0, alpha, n_iter, n_swap, tabu)`: Algoritmo 1.
+- `swap_algorithm(S, hole0, alpha, n_iter, n_swap, tabu, patience)`: Algoritmo 1.
 - `rearrangement(S, hole0, alpha, betas)`: Algoritmo 2.
 - `multistart(S, alpha, centers, betas_list)`: el Algoritmo 2 desde varios inicios.
 - `local_search(S, hole, alpha)`: pulido monótono con evaluaciones exactas.
-- `shape_gradient_flow(mesh, hole, alpha, step, smooth, remesh_args, ...)`: Algoritmo 3.
+- `shape_gradient_flow(mesh, hole, alpha, step, smooth, remesh_args, max_stalls, ...)`: Algoritmo 3.
 - `remesh(mesh, hole, fd, bbox, h, h_fine, corners)`, `initial_hole(mesh, alpha, center, shape)`, `interface_edges(mesh, hole)`.
-- Todos aceptan `record=True` para guardar cuadros (`result.info["frames"]`).
+- Todos aceptan `record=True` para guardar cuadros (`result.info["frames"]`, cada uno con su tiempo de cómputo); `result.info["time"]` es el tiempo de cómputo, sin el costo de grabar los cuadros.
 - Todos devuelven `Result` con los campos `mesh`, `hole`, `lam`, `u`, `history`, `areas`, `info`.
 
 **`steklov_holes.plotting`**
-- `plot_result(res, fname)`, `plot_holes_panel(states, titles, fname)`.
+- `plot_result(res, fname)`, `plot_holes_panel(states, titles, fname, mirror)`; con `mirror=True` se refleja la sección meridiana.
+- `plot_axisym_hole_3d(p, t, hole, fname, radius)`: vista 3D del agujero como sólido de revolución, con un cuarto recortado.
 - `make_movie(frames, fname, fps)`: genera MP4 o GIF según la extensión.
-- `make_pipeline_movie(frames_a, frames_b, fname, totals)`: película en tiempo real de dos cadenas de métodos (agujeros y curvas de $\lambda$ contra tiempo de cómputo).
+- `make_pipeline_movie(frames_a, frames_b, fname, totals, duration)`: película en tiempo normalizado de dos cadenas de métodos (agujeros y curvas de $\lambda$ contra tiempo de cómputo).
 
 ## 9. Cómo reproducir todo
 
@@ -308,7 +323,19 @@ python3 second_variation.py    # segundos
 ```
 
 ```bash
-python3 compare_methods.py     # ~15 min, incluye películas comparativas
+python3 compare_methods.py     # ~5 min: tabla de dominios (valores y tiempos) y figuras
+```
+
+```bash
+python3 pipeline_movies.py     # ~10 min: películas Alg. 1 → 3 vs Alg. 2 → 3
+```
+
+```bash
+python3 annulus_ball.py        # ~15 min: anillo y bolas de R^3 (valores y películas)
+```
+
+```bash
+python3 figures_annulus_ball.py
 ```
 
 ```bash
@@ -323,7 +350,7 @@ python3 make_tables.py
 cd ../paper2_steklov_shape_derivative && latexmk -pdf main.tex
 ```
 
-Los tests (rápidos, < 5 s):
+Los 12 tests (rápidos, < 5 s):
 
 ```bash
 python3 -m pytest -q tests
@@ -332,7 +359,7 @@ python3 -m pytest -q tests
 Los tests verifican:
 - la fórmula de Bessel contra la EDO radial;
 - que $c_1$ se anula exactamente en $R^*(r)$;
-- la convergencia $O(h^2)$ del FEM;
+- la convergencia $O(h^2)$ del FEM, en el plano y en la versión axisimétrica de la bola de $\mathbb R^3$;
 - el resolvedor iterativo contra el denso;
 - la monotonía del reordenamiento y el límite $\beta\to\infty$;
 - la clase $\mathcal O_h$;
@@ -341,9 +368,10 @@ Los tests verifican:
 ## 10. Limitaciones conocidas y trabajo futuro
 
 - **Mínimos locales.** Los Algoritmos 1 y 2 pueden quedar en mínimos locales; correrlos desde varios agujeros iniciales lo resolvió en todos los ejemplos, pero no hay garantía de óptimo global.
-- **Artefactos del Algoritmo 3.** Ocasionalmente quedan pequeñas islas de elementos mal clasificados después de remallar. Su efecto en $\lambda$ es despreciable, pero se ven en las figuras.
+- **Tiempo del Algoritmo 3.** Ya optimizado, su tiempo varía con la cantidad de remallados. Un mallador con Delaunay restringido reduciría aún más el costo.
 - **Malla.** El mallador DistMesh es simple; para mallas grandes conviene usar `gmsh`.
-- **Posibles mejoras:** un paso de Newton con la segunda variación, regularización por curvatura, una representación por conjuntos de nivel y una extensión a 3D.
+- **Posibles mejoras:** un paso de Newton con la segunda variación, regularización por curvatura y una representación por conjuntos de nivel.
+- **3D general:** el caso de la bola se resuelve con la reducción axisimétrica, que es exacta por el teorema de simetría. Dominios de $\mathbb R^3$ sin simetría requerirían FEM en tetraedros.
 - **Problema abierto:** probar la Conjetura 2.8 (optimalidad global de la bola centrada para $R>R^*(r)$). La estrategia propuesta (asintótica de agujeros chicos, *blow-up* y problema sobredeterminado exterior, y unicidad local por la no degeneración $c_\ell>0$) está esbozada en el trabajo revisado.
 
 ## 11. Licencia
