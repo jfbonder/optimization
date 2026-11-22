@@ -124,6 +124,11 @@ Observaciones:
 - **Validación:** en la corona $B_1\setminus B_{0.5}$ el FEM converge como $O(h^2)$ al valor exacto 1.6088088…
 
 **Películas** (`movies/`):
+- `*_pipelines.mp4` (una por dominio): **las dos cadenas completas desde el mismo agujero inicial**.
+  - A la izquierda, Alg. 1 → Alg. 3. Al Algoritmo 1 se lo detiene cuando el mejor $\lambda$ no mejora en 40 iteraciones, y entonces se pasa al Algoritmo 3.
+  - En el centro, Alg. 2 → Alg. 3.
+  - A la derecha, las dos curvas de $\lambda$ en los mismos ejes, dibujándose a la par; una línea punteada marca el paso al Algoritmo 3.
+  - Las genera `experiments/pipeline_movies.py`, y los resultados quedan en `experiments/results/pipeline_*.json`.
 - `*_comparison.mp4` (una por dominio): **el método original y el nuevo lado a lado, desde el mismo agujero inicial**. Arriba el original (Alg. 1), abajo el nuevo (Alg. 2 + 3); cada fila muestra el agujero ($u_h=0$ en negro) y la autofunción, y a la derecha las dos curvas de $\lambda$ se dibujan a medida que avanzan las iteraciones.
 - `*_original_algorithm.mp4` y `*_rearrangement_and_flow.mp4`: cada método por separado (corrida anterior).
 - En la etapa de reordenamiento la curva muestra el autovalor duro $\lambda_{1,h}$, que puede subir en los primeros pasos: lo que es monótono es el penalizado $\lambda_\beta$.
@@ -168,6 +173,7 @@ Conclusión:
 │   ├── optimal_holes.py     configuración de los dominios (y corrida individual de cada método)
 │   ├── compare_methods.py   original vs nuevo desde los mismos inicios: tabla, figuras y películas comparativas
 │   ├── make_movies.py       regenera las películas a partir de los cuadros guardados
+│   ├── pipeline_movies.py   películas de las cadenas Alg. 1 → 3 y Alg. 2 → 3 desde el mismo inicio
 │   ├── convergence.py       convergencia en h (L, α = 1)
 │   ├── make_tables.py       tablas LaTeX a partir de los JSON
 │   └── results/             resultados en JSON y logs

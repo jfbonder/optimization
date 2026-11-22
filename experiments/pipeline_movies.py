@@ -19,6 +19,7 @@ from steklov_holes import plotting as pl
 from optimal_holes import config
 
 N_SWAP = lambda k: max(1, 10 - k // 20)
+MOVIE_START = {"handle": (0.0, 0.0)}   # the default start already fills one disk
 
 
 def run(name):
@@ -26,7 +27,8 @@ def run(name):
     alpha = c["alpha"]
     mesh = c["mesh"](c["h"])
     S = sh.P1System(mesh)
-    start = tuple(json.load(open(f"{RES}/holes_{name}.json"))["start_movie"])
+    # start of the comparison movies, except where a more informative one is chosen
+    start = MOVIE_START.get(name) or tuple(json.load(open(f"{RES}/holes_{name}.json"))["start_movie"])
     h0 = al.initial_hole(mesh, alpha, center=start)
     remesh_args = dict(fd=c["fd"], bbox=c["bbox"], h=c["h"], h_fine=c["h_fine"], corners=c["corners"])
     flow_kw = dict(n_iter=150, smooth=25, patience=15, record=True, remesh_args=remesh_args)
