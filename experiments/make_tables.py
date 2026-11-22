@@ -63,3 +63,25 @@ if os.path.exists(f):
                      f"{d['lambda_h0']:.6f} & ${exact2:+.3e}$ & ${d['lambda_h_second_derivative']:+.3e}$\\\\\n")
         fh.write("\\hline\n\\end{tabular}\n")
 print("tables written to", TAB)
+
+# --- annulus and ball of R^3 ---------------------------------------------------
+cases = [("annulus10", r"annulus, $10\%$"), ("annulus25", r"annulus, $25\%$"), ("annulus50", r"annulus, $50\%$"),
+         ("ball10", r"ball $B_1\subset\mathbb{R}^3$, $10\%$"), ("ball25", r"ball $B_1\subset\mathbb{R}^3$, $25\%$"),
+         ("ball50", r"ball $B_1\subset\mathbb{R}^3$, $50\%$"), ("ball3_1", r"ball $B_3\subset\mathbb{R}^3$, $1\%$")]
+rows = []
+for key, label in cases:
+    f = os.path.join(RES, f"{key}.json")
+    if not os.path.exists(f):
+        continue
+    d = json.load(open(f))
+    bs = min(r["lam_swap"] for r in d["runs"])
+    br = min(r["lam_rearr"] for r in d["runs"])
+    ts = sum(r["time_swap"] for r in d["runs"]) / len(d["runs"])
+    tr = sum(r["time_rearr"] for r in d["runs"]) / len(d["runs"])
+    rows.append(f"{label} & {len(d['runs'])} & {bs:.5f} ({ts:.1f}) & {br:.5f} ({tr:.1f}) & "
+                f"{d['flow']:.5f} ({d['time_flow']:.0f}) \\\\")
+if rows:
+    with open(os.path.join(TAB, "annulus_ball.tex"), "w") as fh:
+        fh.write("\\begin{tabular}{lrrrr}\n\\hline\n"
+                 "case & starts & Alg.~\\ref{alg.swap} & Alg.~\\ref{alg.rearr} & Alg.~\\ref{alg.flow}\\\\\n\\hline\n")
+        fh.write("\n".join(rows) + "\n\\hline\n\\end{tabular}\n")

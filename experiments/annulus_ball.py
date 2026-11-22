@@ -86,6 +86,12 @@ def run(name):
           f"(area {fl.area:.5f} vs {alpha:.5f}, {fl.info['time']:.1f}s)")
     pl.plot_holes_panel([(fl.mesh.p, fl.mesh.t, fl.hole, fl.u)], [rf"$\lambda_{{1,h}}={fl.lam:.5f}$"],
                         f"{FIG}/{name}.png", mirror=c["mirror"], size=3.2)
+    np.savez_compressed(f"{RES}/{name}_final.npz", p=fl.mesh.p, t=fl.mesh.t, hole=fl.hole, u=fl.u,
+                        lam=fl.lam, axisymmetric=c["mirror"])
+    if c["mirror"]:
+        R = c["bbox"][1][0]
+        pl.plot_axisym_hole_3d(fl.mesh.p, fl.mesh.t, fl.hole, f"{FIG}/{name}_3d.png", radius=R,
+                               title=rf"$\lambda_{{1,h}}={fl.lam:.5f}$")
 
     # pipeline movie from a common initial hole
     h0 = al.initial_hole(mesh, alpha, center=c["movie_start"])

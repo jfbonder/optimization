@@ -134,6 +134,49 @@ Observaciones:
 - El tiempo medido excluye el costo de grabar los cuadros: en el Algoritmo 2, cada cuadro requiere un cálculo extra del autovalor duro, que no forma parte del método.
 - Las genera `experiments/pipeline_movies.py`; los tiempos y valores quedan en `experiments/results/pipeline_*.json`.
 
+### Anillo y bola de $\mathbb R^3$
+
+Los experimentos (`experiments/annulus_ball.py`, que también arma las figuras `figures_annulus_ball.py`) son:
+- el anillo $\{0.5<|x|<1\}$, con condición de Steklov en ambas circunferencias;
+- la bola $B_1\subset\mathbb R^3$, con agujeros de 10 %, 25 % y 50 % del volumen;
+- la bola $B_3$, con un agujero de 1 %.
+
+**Cómo se calcula la bola.** Por el Teorema 1.4 de Bull. Sci. Math. ($p=2$), todo agujero óptimo es esféricamente simétrico respecto de un eje. Entonces el problema se reduce exactamente a la semisección meridiana $\{(r,z): r\ge0\}$, con peso $2\pi r$ en todas las integrales; la traza se toma sobre la semicircunferencia y se excluye el eje. Se usa `Mesh(..., axisymmetric=True)` o `half_disk(h, R)`, y `P1System` arma automáticamente el sistema ponderado. La validación (un test) da convergencia cuadrática a la fórmula exacta con $N=3$.
+
+| Caso | Alg. 1 | Alg. 2 | Alg. 3 | Forma óptima |
+|---|---|---|---|---|
+| Anillo, 10 % | 0.37984 | 0.37891 | 0.37891 | sector angosto que cruza el anillo |
+| Anillo, 25 % | 0.43909 | 0.43699 | 0.43538 | sector |
+| Anillo, 50 % | 0.66865 | 0.66573 | 0.66111 | medio anillo |
+| Bola $B_1$, 10 % | 0.62836 | 0.62523 | 0.61991 | casquete polar |
+| Bola $B_1$, 25 % | 0.83097 | 0.82876 | 0.81986 | casquete polar |
+| Bola $B_1$, 50 % | 1.21264 | 1.20553 | 1.19467 | casquete polar |
+| Bola $B_3$, 1 % | 0.68554 | 0.68554 | 0.68554 | **bola centrada** (exacto 0.68489) |
+
+Observaciones:
+- En $B_1$ siempre vale $R<R^*(r)$ (con $N=3$), y por eso la bola centrada no es óptima.
+- En $B_3$ con 1 % vale $R^*\approx2.16<3$, y el óptimo encontrado es la bola centrada. Es evidencia de la Conjetura 2.8 en dimensión 3.
+- La bola centrada es un punto fijo del reordenamiento: es crítica, así que el Algoritmo 2 no se mueve si arranca ahí. El Algoritmo 1 sí puede salir.
+
+**Figuras y películas:**
+- `figures/annulus_ball.png`: secciones planas.
+- `figures/balls_3d.png`: vista 3D de los agujeros en las bolas, como sólido de revolución con un cuarto recortado.
+- `movies/{annulus,ball}*_pipelines.mp4`: las películas de cada caso.
+
+### Optimización del Algoritmo 3
+
+Un perfil mostró en qué se iba el tiempo del flujo:
+- los problemas de autovalores son menos del 5 % del tiempo;
+- el remallado era el 87 %.
+
+Los cambios que se hicieron:
+- la función de tamaño de malla se evalúa una vez sobre una grilla de fondo y se interpola;
+- se acotan las iteraciones de DistMesh;
+- se corta el flujo cuando, dos veces, no hay paso de descenso justo después de remallar;
+- la tolerancia de volumen para aceptar un agujero es del 0.1 %.
+
+En conjunto, el flujo es **entre 3 y 10 veces más rápido** sin perder precisión. Ahora cada cadena completa tarda entre 6 y 22 s, cuando antes tardaba entre 15 y 220 s.
+
 ## 5. ¿Qué método resultó más eficiente?
 
 **Nota.** Una primera versión de mi implementación del algoritmo original lo hacía detenerse antes de tiempo: cuando la interfaz anterior no ofrecía suficientes triángulos para recuperar la medida, el ciclo terminaba (pasaba en la L y en los dos discos). Ya está corregido: ahora se recalcula la interfaz del agujero actual y se agregan triángulos hasta llegar a $\alpha$. Con la corrección, el algoritmo original resulta **competitivo** y las conclusiones cambian respecto de la primera comparación.
@@ -142,7 +185,7 @@ Observaciones:
 |---|---|---|---|
 | Alg. 1 (original, corregido) | 0.3–6 s por corrida | dentro del 0.2 % del Alg. 2 (a veces mejor) | No es monótono y oscila. Mueve la interfaz de a una capa por paso: lento para trasladar el agujero lejos ($B_3$) y no sale del disco centrado. En la L es **más robusto** frente a la inicialización. |
 | Alg. 2 (reordenamiento) | **0.1–2 s** por corrida | dentro del 0.2 % del Alg. 1 (a veces mejor) | Monótono en $\lambda_\beta$; converge en pocas iteraciones y cambia la topología en un paso. Es **2 a 9 veces más rápido**, pero más sensible al agujero inicial (en la L queda en 0.577 desde 2 de 4 inicios). |
-| Alg. 3 (flujo de forma) | 15 s a ~4 min | **el mejor** (0.01–0.8 % menos) | **Domina el tiempo total.** Da la frontera libre suave y ajustada a la malla. Su valor final casi no depende de qué algoritmo discreto le dio el agujero (diferencias < 0.02 %), pero su tiempo varía con la cantidad de remallados. |
+| Alg. 3 (flujo de forma) | 3–20 s (optimizado) | **el mejor** (0.01–0.8 % menos) | **Domina el tiempo total.** Da la frontera libre suave y ajustada a la malla. Su valor final casi no depende de qué algoritmo discreto le dio el agujero (diferencias < 0.02 %), pero su tiempo varía con la cantidad de remallados. |
 
 Conclusión:
 - En tiempo, **el más eficiente de los métodos discretos es el reordenamiento penalizado (Alg. 2)**. Igual, los dos discretos tardan del orden de un segundo, y el tiempo total lo domina el flujo de forma.

@@ -42,7 +42,7 @@ def _mirror(p, t, *fields):
     P = np.vstack([p, pm])
     n = p.shape[0]
     idx = np.arange(n) + n
-    on_axis = np.abs(p[:, 0]) < 1e-12 * max(1.0, np.ptp(p, axis=0).max())
+    on_axis = np.abs(p[:, 0]) < 1e-6 * max(1.0, np.ptp(p, axis=0).max())
     idx[on_axis] = np.flatnonzero(on_axis)          # share the nodes on the axis
     T = np.vstack([t, idx[t[:, ::-1]]])
     out = []
@@ -303,3 +303,93 @@ def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3
                          fontsize=11)
             writer.grab_frame()
     plt.close(fig)
+
+
+def _chains(edges):
+    """Split a set of edges (pairs of node indices) into ordered polylines."""
+    from collections import defaultdict
+    adj = defaultdict(list)
+    for a, b in edges:
+        adj[a].append(b)
+        adj[b].append(a)
+    seen = set()
+    chains = []
+    starts = [v for v in adj if len(adj[v]) == 1] + list(adj)
+    for s0 in starts:
+        if all((min(s0, w), max(s0, w)) in seen for w in adj[s0]):
+            continue
+        chain = [s0]
+        cur = s0
+        while True:
+            nxt = [w for w in adj[cur] if (min(cur, w), max(cur, w)) not in seen]
+            if not nxt:
+                break
+            w = nxt[0]
+            seen.add((min(cur, w), max(cur, w)))
+            chain.append(w)
+            cur = w
+        if len(chain) > 1:
+            chains.append(chain)
+    return chains
+
+
+def plot_axisym_hole_3d(p, t, hole, fname=None, title="", radius=None, ax=None, ntheta=72,
+                        color="#e6735c", elev=28, azim=-50, cutaway=True):
+    """3D view of the hole of a body of revolution computed on its meridian
+    section (r, z): the free boundary (interface curve) and the part of the
+    hole on the outer boundary are rotated around the z axis; the domain is
+    drawn as a transparent sphere of the given radius."""
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+    from .mesh import Mesh
+    m = Mesh(p, t)
+    e2t = m.e2t
+    both = (e2t[:, 0] >= 0) & (e2t[:, 1] >= 0)
+    a = np.where(both, e2t[:, 0], 0)
+    b = np.where(both, e2t[:, 1], 0)
+    interface = m.edges[both & (hole[a] != hole[b])]
+    # boundary edges of the hole on the outer boundary (not on the axis)
+    bnd = ~both
+    el = np.where(e2t[:, 0] >= 0, e2t[:, 0], e2t[:, 1])
+    on_axis = np.all(np.abs(p[m.edges][:, :, 0]) < 1e-6 * np.ptp(p, axis=0).max(), axis=1)
+    outer = m.edges[bnd & hole[el] & ~on_axis]
+
+    own = ax is None
+    if own:
+        fig = plt.figure(figsize=(5.2, 5.2))
+        ax = fig.add_subplot(111, projection="3d")
+    # with ``cutaway`` a quarter of the solid is removed and the meridian
+    # sections of the hole are drawn on the two cut planes
+    th_max = 1.5 * np.pi if cutaway else 2 * np.pi
+    th = np.linspace(0, th_max, ntheta)
+    R = radius if radius is not None else np.max(np.hypot(p[:, 0], p[:, 1]))
+    # transparent sphere
+    uu, vv = np.meshgrid(np.linspace(0, 2 * np.pi, 48), np.linspace(0, np.pi, 24))
+    ax.plot_wireframe(R * np.cos(uu) * np.sin(vv), R * np.sin(uu) * np.sin(vv), R * np.cos(vv),
+                      color="0.6", lw=0.3, alpha=0.5)
+    for edges, col, alpha in ((interface, color, 0.95), (outer, "#7b241c", 0.9)):
+        for ch in _chains([tuple(e) for e in edges]):
+            r = p[ch, 0]
+            z = p[ch, 1]
+            X = np.outer(r, np.cos(th))
+            Y = np.outer(r, np.sin(th))
+            Z = np.outer(z, np.ones_like(th))
+            ax.plot_surface(X, Y, Z, color=col, alpha=alpha, linewidth=0, antialiased=True, shade=True)
+    if cutaway:
+        from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        tri = p[t[hole]]                                  # (k, 3, 2) meridian triangles of the hole
+        for thc in (0.0, th_max):
+            P3 = np.stack([tri[:, :, 0] * np.cos(thc), tri[:, :, 0] * np.sin(thc), tri[:, :, 1]], axis=-1)
+            ax.add_collection3d(Poly3DCollection(P3, facecolor="#922b21", edgecolor="none", alpha=0.85))
+    ax.set_xlim(-R, R)
+    ax.set_ylim(-R, R)
+    ax.set_zlim(-R, R)
+    ax.set_box_aspect((1, 1, 1))
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_axis_off()
+    if title:
+        ax.set_title(title, fontsize=10)
+    if own and fname:
+        fig.tight_layout()
+        fig.savefig(fname, dpi=200)
+        plt.close(fig)
+    return ax
