@@ -95,12 +95,14 @@ Es el análogo discreto de la relajación de [BRW 2006] y de la penalización de
 
 (Valores de $\lambda_{1,h}$; ver `paper2_steklov_shape_derivative/tables/` y `experiments/results/*.json`.) Los Algoritmos 1 y 2 se corren desde **los mismos agujeros iniciales** (3 o 4 por dominio). El Algoritmo 3 se arranca desde el mejor agujero de cada uno.
 
-| Dominio | Alg. 1 (original): mejor valor (tiempo/corrida) | Alg. 2: mejor valor (tiempo/corrida) | Alg. 1 + 3 | Alg. 2 + 3 |
+| Dominio | Alg. 1 (original): mejor $\lambda$ (s/corrida) | Alg. 2: mejor $\lambda$ (s/corrida) | Alg. 1 + 3: $\lambda$ (tiempo total) | Alg. 2 + 3: $\lambda$ (tiempo total) |
 |---|---|---|---|---|
-| Disco unidad, $\alpha=\pi/2$ | **1.24772** (1.9 s) | 1.24998 (0.4 s) | **1.24052** | 1.24096 |
-| L (tres cuadrados), $\alpha=1/2$ | 0.46808 (2.4 s) | **0.46695** (0.3 s) | **0.46654** | 0.46690 |
-| Dos discos con un mango, $\alpha=\pi$ | 0.50410 (2.0 s) | 0.50410 (0.1 s) | 0.50359 | 0.50359 |
-| Disco $B_3$, $\alpha=\pi/4$ | 0.82684 (9.3 s) | **0.82675** (2.0 s) | 0.82680 | **0.82670** |
+| Disco unidad, $\alpha=\pi/2$ | **1.24772** (1.5 s) | 1.24998 (0.4 s) | 1.23987 (72 s) | **1.23977** (222 s) |
+| L (tres cuadrados), $\alpha=1/2$ | 0.46808 (1.4 s) | **0.46695** (0.2 s) | 0.46653 (25 s) | **0.46652** (20 s) |
+| Dos discos con un mango, $\alpha=\pi$ | 0.50433 (0.9 s) | **0.50410** (0.1 s) | **0.50344** (38 s) | 0.50349 (15 s) |
+| Disco $B_3$, $\alpha=\pi/4$ | 0.82684 (3.0 s) | **0.82675** (1.2 s) | 0.82680 (170 s) | **0.82670** (173 s) |
+
+El Algoritmo 1 se detiene cuando el mejor valor no mejora en 40 iteraciones (máximo 300). El tiempo total es el del algoritmo discreto desde el mejor inicio más el del Algoritmo 3.
 
 Sensibilidad a la inicialización (detalle por agujero inicial en `experiments/results/compare.log`):
 - **L:** desde el cuadrado de la esquina, el original llega a 0.506 y el reordenamiento queda en 0.577. Desde el centro, el original llega a 0.468 y el reordenamiento a 0.578. Desde los otros dos inicios, ambos encuentran la franja (≈0.467).
@@ -136,14 +138,14 @@ Observaciones:
 
 **Nota.** Una primera versión de mi implementación del algoritmo original lo hacía detenerse antes de tiempo: cuando la interfaz anterior no ofrecía suficientes triángulos para recuperar la medida, el ciclo terminaba (pasaba en la L y en los dos discos). Ya está corregido: ahora se recalcula la interfaz del agujero actual y se agregan triángulos hasta llegar a $\alpha$. Con la corrección, el algoritmo original resulta **competitivo** y las conclusiones cambian respecto de la primera comparación.
 
-| | Tiempo por corrida | Calidad | Comentarios |
+| | Tiempo | Calidad | Comentarios |
 |---|---|---|---|
-| Alg. 1 (original, corregido) | 2–10 s (300 iteraciones) | dentro del 0.2 % del Alg. 2 (a veces mejor) | No es monótono y oscila. Mueve la interfaz de a una capa por paso: lento para trasladar el agujero lejos ($B_3$) y no sale del disco centrado. En la L es **más robusto** frente a la inicialización. |
-| Alg. 2 (reordenamiento) | **0.1–3 s** | dentro del 0.2 % del Alg. 1 (a veces mejor) | Monótono en $\lambda_\beta$; converge en ≲20 iteraciones y cambia la topología en un paso. Es **5 a 20 veces más rápido**, pero más sensible al agujero inicial (en la L queda en 0.577 desde 2 de 4 inicios). |
-| Alg. 3 (flujo de forma) | 1–3 min | **el mejor** (0.01–0.7 % menos) | Frontera libre suave y ajustada a la malla, con refinamiento cerca del agujero. Su resultado final casi no depende de qué algoritmo discreto le dio el agujero inicial. |
+| Alg. 1 (original, corregido) | 0.3–6 s por corrida | dentro del 0.2 % del Alg. 2 (a veces mejor) | No es monótono y oscila. Mueve la interfaz de a una capa por paso: lento para trasladar el agujero lejos ($B_3$) y no sale del disco centrado. En la L es **más robusto** frente a la inicialización. |
+| Alg. 2 (reordenamiento) | **0.1–2 s** por corrida | dentro del 0.2 % del Alg. 1 (a veces mejor) | Monótono en $\lambda_\beta$; converge en pocas iteraciones y cambia la topología en un paso. Es **2 a 9 veces más rápido**, pero más sensible al agujero inicial (en la L queda en 0.577 desde 2 de 4 inicios). |
+| Alg. 3 (flujo de forma) | 15 s a ~4 min | **el mejor** (0.01–0.8 % menos) | **Domina el tiempo total.** Da la frontera libre suave y ajustada a la malla. Su valor final casi no depende de qué algoritmo discreto le dio el agujero (diferencias < 0.02 %), pero su tiempo varía con la cantidad de remallados. |
 
 Conclusión:
-- En tiempo, **el más eficiente es el reordenamiento penalizado (Alg. 2)**.
+- En tiempo, **el más eficiente de los métodos discretos es el reordenamiento penalizado (Alg. 2)**. Igual, los dos discretos tardan del orden de un segundo, y el tiempo total lo domina el flujo de forma.
 - En robustez no domina: en la L, el algoritmo original (corregido) encuentra buenas configuraciones desde más inicios.
 - Como ambos métodos discretos son baratos, la estrategia recomendada es correr **los dos desde unos pocos agujeros iniciales y pasar el mejor resultado al flujo de forma (Alg. 3)**, que da la frontera libre con precisión y los valores más bajos.
 
