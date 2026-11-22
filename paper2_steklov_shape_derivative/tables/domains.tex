@@ -1,10 +1,10 @@
 \begin{tabular}{lrrrrrr}
 \hline
-domain & nodes & initial & Alg.~\ref{alg.swap} & Alg.~\ref{alg.rearr} & Alg.~\ref{alg.flow} & remeshes\\
+domain & nodes & starts & Alg.~\ref{alg.swap} & Alg.~\ref{alg.rearr} & Alg.~\ref{alg.swap}+\ref{alg.flow} & Alg.~\ref{alg.rearr}+\ref{alg.flow}\\
 \hline
-unit disk, $\alpha=\pi/2$ & 2267 & 1.73038 & 1.25431 & 1.24875 & 1.23988 & 11 \\
-L-shaped domain, $\alpha=1/2$ & 1976 & 0.65330 & 0.57835 & 0.46695 & 0.46653 & 22 \\
-two disks with a handle, $\alpha=\pi$ & 2188 & 0.53306 & 0.51977 & 0.50410 & 0.50359 & 8 \\
-disk $B_3$, $\alpha=\pi/4$ & 5099 & 0.83609 & 0.82961 & 0.82674 & 0.82669 & 14 \\
+unit disk, $\alpha=\pi/2$ & 2267 & 3 & 1.24772 (1.9\,s) & 1.24998 (0.4\,s) & 1.24052 & 1.24096 \\
+L-shaped domain, $\alpha=1/2$ & 1976 & 4 & 0.46808 (2.4\,s) & 0.46695 (0.3\,s) & 0.46654 & 0.46690 \\
+two disks with a handle, $\alpha=\pi$ & 2188 & 3 & 0.50410 (2.0\,s) & 0.50410 (0.1\,s) & 0.50359 & 0.50359 \\
+disk $B_3$, $\alpha=\pi/4$ & 5099 & 3 & 0.82684 (9.3\,s) & 0.82675 (2.0\,s) & 0.82680 & 0.82670 \\
 \hline
 \end{tabular}

@@ -1,0 +1,17 @@
+[disk] start (0.25, 0.1): initial 1.73038 | original 1.25431 (1.9s) | rearrangement 1.24998 (0.4s)
+[disk] start (0.0, 0.0): initial 3.08444 | original 1.25616 (1.9s) | rearrangement 1.25213 (0.5s)
+[disk] start (-0.5, 0.0): initial 1.43408 | original 1.24772 (1.9s) | rearrangement 1.25046 (0.4s)
+[disk] best original 1.24772 | best rearrangement 1.24998 | flow (from rearr) 1.24096 | flow (from original) 1.24052
+[lshape] start (-0.5, -0.5): initial 0.65330 | original 0.50569 (2.4s) | rearrangement 0.57697 (0.3s)
+[lshape] start (0.5, -0.5): initial 0.50713 | original 0.46809 (2.4s) | rearrangement 0.46695 (0.2s)
+[lshape] start (-0.5, 0.5): initial 0.50713 | original 0.46810 (2.5s) | rearrangement 0.46695 (0.2s)
+[lshape] start (0.0, 0.0): initial 0.94804 | original 0.46808 (2.5s) | rearrangement 0.57762 (0.4s)
+[lshape] best original 0.46808 | best rearrangement 0.46695 | flow (from rearr) 0.46690 | flow (from original) 0.46654
+[handle] start (-1.2, 0.1): initial 0.53306 | original 0.50412 (2.0s) | rearrangement 0.50420 (0.1s)
+[handle] start (0.0, 0.0): initial 1.13236 | original 0.50447 (1.9s) | rearrangement 0.50420 (0.1s)
+[handle] start (1.5, 0.0): initial 0.50433 | original 0.50410 (2.1s) | rearrangement 0.50410 (0.1s)
+[handle] best original 0.50410 | best rearrangement 0.50410 | flow (from rearr) 0.50359 | flow (from original) 0.50359
+[bigdisk] start (1.5, 0.5): initial 0.83609 | original 0.82736 (10.2s) | rearrangement 0.82679 (2.6s)
+[bigdisk] start (0.0, 0.0): initial 0.82684 | original 0.82684 (9.0s) | rearrangement 0.82675 (0.5s)
+[bigdisk] start (-2.5, 0.0): initial 0.83607 | original 0.83587 (8.9s) | rearrangement 0.82675 (2.9s)
+[bigdisk] best original 0.82684 | best rearrangement 0.82675 | flow (from rearr) 0.82670 | flow (from original) 0.82680

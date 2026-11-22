@@ -93,20 +93,24 @@ Es el análogo discreto de la relajación de [BRW 2006] y de la penalización de
 
 ## 4. Resultados numéricos
 
-(Valores de $\lambda_{1,h}$; ver `paper2_steklov_shape_derivative/tables/` y `experiments/results/*.json`.)
+(Valores de $\lambda_{1,h}$; ver `paper2_steklov_shape_derivative/tables/` y `experiments/results/*.json`.) Los Algoritmos 1 y 2 se corren desde **los mismos agujeros iniciales** (3 o 4 por dominio). El Algoritmo 3 se arranca desde el mejor agujero de cada uno.
 
-| Dominio | Inicial | Alg. 1 (original) | Alg. 2 | Alg. 3 |
+| Dominio | Alg. 1 (original): mejor valor (tiempo/corrida) | Alg. 2: mejor valor (tiempo/corrida) | Alg. 1 + 3 | Alg. 2 + 3 |
 |---|---|---|---|---|
-| Disco unidad, $\alpha=\pi/2$ | 1.73038 | 1.25431 | 1.24875 | **1.23988** |
-| L (tres cuadrados), $\alpha=1/2$ | 0.65330 | 0.57835 | 0.46695 | **0.46653** |
-| Dos discos con un mango, $\alpha=\pi$ | 0.53306 | 0.51977 | 0.50410 | **0.50359** |
-| Disco $B_3$, $\alpha=\pi/4$ | 0.83609 | 0.82961 | 0.82674 | **0.82669** |
+| Disco unidad, $\alpha=\pi/2$ | **1.24772** (1.9 s) | 1.24998 (0.4 s) | **1.24052** | 1.24096 |
+| L (tres cuadrados), $\alpha=1/2$ | 0.46808 (2.4 s) | **0.46695** (0.3 s) | **0.46654** | 0.46690 |
+| Dos discos con un mango, $\alpha=\pi$ | 0.50410 (2.0 s) | 0.50410 (0.1 s) | 0.50359 | 0.50359 |
+| Disco $B_3$, $\alpha=\pi/4$ | 0.82684 (9.3 s) | **0.82675** (2.0 s) | 0.82680 | **0.82670** |
+
+Sensibilidad a la inicialización (detalle por agujero inicial en `experiments/results/compare.log`):
+- **L:** desde el cuadrado de la esquina, el original llega a 0.506 y el reordenamiento queda en 0.577. Desde el centro, el original llega a 0.468 y el reordenamiento a 0.578. Desde los otros dos inicios, ambos encuentran la franja (≈0.467).
+- **$B_3$:** el reordenamiento llega al disco centrado desde los tres inicios. El original, arrancado cerca del borde, mueve el agujero de a una capa de triángulos y en 300 iteraciones queda lejos del centro (0.836).
 
 Observaciones:
 - **Disco unidad:** el agujero óptimo toca $\partial\Omega$ del lado opuesto a donde se concentra la autofunción. Es un "casquete" con frontera libre curva: ni el disco centrado ni el semidisco (Teorema 2), y es esféricamente simétrico, como predice [BRW].
-- **L:** el óptimo es una franja en el extremo de uno de los brazos (hay dos, por simetría). El algoritmo original, arrancado en el cuadrado de la esquina, queda en una configuración bastante peor.
+- **L:** el óptimo es una franja en el extremo de uno de los brazos (hay dos, por simetría).
 - **Dos discos:** el agujero llena prácticamente uno de los discos.
-- **$B_3$ con agujero chico** ($R=3>R^*(0.5)\approx2.30$): todos los métodos, arrancados desde inicios muy distintos (incluido uno aleatorio), convergen al **disco centrado**. Es evidencia a favor de la Conjetura 2.8.
+- **$B_3$ con agujero chico** ($R=3>R^*(0.5)\approx2.30$): el óptimo numérico es el **disco centrado**, lo que es evidencia a favor de la Conjetura 2.8.
 - **Convergencia en $h$** (L, $\alpha=1$, el ejemplo de la Tabla 1 original):
 
   | $h$ | Alg. 2 | Alg. 3 |
@@ -119,21 +123,26 @@ Observaciones:
 - **Traslación del disco centrado:** la segunda derivada de $\lambda_1(B_r(te_1))$ calculada por FEM (con malla que se deforma con el agujero) coincide con la fórmula exacta de la Proposición 2.6, por ejemplo $+1.21\cdot10^{-2}$ contra $+1.22\cdot10^{-2}$ para $R=3$, $r=0.5$. El cambio de signo se produce exactamente en $R^*(r)$.
 - **Validación:** en la corona $B_1\setminus B_{0.5}$ el FEM converge como $O(h^2)$ al valor exacto 1.6088088…
 
-**Películas** (`movies/`), una por dominio y método:
-- `*_original_algorithm.mp4`: el algoritmo del paper original.
-- `*_rearrangement_and_flow.mp4`: el método nuevo (Algoritmo 2 seguido del 3).
-
-Cada cuadro muestra el agujero ($u_h=0$ en negro), la autofunción en otro panel y la curva de $\lambda$. En la etapa de reordenamiento la curva muestra el autovalor duro $\lambda_{1,h}$, que puede subir en los primeros pasos: lo que es monótono es el penalizado $\lambda_\beta$.
+**Películas** (`movies/`):
+- `*_comparison.mp4` (una por dominio): **el método original y el nuevo lado a lado, desde el mismo agujero inicial**. Arriba el original (Alg. 1), abajo el nuevo (Alg. 2 + 3); cada fila muestra el agujero ($u_h=0$ en negro) y la autofunción, y a la derecha las dos curvas de $\lambda$ se dibujan a medida que avanzan las iteraciones.
+- `*_original_algorithm.mp4` y `*_rearrangement_and_flow.mp4`: cada método por separado (corrida anterior).
+- En la etapa de reordenamiento la curva muestra el autovalor duro $\lambda_{1,h}$, que puede subir en los primeros pasos: lo que es monótono es el penalizado $\lambda_\beta$.
+- `experiments/make_movies.py` regenera las películas a partir de los cuadros guardados.
 
 ## 5. ¿Qué método resultó más eficiente?
 
-| | Tiempo típico | Calidad | Comentarios |
-|---|---|---|---|
-| Alg. 1 (original) | 0.1–2 s | peor (0.3 a 24 % por encima del mejor valor) | No es monótono, se estanca en mínimos locales y no sale del disco centrado. |
-| **Alg. 2 (reordenamiento)** | **1–8 s** (con varios inicios) | dentro del 1 % del mejor valor | Monótono, converge en ≲20 iteraciones y encuentra la topología. **Es el mejor en relación calidad/costo.** |
-| Alg. 3 (flujo de forma) | 1–3 min | el mejor (0.01–0.7 % menos que el Alg. 2) | Frontera libre suave y ajustada a la malla, con refinamiento cerca del agujero. Necesita una buena topología inicial; el costo lo domina el remallado. |
+**Nota.** Una primera versión de mi implementación del algoritmo original lo hacía detenerse antes de tiempo: cuando la interfaz anterior no ofrecía suficientes triángulos para recuperar la medida, el ciclo terminaba (pasaba en la L y en los dos discos). Ya está corregido: ahora se recalcula la interfaz del agujero actual y se agregan triángulos hasta llegar a $\alpha$. Con la corrección, el algoritmo original resulta **competitivo** y las conclusiones cambian respecto de la primera comparación.
 
-Conclusión: **el más eficiente es el reordenamiento penalizado (Algoritmo 2)**. Con unos segundos da el agujero óptimo con precisión de malla. Para obtener la frontera libre con precisión, lo recomendable es encadenarlo con el flujo de forma (Algoritmo 3).
+| | Tiempo por corrida | Calidad | Comentarios |
+|---|---|---|---|
+| Alg. 1 (original, corregido) | 2–10 s (300 iteraciones) | dentro del 0.2 % del Alg. 2 (a veces mejor) | No es monótono y oscila. Mueve la interfaz de a una capa por paso: lento para trasladar el agujero lejos ($B_3$) y no sale del disco centrado. En la L es **más robusto** frente a la inicialización. |
+| Alg. 2 (reordenamiento) | **0.1–3 s** | dentro del 0.2 % del Alg. 1 (a veces mejor) | Monótono en $\lambda_\beta$; converge en ≲20 iteraciones y cambia la topología en un paso. Es **5 a 20 veces más rápido**, pero más sensible al agujero inicial (en la L queda en 0.577 desde 2 de 4 inicios). |
+| Alg. 3 (flujo de forma) | 1–3 min | **el mejor** (0.01–0.7 % menos) | Frontera libre suave y ajustada a la malla, con refinamiento cerca del agujero. Su resultado final casi no depende de qué algoritmo discreto le dio el agujero inicial. |
+
+Conclusión:
+- En tiempo, **el más eficiente es el reordenamiento penalizado (Alg. 2)**.
+- En robustez no domina: en la L, el algoritmo original (corregido) encuentra buenas configuraciones desde más inicios.
+- Como ambos métodos discretos son baratos, la estrategia recomendada es correr **los dos desde unos pocos agujeros iniciales y pasar el mejor resultado al flujo de forma (Alg. 3)**, que da la frontera libre con precisión y los valores más bajos.
 
 ## 6. Estructura del repositorio
 
@@ -156,7 +165,9 @@ Conclusión: **el más eficiente es el reordenamiento penalizado (Algoritmo 2)**
 ├── experiments/
 │   ├── translation.py       traslación del disco centrado (Tabla y Figura)
 │   ├── second_variation.py  diagrama de regímenes en el plano (r, R)
-│   ├── optimal_holes.py     los cuatro dominios: figuras, historias y películas
+│   ├── optimal_holes.py     configuración de los dominios (y corrida individual de cada método)
+│   ├── compare_methods.py   original vs nuevo desde los mismos inicios: tabla, figuras y películas comparativas
+│   ├── make_movies.py       regenera las películas a partir de los cuadros guardados
 │   ├── convergence.py       convergencia en h (L, α = 1)
 │   ├── make_tables.py       tablas LaTeX a partir de los JSON
 │   └── results/             resultados en JSON y logs
@@ -231,6 +242,7 @@ pl.make_movie(res.info["frames"] + flow.info["frames"], "disco.mp4", fps=4)
 **`steklov_holes.plotting`**
 - `plot_result(res, fname)`, `plot_holes_panel(states, titles, fname)`.
 - `make_movie(frames, fname, fps)`: genera MP4 o GIF según la extensión.
+- `make_comparison_movie(frames_a, frames_b, fname)`: película lado a lado de dos métodos, con las dos curvas de $\lambda$.
 
 ## 9. Cómo reproducir todo
 
@@ -247,7 +259,7 @@ python3 second_variation.py    # segundos
 ```
 
 ```bash
-python3 optimal_holes.py       # ~10 min, incluye películas
+python3 compare_methods.py     # ~15 min, incluye películas comparativas
 ```
 
 ```bash
@@ -279,7 +291,7 @@ Los tests verifican:
 
 ## 10. Limitaciones conocidas y trabajo futuro
 
-- **Mínimos locales.** El Algoritmo 2 puede quedar en mínimos locales; `multistart` lo resolvió en todos los ejemplos, pero no hay garantía de óptimo global.
+- **Mínimos locales.** Los Algoritmos 1 y 2 pueden quedar en mínimos locales; correrlos desde varios agujeros iniciales lo resolvió en todos los ejemplos, pero no hay garantía de óptimo global.
 - **Artefactos del Algoritmo 3.** Ocasionalmente quedan pequeñas islas de elementos mal clasificados después de remallar. Su efecto en $\lambda$ es despreciable, pero se ven en las figuras.
 - **Malla.** El mallador DistMesh es simple; para mallas grandes conviene usar `gmsh`.
 - **Posibles mejoras:** un paso de Newton con la segunda variación, regularización por curvatura, una representación por conjuntos de nivel y una extensión a 3D.
