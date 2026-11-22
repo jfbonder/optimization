@@ -1,0 +1,4 @@
+[disk] initial 1.73038 | swap 1.25431 | rearr 1.24875 | flow 1.23988 (remeshes 11)
+[lshape] initial 0.65330 | swap 0.57835 | rearr 0.46695 | flow 0.46653 (remeshes 22)
+[handle] initial 0.53306 | swap 0.51977 | rearr 0.50410 | flow 0.50359 (remeshes 8)
+[bigdisk] initial 0.83609 | swap 0.82961 | rearr 0.82674 | flow 0.82669 (remeshes 14)

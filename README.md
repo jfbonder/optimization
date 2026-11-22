@@ -97,9 +97,9 @@ Es el análogo discreto de la relajación de [BRW 2006] y de la penalización de
 
 | Dominio | Inicial | Alg. 1 (original) | Alg. 2 | Alg. 3 |
 |---|---|---|---|---|
-| Disco unidad, $\alpha=\pi/2$ | 1.73038 | 1.25431 | 1.24875 | **1.23985** |
-| L (tres cuadrados), $\alpha=1/2$ | 0.65330 | 0.57835 | 0.46695 | **0.46657** |
-| Dos discos con un mango, $\alpha=\pi$ | 0.53306 | 0.52151 | 0.50410 | **0.50271** |
+| Disco unidad, $\alpha=\pi/2$ | 1.73038 | 1.25431 | 1.24875 | **1.23988** |
+| L (tres cuadrados), $\alpha=1/2$ | 0.65330 | 0.57835 | 0.46695 | **0.46653** |
+| Dos discos con un mango, $\alpha=\pi$ | 0.53306 | 0.51977 | 0.50410 | **0.50359** |
 | Disco $B_3$, $\alpha=\pi/4$ | 0.83609 | 0.82961 | 0.82674 | **0.82669** |
 
 Observaciones:
