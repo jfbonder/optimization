@@ -19,12 +19,17 @@ for key, label in names.items():
     if not os.path.exists(f):
         continue
     d = json.load(open(f))
+    if "runs" not in d:
+        continue
+    ts = sum(r["time_swap"] for r in d["runs"]) / len(d["runs"])
+    tr = sum(r["time_rearr"] for r in d["runs"]) / len(d["runs"])
     rows.append(
-        f"{label} & {d['nodes']} & {d['lambda_initial']:.5f} & {d['swap']['lam']:.5f} "
-        f"& {d['rearrangement']['lam']:.5f} & {d['flow']['lam']:.5f} & {d['flow']['remeshes']} \\\\")
+        f"{label} & {d['nodes']} & {len(d['runs'])} & {d['best_swap']:.5f} ({ts:.1f}\\,s) "
+        f"& {d['best_rearr']:.5f} ({tr:.1f}\\,s) & {d['flow_from_swap']:.5f} & {d['flow_from_rearr']:.5f} \\\\")
 with open(os.path.join(TAB, "domains.tex"), "w") as fh:
     fh.write("\\begin{tabular}{lrrrrrr}\n\\hline\n"
-             "domain & nodes & initial & Alg.~\\ref{alg.swap} & Alg.~\\ref{alg.rearr} & Alg.~\\ref{alg.flow} & remeshes\\\\\n\\hline\n")
+             "domain & nodes & starts & Alg.~\\ref{alg.swap} & Alg.~\\ref{alg.rearr} & "
+             "Alg.~\\ref{alg.swap}+\\ref{alg.flow} & Alg.~\\ref{alg.rearr}+\\ref{alg.flow}\\\\\n\\hline\n")
     fh.write("\n".join(rows) + "\n\\hline\n\\end{tabular}\n")
 
 # --- convergence ---------------------------------------------------------------

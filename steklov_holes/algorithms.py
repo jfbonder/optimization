@@ -167,7 +167,24 @@ def swap_algorithm(sys: P1System, hole0, alpha, n_iter=200, n_swap=1, tabu=10,
                 break
             newhole[e] = True
             area += areas[e]
-        if area < alpha:      # not enough candidates: fall back to any neighbour
+        # If the old interface does not offer enough candidates (short
+        # interfaces, e.g. a hole filling a whole disk), recompute the
+        # interface of the current hole and keep adding the adjacent outside
+        # triangle with the smallest |grad u_h|^2 (the discrete normal
+        # derivative) until |A_h| >= alpha.
+        while area < alpha:
+            _, _, out2 = interface_edges(mesh, newhole)
+            cand = np.unique(out2)
+            cand = cand[allowed[cand]]
+            ok = cand[k - removed_at[cand] > tabu]
+            if ok.size == 0:
+                ok = cand
+            if ok.size == 0:
+                break
+            e = ok[np.argmin(g2[ok])]
+            newhole[e] = True
+            area += areas[e]
+        if area < alpha:
             break
         hole = newhole
         lam, u = eig_hard(sys, hole, v0=u)

@@ -136,3 +136,65 @@ def make_movie(frames, fname, fps=8, title="", show_mesh=False, max_frames=400, 
             fig.suptitle(f"{title}   —   {f['label']}, iteration {k}", fontsize=10)
             writer.grab_frame()
     plt.close(fig)
+
+
+def make_comparison_movie(frames_a, frames_b, fname, labels=("original algorithm", "new method"),
+                          title="", fps=10, dpi=100, hold_last=2.0, max_frames=300):
+    """Side-by-side movie: row 1 = method A, row 2 = method B (hole | eigenfunction),
+    right panel: both eigenvalue curves drawn progressively on the same axes.
+    Frame k shows iteration min(k, n-1) of each method."""
+    from matplotlib.animation import FFMpegWriter, PillowWriter
+
+    def sub(fr):
+        if len(fr) > max_frames:
+            idx = np.unique(np.linspace(0, len(fr) - 1, max_frames).astype(int))
+            return [fr[i] for i in idx], idx
+        return fr, np.arange(len(fr))
+
+    fa, ia = sub(frames_a)
+    fb, ib = sub(frames_b)
+    la = np.array([f["lam"] for f in fa])
+    lb = np.array([f["lam"] for f in fb])
+    vmax = max(float(np.max(f["u"])) for f in fa + fb)
+    lo, hi = min(la.min(), lb.min()), max(la.max(), lb.max())
+    pad = 0.05 * (hi - lo + 1e-12)
+    nmax = max(ia[-1], ib[-1]) + 1
+
+    fig = plt.figure(figsize=(13.0, 7.2))
+    axh = [fig.add_axes([0.01, 0.52, 0.22, 0.40]), fig.add_axes([0.01, 0.04, 0.22, 0.40])]
+    axe = [fig.add_axes([0.24, 0.52, 0.22, 0.40]), fig.add_axes([0.24, 0.04, 0.22, 0.40])]
+    ax2 = fig.add_axes([0.55, 0.12, 0.42, 0.74])
+    if fname.endswith(".gif"):
+        writer = PillowWriter(fps=fps)
+    else:
+        import imageio_ffmpeg
+        matplotlib.rcParams["animation.ffmpeg_path"] = imageio_ffmpeg.get_ffmpeg_exe()
+        writer = FFMpegWriter(fps=fps, bitrate=2400, codec="libx264", extra_args=["-pix_fmt", "yuv420p"])
+    n = max(len(fa), len(fb))
+    seq = list(range(n)) + [n - 1] * int(hold_last * fps)
+    colors = ("C1", "C0")
+    with writer.saving(fig, fname, dpi=dpi):
+        for k in seq:
+            ka, kb = min(k, len(fa) - 1), min(k, len(fb) - 1)
+            for ax in axh + axe + [ax2]:
+                ax.clear()
+            for row, (fr, kk, idx, lab, col) in enumerate(((fa, ka, ia, labels[0], colors[0]),
+                                                          (fb, kb, ib, labels[1], colors[1]))):
+                f = fr[kk]
+                draw_hole(axh[row], f["p"], f["t"], f["hole"])
+                axh[row].set_title(f"{lab}: hole, it. {idx[kk]}", fontsize=9, color=col)
+                draw_eigenfunction(axe[row], f["p"], f["t"], f["u"], vmax=vmax)
+                axe[row].set_title(rf"$u_h$,  $\lambda={f['lam']:.5f}$", fontsize=9)
+            ax2.plot(ia[:ka + 1], la[:ka + 1], color=colors[0], lw=1.5, label=labels[0])
+            ax2.plot(ib[:kb + 1], lb[:kb + 1], color=colors[1], lw=1.5, label=labels[1])
+            ax2.plot([ia[ka]], [la[ka]], "o", color=colors[0], ms=5)
+            ax2.plot([ib[kb]], [lb[kb]], "o", color=colors[1], ms=5)
+            ax2.set_xlim(-0.5, nmax - 0.5)
+            ax2.set_ylim(lo - pad, hi + pad)
+            ax2.set_xlabel("iteration")
+            ax2.set_ylabel(r"$\lambda_{1,h}$")
+            ax2.grid(alpha=0.3)
+            ax2.legend(loc="upper right", fontsize=9)
+            fig.suptitle(title, fontsize=11)
+            writer.grab_frame()
+    plt.close(fig)
