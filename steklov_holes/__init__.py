@@ -5,6 +5,10 @@ Companion code to
   J. Fernández Bonder, P. Groisman, J. D. Rossi, Optimization of the first
   Steklov eigenvalue in domains with holes: a shape derivative approach,
   Ann. Mat. Pura Appl. (4) 186 (2007), 341-358.
+
+Copyright (c) 2026 Julián Fernández Bonder. Released under the MIT License
+(see LICENSE). The license covers the code (steklov_holes/, experiments/,
+tests/), not the texts of the papers included in the repository.
 """
 
 from .mesh import Mesh, disk, annulus, lshape, two_disks_with_handle, half_disk, distmesh2d
