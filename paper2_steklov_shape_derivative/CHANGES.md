@@ -35,6 +35,7 @@ The same list appears, with cross-references, at the beginning of the Introducti
    - The eigenvalue problems are solved with Lanczos instead of `fmincon`.
    - The implementation of Algorithm 3 was optimized after profiling, which showed that remeshing dominated its cost. The changes are a size function evaluated on a background grid, a cap on the DistMesh iterations, and a stopping rule based on stalls right after remeshing; together they make the flow 3 to 10 times faster.
    - New experiments on an annulus (Steklov condition on both circles) and on the balls of $\mathbb R^3$, computed through an exact axisymmetric reduction justified by Theorem 1.4 of [11]. In the annulus the optimal holes are sectors spanning the ring. In $B_1$ they are polar caps. In $B_3$ with a hole of 1 % of the volume the optimum is the centred ball, which supports the conjecture in dimension 3.
+   - The code is publicly available at https://github.com/jfbonder/optimization. It is cited in the Introduction and in Section 3.3, and described in a new "Code availability" paragraph before the acknowledgements.
    - All the numerical results are new (Python implementation in `steklov_holes/`). Figures 1–5 and Table 1 of the published version are replaced by new figures and tables, including the translation of the centred ball and the regime diagram.
 7. **Minor points.**
    - Typos were corrected ("Sobloev", "design and algorithm", "Lema", "looses").
