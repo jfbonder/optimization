@@ -344,10 +344,10 @@ Take now $u\in C^\infty(\overline\Omega)$ and define $u_\varepsilon=(1-\phi_\var
 \|u-u_\varepsilon\|_{W^{1,p}(\Omega)}=\|\phi_\varepsilon u\|_{W^{1,p}(\Omega)}.
 \]
 We will show that $\|\phi_\varepsilon u\|_{W^{1,p}(\Omega)}\to0$ as $\varepsilon\to0$. From this fact, the result will follow since $C^\infty(\overline\Omega)$ is dense in $W^{1,p}(\Omega)$. Now,
-\[
-\|\phi_\varepsilon u\|^p_{W^{1,p}(\Omega)}\le C\left(\int_\Omega|\nabla\phi_\varepsilon|^p|u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|\nabla u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|u|^p\,dx\right)
-\le C\big(\|u\|^p_\infty+\|\nabla u\|^p_\infty\big)\|\phi_\varepsilon\|^p_{W^{1,p}(\R^N)},
-\]
+\begin{align*}
+\|\phi_\varepsilon u\|^p_{W^{1,p}(\Omega)}&\le C\left(\int_\Omega|\nabla\phi_\varepsilon|^p|u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|\nabla u|^p\,dx+\int_\Omega|\phi_\varepsilon|^p|u|^p\,dx\right)\\
+&\le C\big(\|u\|^p_\infty+\|\nabla u\|^p_\infty\big)\|\phi_\varepsilon\|^p_{W^{1,p}(\R^N)},
+\end{align*}
 so that
 \begin{equation}\label{est}
 \|u-u_\varepsilon\|^p_{W^{1,p}(\Omega)}\le C\varepsilon.
@@ -371,10 +371,15 @@ If $\capa_p(A)=0$, then $W^{1,p}_A(\Omega)=W^{1,p}(\Omega)$ by Theorem~\ref{t.ca
 \end{cases}
 \]
 By known regularity theory (see \cite{To}) and the strong maximum principle (see \cite{Va}) it follows that $u\in C^{1,\beta}(\overline\Omega)$ and $u>0$ in $\overline\Omega$; hence $u\ge m>0$ in $\overline\Omega$ for some constant $m$. As $u\in W^{1,p}_A(\Omega)$, there exists a sequence $u_n\in C^\infty_0(\overline\Omega\setminus A)$ such that $u_n\to u$ in $W^{1,p}(\Omega)$. Let $\phi_n=1-u_n/u$. Observe that $\phi_n\equiv1$ in a neighborhood of $A$. Moreover,
+\begin{align*}
+\|\nabla\phi_n\|_{L^p(\Omega)}&=\Big\|\frac1u\nabla(u-u_n)+\frac1{u^2}\nabla u\,(u_n-u)\Big\|_{L^p(\Omega)}\\
+&\le C\|\nabla(u_n-u)\|_{L^p(\Omega)}+C\|\nabla u\|_{L^\infty(\Omega)}\|u-u_n\|_{L^p(\Omega)},
+\end{align*}
+and also
 \[
-\|\nabla\phi_n\|_{L^p(\Omega)}=\Big\|\frac1u\nabla(u-u_n)+\frac1{u^2}\nabla u\,(u_n-u)\Big\|_{L^p(\Omega)}\le C\|\nabla(u_n-u)\|_{L^p(\Omega)}+C\|\nabla u\|_{L^\infty(\Omega)}\|u-u_n\|_{L^p(\Omega)},
+\|\phi_n\|_{L^p(\Omega)}\le m^{-1}\|u-u_n\|_{L^p(\Omega)}.
 \]
-and $\|\phi_n\|_{L^p(\Omega)}\le m^{-1}\|u-u_n\|_{L^p(\Omega)}$. Then, for every $\varepsilon>0$ there exists $n_0$ such that $\|\phi_n\|_{W^{1,p}(\Omega)}<\varepsilon$ if $n\ge n_0$. Now the result follows by extending $\phi_n$ to $\R^N$ and regularizing, as at the end of the proof of Theorem~\ref{t.cap}.
+Then, for every $\varepsilon>0$ there exists $n_0$ such that $\|\phi_n\|_{W^{1,p}(\Omega)}<\varepsilon$ if $n\ge n_0$. Now the result follows by extending $\phi_n$ to $\R^N$ and regularizing, as at the end of the proof of Theorem~\ref{t.cap}.
 \end{proof}
 
 \begin{remark}\label{r.trace}

@@ -213,10 +213,10 @@ Q_t(v)=\frac{\int_\Omega a_t\nabla v\nabla v+b_tv^2}{\int_{\partial\Omega}v^2},\
 satisfy $(1-Ct)Q_0(v)\le Q_t(v)\le(1+Ct)Q_0(v)$, and $\lambda_1(A_t)=\min Q_t$. Hence $|\lambda_1(A_t)-\lambda_1(A)|\le Ct$. The functions $\bar u_t$ are bounded in $H^1_A(\Omega)$; any weak limit $w$ along a sequence $t_n\to0$ satisfies $\|w\|_{L^2(\partial\Omega)}=1$ (by compactness of the trace), $w\ge0$, and $Q_0(w)\le\liminf Q_{t_n}(\bar u_{t_n})=\lambda_1(A)$, so $w$ is the positive normalized eigenfunction $u$ (by simplicity of $\lambda_1(A)$, see \cite{MR}), and the convergence of the norms implies that $\bar u_t\to u$ strongly in $H^1(\Omega)$. This proves \eqref{ift4}. (In the published version this step was attributed to \cite[Theorem~1.6]{FBRW1}; we give here the direct argument, which only uses that the deformation is smooth.)
 
 It remains to check \eqref{ift3}. First, we compute
-\[
-\frac{\partial f_1}{\partial(\lambda,v)}(0,\lambda_1(A),u)(\mu,w)\varphi=\int_\Omega\nabla w\nabla\varphi+w\varphi\,dx-\int_{\partial\Omega}(\lambda_1(A)w+\mu u)\varphi\,dS,\qquad
-\frac{\partial f_2}{\partial(\lambda,v)}(0,\lambda_1(A),u)(\mu,w)=2\int_{\partial\Omega}uw\,dS.
-\]
+\begin{align*}
+\frac{\partial f_1}{\partial(\lambda,v)}(0,\lambda_1(A),u)(\mu,w)\varphi&=\int_\Omega\nabla w\nabla\varphi+w\varphi\,dx-\int_{\partial\Omega}(\lambda_1(A)w+\mu u)\varphi\,dS,\\
+\frac{\partial f_2}{\partial(\lambda,v)}(0,\lambda_1(A),u)(\mu,w)&=2\int_{\partial\Omega}uw\,dS.
+\end{align*}
 Now, the fact that $\partial f/\partial(\lambda,v)|_{(0,\lambda_1(A),u)}$ is an isomorphism follows from the Fredholm alternative applied to the operator $L:H^1_A(\Omega)\to(H^1_A(\Omega))'$ given by
 \[
 \langle Lv,\varphi\rangle=\int_\Omega\nabla v\nabla\varphi+v\varphi\,dx-\lambda_1(A)\int_{\partial\Omega}v\varphi\,dS,
@@ -317,9 +317,10 @@ We have $\Theta(0)=\lambda_1(B_r)$ and, since $U(t)$ is admissible for $A_t$,
 \lambda_1(B_r(te_1))\le\Theta(t)\qquad\text{for every small } t.
 \end{equation}
 Observe that, since $\Theta$ is an even function, $\Theta'(0)=0$. To obtain $\Theta''(0)$ we denote $f(t):=\int_{B_R}|\nabla U(t)|^2+|U(t)|^2\,dx$ and $g(t):=\int_{\partial B_R}|U(t)|^2\,dS$. Hence $\Theta''(0)=g^{-3}(f''g^2-fgg''-2f'g'g+2f(g')^2)|_{t=0}$. Next we compute these terms:
-\[
-f(0)=\lambda_1|\partial B_R|,\quad g(0)=|\partial B_R|,\quad g'(0)=-2\int_{\partial B_R}v\frac{\partial v}{\partial x_1}\,dS,\quad g''(0)=2\int_{\partial B_R}\Big(\frac{\partial v}{\partial x_1}\Big)^2+v\frac{\partial^2v}{\partial x_1^2}\,dS.
-\]
+\begin{gather*}
+f(0)=\lambda_1|\partial B_R|,\qquad g(0)=|\partial B_R|,\\
+g'(0)=-2\int_{\partial B_R}v\frac{\partial v}{\partial x_1}\,dS,\qquad g''(0)=2\int_{\partial B_R}\Big(\frac{\partial v}{\partial x_1}\Big)^2+v\frac{\partial^2v}{\partial x_1^2}\,dS.
+\end{gather*}
 By means of Green's Theorem we obtain
 \[
 f'(0)=-\int_{\partial B_R}\big(|\nabla v|^2+v^2\big)\nu_1\,dS,\qquad f''(0)=\int_{\partial B_R}\frac{\partial}{\partial x_1}\big(|\nabla v|^2+v^2\big)\nu_1\,dS.
@@ -403,7 +404,7 @@ Finally, for large $\ell$ the Robin condition at $R$ forces the coefficient of t
 \end{proof}
 
 \begin{remark}
-Formula \eqref{transl} is checked numerically in Table~\ref{tab.translation}: the second derivative of $\lambda_{1,h}(B_r(te_1))$ computed with finite elements on meshes that move with the hole agrees with \eqref{transl} (the agreement for $R=1$, $r=0.5$ is only qualitative because the quadratic fit uses a large range of $t$ there). We also checked numerically (for $N=2$, $\ell\le40$ and $(r,R)$ in a grid of the region $R>R^*(r)$, see Figure~\ref{fig.regimes}) that $c_\ell>c_1>0$ for $\ell\ge2$ when $R>R^*(r)$. Thus, in this regime, the centered ball is a nondegenerate critical point with positive second variation.
+In Table~\ref{tab.translation} we check formula \eqref{transl} numerically: the second derivative at $t=0$ of the discrete eigenvalue of the translated hole, computed with finite elements on meshes that move with the hole, agrees with \eqref{transl} (the agreement for $R=1$, $r=0.5$ is only qualitative because the quadratic fit uses a large range of $t$ there). We also checked numerically (for $N=2$, $\ell\le40$ and $(r,R)$ in a grid of the region $R>R^*(r)$, see Figure~\ref{fig.regimes}) that $c_\ell>c_1>0$ for $\ell\ge2$ when $R>R^*(r)$. Thus, in this regime, the centered ball is a nondegenerate critical point with positive second variation.
 \end{remark}
 
 \begin{conjecture}\label{conj}

@@ -338,8 +338,8 @@ Using that $\min(\bar u,v)=\bar u-(\bar u-v)^+$, $\Delta v=0$ in $B_{\sqrt\kappa
 \begin{aligned}
 &\int_{B_{\sqrt\kappa}\setminus B_\kappa}|\nabla w|^2+r^2w^2-|\nabla\bar u|^2-r^2\bar u^2\,dx\\
 &\quad=-\int_{B_{\sqrt\kappa}\setminus B_\kappa}\nabla(\bar u-v)^+\nabla(\bar u+v)\,dx-r^2\int_{B_{\sqrt\kappa}\setminus B_\kappa}(\bar u-v)^+(\bar u+v)\,dx\\
-&\quad\le-2\int_{B_{\sqrt\kappa}\setminus B_\kappa}\nabla(\bar u-v)^+\nabla v\,dx-2r^2\int_{B_{\sqrt\kappa}\setminus B_\kappa}(\bar u-v)^+v\,dx
-\le2\int_{\partial B_\kappa}\bar u\,|\nabla v|\,dS\le C_2(N,\kappa)\,\gamma\int_{\partial B_\kappa}\bar u.
+&\quad\le-2\int_{B_{\sqrt\kappa}\setminus B_\kappa}\nabla(\bar u-v)^+\nabla v\,dx-2r^2\int_{B_{\sqrt\kappa}\setminus B_\kappa}(\bar u-v)^+v\,dx\\
+&\quad\le2\int_{\partial B_\kappa}\bar u\,|\nabla v|\,dS\le C_2(N,\kappa)\,\gamma\int_{\partial B_\kappa}\bar u.
 \end{aligned}
 \]
 (In the first inequality we used that $(\bar u-v)^+(\bar u-v)=((\bar u-v)^+)^2\ge0$ and $\nabla(\bar u-v)^+\nabla(\bar u-v)=|\nabla(\bar u-v)^+|^2\ge0$.) Therefore,
@@ -349,8 +349,8 @@ Using that $\min(\bar u,v)=\bar u-(\bar u-v)^+$, $\Delta v=0$ in $B_{\sqrt\kappa
 Recall that $\gamma$ is controlled by $\frac1r\avint_{\partial B_r(x_0)}u$, so that $\gamma$ will be small if $\frac1r\avint_{\partial B_r(x_0)}u$ is small. On the other hand, by the trace inequality in $W^{1,1}(B_\kappa)$, since $\nabla\bar u=0$ a.e. in $\{\bar u=0\}$ and $\bar u\le\sqrt\kappa\gamma\le\gamma$ in $B_\kappa$,
 \[
 \begin{aligned}
-\int_{\partial B_\kappa}\bar u&\le C_3(N,\kappa)\int_{B_\kappa}|\nabla\bar u|+\bar u\,dx
-\le C_3(N,\kappa)\left\{\frac12\int_{B_\kappa}|\nabla\bar u|^2\,dx+\frac12|B_\kappa\cap\{\bar u>0\}|+\gamma|B_\kappa\cap\{\bar u>0\}|\right\}\\
+\int_{\partial B_\kappa}\bar u&\le C_3(N,\kappa)\int_{B_\kappa}|\nabla\bar u|+\bar u\,dx\\
+&\le C_3(N,\kappa)\left\{\frac12\int_{B_\kappa}|\nabla\bar u|^2\,dx+\Big(\frac12+\gamma\Big)|B_\kappa\cap\{\bar u>0\}|\right\}\\
 &\le\frac{C_3(N,\kappa)}{\min(1,\varepsilon)}\left\{\int_{B_\kappa}|\nabla\bar u|^2+r^2\bar u^2\,dx+\varepsilon|B_\kappa\cap\{\bar u>0\}|\right\},
 \end{aligned}
 \]
@@ -411,9 +411,10 @@ cr^{N-1}\le\int_{B_r(x)}d\lambda\le Cr^{N-1}.
 
 \begin{proof}
 For $n$ large enough, let $u_n=u*\rho_n$ where $\rho_n$ are the standard mollifiers. Then, since $u_n\ge0$,
-\[
-\int_{B_r(x)}\lambda*\rho_n\,dx=\int_{B_r(x)}\Delta u_n-u_n\,dx=\int_{\partial B_r(x)}\nabla u_n\cdot\nu\,dS-\int_{B_r(x)}u_n\le\omega_{N-1}\sup_{\partial B_r(x)}|\nabla u_n|\,r^{N-1}\le Cr^{N-1}
-\]
+\begin{align*}
+\int_{B_r(x)}\lambda*\rho_n\,dx&=\int_{B_r(x)}\Delta u_n-u_n\,dx=\int_{\partial B_r(x)}\nabla u_n\cdot\nu\,dS-\int_{B_r(x)}u_n\\
+&\le\omega_{N-1}\sup_{\partial B_r(x)}|\nabla u_n|\,r^{N-1}\le Cr^{N-1}
+\end{align*}
 since $|\nabla u_n|\le\sup|\nabla u|\le C$ for a certain constant $C$ depending on $D$. By taking the limit $n\to\infty$ we get $\int_{B_r(x)}d\lambda\le Cr^{N-1}$. The other inequality follows as in the proof of \cite[Theorem~4.3]{AC} by taking as $G_y(z)$ the (positive) Green function of $-\Delta+\mathrm{Id}$ with homogeneous Dirichlet boundary conditions in the ball $B_r(x)$. Then, for $0<\kappa<1/2$ and $y\in B_{\kappa r}(x)$ one uses the inequality
 \[
 v(y)\ge Cv(x)\ge Ca_N\avint_{\partial B_r(x)}u
@@ -515,9 +516,10 @@ which is a diffeomorphism if $t$ is small enough. Now, let $v_k(x)=u(\tau_k^{-1}
 F_\varepsilon(|\{v_k>0\}|)-F_\varepsilon(|\{u>0\}|)=o(t)\rho_k^N+o(\rho_k^N).
 \end{equation}
 In fact, $v_k=u$ in $\Omega\setminus(B_{\rho_k}(x_{0,k})\cup B_{\rho_k}(x_{1,k}))$ and
-\[
-|\{v_k>0\}\cap B_{\rho_k}(x_{i,k})|-|\{u>0\}\cap B_{\rho_k}(x_{i,k})|=(-1)^i\rho_k^N\left(t\int_{B_1\cap\{y_1=0\}}\Phi(|y|)\,d\cH^{N-1}_y+o_i(t)\right)+o(\rho_k^N),
-\]
+\begin{multline*}
+|\{v_k>0\}\cap B_{\rho_k}(x_{i,k})|-|\{u>0\}\cap B_{\rho_k}(x_{i,k})|\\
+=(-1)^i\rho_k^N\left(t\int_{B_1\cap\{y_1=0\}}\Phi(|y|)\,d\cH^{N-1}_y+o_i(t)\right)+o(\rho_k^N),
+\end{multline*}
 since $\Phi(|y|)$ is radially symmetric and $\chi_{\{u_{i,k}>0\}}\to\chi_{\{\langle x,\nu_i\rangle<0\}}$ in $L^1_{\mathrm{loc}}(\R^N)$; \eqref{217} follows since $F_\varepsilon$ is Lipschitz. Similar computations involving also the development of $\nabla v_k$ in terms of $\nabla u$ and $D\tau_k$ give
 \begin{equation}\label{218}
 \int_\Omega|\nabla v_k|^2\,dx-\int_\Omega|\nabla u|^2\,dx=\rho_k^N\left((\lambda_1^2-\lambda_0^2)\,t\int_{B_1(0)\cap\{y_1=0\}}\Phi(|y|)\,d\cH^{N-1}_y+o(t)\right)+o(\rho_k^N).
@@ -675,9 +677,10 @@ In order to see (2) we proceed as in \cite[Lemma~6]{AAC}. Let $y_0\in\Gamma_D$ a
 \frac1r\avint_{\partial B_r(x_0)}u_\varepsilon\ge\frac1r\avint_{\partial B_r(x_0)}w\ge\bar c\,c_0
 \]
 with $\bar c$ independent of $\varepsilon$. If $v_0$ is the solution to $\Delta v=v$ in $B_r(x_0)$, $v=u_\varepsilon$ on $\partial B_r(x_0)$, then, by \eqref{29}, we have
-\[
-c|B_r(x_0)\cap\{u_\varepsilon=0\}|\le|B_r(x_0)\cap\{u_\varepsilon=0\}|\left(\frac1r\avint_{\partial B_r(x_0)}u_\varepsilon\right)^2\le K\int_{B_r(x_0)}|\nabla(u_\varepsilon-v_0)|^2\,dx\le K\big(\|u_\varepsilon\|^2_{H^1(B_r(x_0))}-\|v_0\|^2_{H^1(B_r(x_0))}\big).
-\]
+\begin{align*}
+c|B_r(x_0)\cap\{u_\varepsilon=0\}|&\le|B_r(x_0)\cap\{u_\varepsilon=0\}|\left(\frac1r\avint_{\partial B_r(x_0)}u_\varepsilon\right)^2\le K\int_{B_r(x_0)}|\nabla(u_\varepsilon-v_0)|^2\,dx\\
+&\le K\big(\|u_\varepsilon\|^2_{H^1(B_r(x_0))}-\|v_0\|^2_{H^1(B_r(x_0))}\big).
+\end{align*}
 Let now $\delta_r=|B_r(x_0)\cap\{u_\varepsilon=0\}|$ and let $x_1\in\partial\{u_\varepsilon>0\}$ be such that the free boundary is smooth in a neighborhood of $x_1$. We perturb $\{u_\varepsilon>0\}$ in a neighborhood of $x_1$ so that the measure of the perturbed set is decreased by an amount $\delta_r$ (cf. Theorem~\ref{t.const}). Let $\Phi$ be a smooth nonnegative function supported in $B_\kappa(x_1)$ with $\kappa>0$ small. For $x\in B_\kappa(x_1)$ we write $x=\sigma+s\nu(\sigma)$ with $\sigma\in\partial\{u_\varepsilon>0\}$ and $s\in\R$, where $\nu(\sigma)$ is the outer unit normal to the free boundary at $\sigma$. We define the change of variables $y=x-\Phi(\sigma)\tau\nu(\sigma)$ with $\tau>0$ small, and the deformed set $D_{\delta_r}$ such that $D_{\delta_r}\cap B_\kappa(x_1)=\{y\ :\ x\in\{u_\varepsilon>0\}\cap B_\kappa(x_1)\}$. Observe that if $r$ is small we can perform this perturbation in such a way that it decreases the measure of $\{u_\varepsilon>0\}$ by exactly $\delta_r$. Also, observe that $\delta_r\to0$ as $r\to0$. Now let $v_r$ be the solution of
 \begin{equation}\label{42}
 \begin{cases}
@@ -687,10 +690,11 @@ v=u_\varepsilon & \text{on }\partial B_\kappa(x_1)\cap D_{\delta_r};
 \end{cases}
 \end{equation}
 then $v_r$ verifies $\frac{\partial v_r}{\partial\nu}=-\lambda_\varepsilon+o(1)$ as $r\to0$ on $\partial\{v_r>0\}\cap B_\kappa(x_1)$. On the other hand, $u_\varepsilon=\lambda_\varepsilon\tau\Phi+o_\varepsilon(\tau)$ on $\partial\{v_r>0\}\cap B_\kappa(x_1)$, with $\tau\int\Phi\,d\cH^{N-1}=\delta_r+o(\delta_r)$. Thus
-\[
+\begin{align*}
 \int_{B_\kappa(x_1)}|\nabla v_r|^2+v_r^2\,dx-\int_{B_\kappa(x_1)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx
-=-\int_{\partial\{v_r>0\}\cap B_\kappa(x_1)}\frac{\partial v_r}{\partial\nu}u_\varepsilon\,dS+o_\varepsilon(\delta_r)=\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r).
-\]
+&=-\int_{\partial\{v_r>0\}\cap B_\kappa(x_1)}\frac{\partial v_r}{\partial\nu}u_\varepsilon\,dS+o_\varepsilon(\delta_r)\\
+&=\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r).
+\end{align*}
 Now we extend $v_r$ by zero to $B_\kappa(x_1)\setminus D_{\delta_r}$ and define
 \[
 w_r=\begin{cases}v_r & \text{in } B_\kappa(x_1),\\ v_0 & \text{in } B_r(x_0),\\ u_\varepsilon & \text{elsewhere}.\end{cases}
@@ -699,8 +703,8 @@ Then $|\{w_r>0\}|=|\{u_\varepsilon>0\}|$ and $w_r=u_\varepsilon$ on $\partial\Om
 \[
 \begin{aligned}
 0\le\cJ_\varepsilon(w_r)-\cJ_\varepsilon(u_\varepsilon)&=\int_{B_r(x_0)}|\nabla v_0|^2+v_0^2\,dx-\int_{B_r(x_0)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx\\
-&\quad+\int_{B_\kappa(x_1)}|\nabla v_r|^2+v_r^2\,dx-\int_{B_\kappa(x_1)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx
-\le-\frac cK\delta_r+\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r),
+&\quad+\int_{B_\kappa(x_1)}|\nabla v_r|^2+v_r^2\,dx-\int_{B_\kappa(x_1)}|\nabla u_\varepsilon|^2+u_\varepsilon^2\,dx\\
+&\le-\frac cK\delta_r+\lambda_\varepsilon^2\delta_r+o_\varepsilon(\delta_r),
 \end{aligned}
 \]
 for every $r>0$ small. Therefore, $\lambda_\varepsilon^2\ge c/K$.
@@ -717,10 +721,10 @@ Let $\Gamma_D\neq\emptyset$ be the closure of a relatively open subset of $\part
 
 \begin{proof}
 Arguing by contradiction, assume first that $|\{u_\varepsilon>0\}|>\alpha$. Let $x_1\in\partial\{u_\varepsilon>0\}\cap\Omega$ be a regular point (the free boundary is nonempty since $0<|\{u_\varepsilon=0\}|$ by \eqref{41}). We will proceed as in the proof of the previous lemma. Given $\delta>0$, we perturb the domain $\{u_\varepsilon>0\}$ in a neighborhood $B_\kappa(x_1)$ of $x_1$, decreasing its measure by $\delta$. We choose $\delta$ small so that the measure of the perturbed set is still larger than $\alpha$. Then we let $v$ be the solution to \eqref{42} extended by zero to the rest of $B_\kappa(x_1)$ and equal to $u_\varepsilon$ in the rest of $\Omega$. We have, by Lemma~\ref{l.upper},
-\[
-0\le\cJ_\varepsilon(v)-\cJ_\varepsilon(u_\varepsilon)=\int_\Omega|\nabla v|^2+v^2-\int_\Omega|\nabla u_\varepsilon|^2+u_\varepsilon^2+F_\varepsilon(|\{v>0\}|)-F_\varepsilon(|\{u_\varepsilon>0\}|)
-\le\lambda_\varepsilon^2\delta+o_\varepsilon(\delta)-\frac1\varepsilon\delta\le\Big(C^2-\frac1\varepsilon\Big)\delta+o_\varepsilon(\delta)<0,
-\]
+\begin{align*}
+0\le\cJ_\varepsilon(v)-\cJ_\varepsilon(u_\varepsilon)&=\int_\Omega|\nabla v|^2+v^2-\int_\Omega|\nabla u_\varepsilon|^2+u_\varepsilon^2+F_\varepsilon(|\{v>0\}|)-F_\varepsilon(|\{u_\varepsilon>0\}|)\\
+&\le\lambda_\varepsilon^2\delta+o_\varepsilon(\delta)-\frac1\varepsilon\delta\le\Big(C^2-\frac1\varepsilon\Big)\delta+o_\varepsilon(\delta)<0,
+\end{align*}
 if $\varepsilon<\varepsilon_0$ and then $\delta<\delta_0(\varepsilon)$. A contradiction.
 
 Now assume that $|\{u_\varepsilon>0\}|<\alpha$. We proceed as in the previous case but this time we perturb in a neighborhood of $x_1$ the set $\{u_\varepsilon>0\}$ increasing the measure by $\delta$. Then we construct the function $v$ as before, and if $\delta$ is small enough $|\{v>0\}|<\alpha$. Then, by Lemma~\ref{l.lower},
@@ -784,9 +788,10 @@ For any $0<\alpha<|\Omega|$ there exists $\alpha_\varepsilon\to\alpha$ as $\vare
 
 \begin{proof}
 Let $u_\varepsilon$ be a minimizer of $\cJ_\varepsilon$ in $K_1$. We already know that $\alpha_\varepsilon:=|\{u_\varepsilon>0\}|\le\alpha+C\varepsilon$ (see \eqref{41}). Let us see that $\alpha_\varepsilon\to\alpha$ as $\varepsilon\to0$. If not, there exists a sequence $\varepsilon_j\to0$ such that $\alpha_{\varepsilon_j}=|\{u_{\varepsilon_j}>0\}|\le\theta<\alpha$. Let $\phi_0$ be a minimizer of $(P_\alpha)$. The function $S$ is strictly decreasing (this is the strict monotonicity of the optimal constant with respect to the measure of the hole, proved in \cite[Section~2]{FBRW1}; recall that here $\alpha$ is the measure of the positivity set), so we have
-\[
-\cJ(\phi_0)=S(\alpha)<S(\theta)\le S(\alpha_{\varepsilon_j})\le\cJ(u_{\varepsilon_j})=\cJ_{\varepsilon_j}(u_{\varepsilon_j})-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\le\cJ_{\varepsilon_j}(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})=\cJ(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\le\cJ(\phi_0)+C\varepsilon_j,
-\]
+\begin{align*}
+\cJ(\phi_0)=S(\alpha)<S(\theta)&\le S(\alpha_{\varepsilon_j})\le\cJ(u_{\varepsilon_j})=\cJ_{\varepsilon_j}(u_{\varepsilon_j})-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\\
+&\le\cJ_{\varepsilon_j}(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})=\cJ(\phi_0)-F_{\varepsilon_j}(\alpha_{\varepsilon_j})\le\cJ(\phi_0)+C\varepsilon_j,
+\end{align*}
 a contradiction. Now, taking $\phi_\varepsilon=u_\varepsilon$ we see that $\phi_\varepsilon$ is a minimizer of $(P_{\alpha_\varepsilon})$. In fact, let $v$ be an admissible function for $(P_{\alpha_\varepsilon})$; then
 \[
 \cJ(v)+F_\varepsilon(\alpha_\varepsilon)=\cJ_\varepsilon(v)\ge\cJ_\varepsilon(\phi_\varepsilon)=\cJ(\phi_\varepsilon)+F_\varepsilon(\alpha_\varepsilon),
