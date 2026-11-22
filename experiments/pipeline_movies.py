@@ -56,7 +56,7 @@ def run(name):
     print(summary)
     json.dump(summary, open(f"{RES}/pipeline_{name}.json", "w"), indent=1)
     pl.make_pipeline_movie(fa, fb, f"{MOV}/{name}_pipelines.mp4", totals=(total_a, total_b),
-                           title=c["title"] + "  —  same initial hole, real computation time")
+                           title=c["title"] + "  —  same initial hole", duration=20.0)
 
 
 if __name__ == "__main__":

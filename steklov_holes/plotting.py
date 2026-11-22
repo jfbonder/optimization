@@ -201,13 +201,14 @@ def make_comparison_movie(frames_a, frames_b, fname, labels=("original algorithm
 
 
 def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3", "Alg. 2 \u2192 Alg. 3"),
-                        totals=None, title="", fps=12, duration=30.0, dpi=100, hold_last=3.0):
+                        totals=None, title="", fps=12, duration=20.0, dpi=100, hold_last=3.0):
     """Real-time comparison of two pipelines.
 
     Every frame carries a timestamp ``time`` (seconds of computation, recording
-    overhead excluded).  The movie runs at a constant rate in computation
-    time: at movie time tau each panel shows the last state computed before
-    tau.  Panels: hole of pipeline A, hole of pipeline B, and both eigenvalue
+    overhead excluded).  Computation time is rescaled so that the whole movie
+    lasts ``duration`` seconds (normalized time): at movie time s the panels
+    show the last state computed before tau = s * T / duration, where T is the
+    total time of the slower pipeline.  Panels: hole of pipeline A, hole of pipeline B, and both eigenvalue
     curves against computation time (dotted line: switch to the shape flow).
     ``totals`` = (total time A, total time B); by default the last timestamps.
     """
@@ -276,6 +277,7 @@ def make_pipeline_movie(frames_a, frames_b, fname, labels=("Alg. 1 \u2192 Alg. 3
             ax2.set_title("eigenvalue vs. computation time (dotted line: switch to Alg. 3)", fontsize=10)
             ax2.grid(alpha=0.3)
             ax2.legend(loc="upper right", fontsize=9)
-            fig.suptitle(title, fontsize=12)
+            fig.suptitle(f"{title}   (normalized time: 1 s of movie = {T / duration:.2g} s of computation)",
+                         fontsize=11)
             writer.grab_frame()
     plt.close(fig)
